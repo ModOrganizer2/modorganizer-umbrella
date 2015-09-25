@@ -1,7 +1,7 @@
 build
 downloads
 *.pyc
-/progress
-/Thumbs.db
-/eggs/*.egg
-/graph.png
+progress
+Thumbs.db
+eggs/*.egg
+graph.png

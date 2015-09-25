@@ -6,8 +6,10 @@ This repository contains a meta build-system that is able to downloads MO subpro
 
 ## Dependencies
 * python
+  * decorator
 * cmake
 * visual C++ 2013 or newer
+* graphviz
 
 ## Usage
 First, check config and see if all paths are set correctly.

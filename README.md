@@ -6,8 +6,11 @@ This repository contains a meta build-system that is able to downloads MO subpro
 
 ## Dependencies
 * python
+  * decorator
 * cmake
 * visual C++ 2013 or newer
+* graphviz
+* 7zip - specifically, the command line version (7za)
 
 ## Usage
 First, check config and see if all paths are set correctly.

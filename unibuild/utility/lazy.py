@@ -29,7 +29,26 @@ class Get(object):
 class Evaluate(object):
     def __init__(self, func):
         super(Evaluate, self).__init__()
+        self.__data = None
         self.__func = func
 
+    """
     def __get__(self, instance, owner):
         return self.__func()
+    """
+
+    def __evaluate(self):
+        if self.__data is None:
+            self.__data = self.__func()
+
+    def __getattr__(self, item):
+        self.__evaluate()
+        return getattr(self.__data, item)
+
+    def __str__(self):
+        self.__evaluate()
+        return str(self.__data)
+
+    def __iter__(self):
+        self.__evaluate()
+        return iter(self.__data)

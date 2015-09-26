@@ -88,8 +88,7 @@ class URLDownload(Retrieval):
 
         os.makedirs(output_file_path)
         filename, extension = os.path.splitext(self.__file_name)
-        print("{}".format(filename))
-        if extension == ".gz":
+        if extension == ".gz" or extension == ".tgz":
             with tarfile.open(archive_file_path, 'r:gz') as arch:
                 arch.extractall(output_file_path)
         elif extension == ".bz2":

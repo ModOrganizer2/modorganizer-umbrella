@@ -5,3 +5,5 @@ progress
 Thumbs.db
 eggs/*.egg
 graph.png
+.idea
+7za.exe

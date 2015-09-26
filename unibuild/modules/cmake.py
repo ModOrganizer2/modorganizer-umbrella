@@ -43,7 +43,6 @@ class CMake(Builder):
                           " are you missing a matching retrieval script?".format(self._context.name))
             return False
 
-        print(self._context["build_path"])
         build_path = os.path.join(self._context["build_path"], "build")
         if os.path.exists(build_path):
             shutil.rmtree(build_path)

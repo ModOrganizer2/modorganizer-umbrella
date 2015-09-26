@@ -46,8 +46,10 @@ class Task(object):
         return None
 
     def __success_path(self):
+        task_name = self.name.replace("/", "_").replace("\\", "_")
+        ctx_name = self._context.name if self._context else task_name
         return os.path.join(config["__build_base_path"], "progress",
-                            "success_{}.txt".format(self.name.replace("/", "_").replace("\\", "_")))
+                            "{}_complete_{}.txt".format(ctx_name, task_name))
 
     def already_processed(self):
         if not os.path.exists(self.__success_path()):

@@ -117,7 +117,7 @@ class Make(Builder):
 
         with open(soutpath, "a") as sout:
             with open(serrpath, "a") as serr:
-                proc = Popen(self.__make_tool,
+                proc = Popen(self.__make_tool.split(" "),
                              env=config["__environment"],
                              cwd=self._context["build_path"],
                              shell=True,

@@ -16,18 +16,13 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild import Project
-from unibuild.modules import cmake, urldownload
-from config import config
-import os
+from unibuild.project import Project
+from unibuild.modules import urldownload
 
 
-zlib_version = "1.2.8"
+python_version = "2.7.10"
 
 
-Project("zlib") \
-    .depend(cmake.CMake().arguments(["-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
-                                     "-DCMAKE_INSTALL_PREFIX:PATH={}".format(
-                                         os.path.join(config["__build_base_path"], "build", "zlib"))
-                                     ]).install()
-            .depend(urldownload.URLDownload("http://zlib.net/zlib-{}.tar.gz".format(zlib_version), 1)))
+Project("Python").depend(
+    urldownload.URLDownload("https://www.python.org/ftp/python/{0}/Python-{0}.tgz".format(python_version), 1)
+)

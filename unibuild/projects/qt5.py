@@ -29,8 +29,8 @@ qt_version = "5.5"
 qt_version_minor = "0"
 
 
-skip_list = ["qtactiveqt", "qtandroidextras", "qtenginio", "qtsensors",
-             "qtserialport", "qtsvg", "qtwebkit", "qttools", "qtwebchannel",
+skip_list = ["qtactiveqt", "qtandroidextras", "qtenginio",
+             "qtserialport", "qtsvg",
              "qtwayland", "qtdoc", "qtconnectivity", "qtwebkit-examples"]
 
 nomake_list = ["tests", "examples"]
@@ -40,7 +40,7 @@ platform = "win32-msvc2013"
 num_jobs = multiprocessing.cpu_count() * 2
 
 configure_cmd = ("configure.bat -platform {platform} -debug-and-release -force-debug-info -opensource -confirm-license "
-                 "-mp -no-compile-examples -no-angle -opengl desktop -no-icu -prefix {path}/qt5) "
+                 "-mp -no-compile-examples -no-angle -opengl desktop -prefix {path}/qt5 "
                  "{skip} {nomake}").format(path=config["paths"]["build"],
                                            platform=platform,
                                            skip=" ".join(["-skip {}".format(s) for s in skip_list]),
@@ -54,9 +54,7 @@ Project("Qt5") \
             .depend("jom")
             .depend(build.Run(configure_cmd)
                     .depend(patch.Replace("qtbase/configure.bat", "if not exist %QTSRC%.gitignore goto sconf", "")
-                            .depend(build.Run("perl init-repository --no-webkit "
-                                              "-module-subset=qtbase,qtwidgets,qtxmlpatterns,qtdeclarative,qtnetwork,"
-                                              "qtquickcontrols,qtwinextras,qtwebengine")
+                            .depend(build.Run("perl init-repository")
                                     .set_fail_behaviour(Task.FailBehaviour.CONTINUE)
                                     .depend(git.Clone("git://code.qt.io/qt/qt5.git", "5.5")
                                             )

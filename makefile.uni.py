@@ -36,7 +36,7 @@ Projects
 """
 
 
-from unibuild.projects import sevenzip, qt5, boost, zlib
+from unibuild.projects import sevenzip, qt5, boost, zlib #, python
 
 
 Project("Spdlog") \
@@ -49,38 +49,40 @@ Project("LootApi") \
     .depend(github.Release("loot", "loot", loot_version, "LOOT.API.{}".format(loot_version), "7z")
             .set_destination("lootapi"))
 
+Project("modorganizer-game_features") \
+    .depend(github.Source("TanninOne", "modorganizer-game_features", modorganizer_branch)
+            .set_destination("plugin/game_features"))
 
-for git_path, path, install, dependencies in [
-    ("modorganizer-archive",          "archive",                 True,  ["7zip"]),
-    ("modorganizer-uibase",           "uibase",                  True,  ["Qt5", "boost"]),
-    ("modorganizer-lootcli",          "lootcli",                 True,  ["LootApi", "Qt5", "boost"]),
-    ("modorganizer-esptk",            "esptk",                   False, ["boost"]),
-    ("modorganizer-bsatk",            "bsatk",                   False, ["zlib"]),
-    ("modorganizer-nxmhandler",       "nxmhandler",              True,  ["Qt5"]),
-    ("modorganizer-python_runner",    "python_runner",           True,  ["boost"]),
-    ("modorganizer-game_features",    "plugin/game_features",    False, ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-game_gamebryo",    "plugin/game_gamebryo",    False, ["Qt5", "modorganizer-uibase",
-                                                                         "modorganizer-game_features"]),
-    ("modorganizer-game_skyrim",      "plugin/game_skyrim",      True,  ["Qt5", "modorganizer-uibase",
-                                                                         "modorganizer-game_gamebryo",
-                                                                         "modorganizer-game_features"]),
-    ("modorganizer-tool_nmmimport",   "plugin/tool_nmmimport",   True,  ["Qt5", "modorganizer-uibase",
-                                                                         "modorganizer-archive"]),
-    ("modorganizer-tool_inieditor",   "plugin/tool_inieditor",   True,  ["Qt5", "modorganizer-uibase"]),
-#    ("modorganizer-preview_dds",      "plugin/preview_dds",      True,  ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-preview_base",     "plugin/preview_base",     True,  ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-diagnose_basic",   "plugin/diagnose_basic",   True,  ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-check_fnis",       "plugin/check_fnis",       True,  ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_bain",   "plugin/installer_bain",   True,  ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_manual", "plugin/installer_manual", True,  ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_bundle", "plugin/installer_bundle", True,  ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_quick",  "plugin/installer_quick",  True,  ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_fomod",  "plugin/installer_fomod",  True,  ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-plugin_python",    "plugin/plugin_python",    True,  ["Qt5", "boost", "modorganizer-uibase"]),
-    ("modorganizer",                  "modorganizer",            True,  ["Qt5", "boost",
-                                                                         "modorganizer-uibase", "modorganizer-archive",
-                                                                         "modorganizer-bsatk", "modorganizer-esptk",
-                                                                         "modorganizer-game_features"]),
+for git_path, path, dependencies in [
+    ("modorganizer-archive",          "archive",                 ["7zip", "Qt5"]),
+    ("modorganizer-uibase",           "uibase",                  ["Qt5", "boost"]),
+    ("modorganizer-lootcli",          "lootcli",                 ["LootApi", "Qt5", "boost"]),
+    ("modorganizer-esptk",            "esptk",                   ["boost"]),
+    ("modorganizer-bsatk",            "bsatk",                   ["zlib"]),
+    ("modorganizer-nxmhandler",       "nxmhandler",              ["Qt5"]),
+    ("modorganizer-helper",           "helper",                  ["Qt5"]),
+    ("modorganizer-game_gamebryo",    "plugin/game_gamebryo",    ["Qt5", "modorganizer-uibase",
+                                                                  "modorganizer-game_features"]),
+    ("modorganizer-game_skyrim",      "plugin/game_skyrim",      ["Qt5", "modorganizer-uibase",
+                                                                  "modorganizer-game_gamebryo",
+                                                                  "modorganizer-game_features"]),
+    ("modorganizer-tool_nmmimport",   "plugin/tool_nmmimport",   ["Qt5", "modorganizer-uibase",
+                                                                  "modorganizer-archive"]),
+    ("modorganizer-tool_inieditor",   "plugin/tool_inieditor",   ["Qt5", "modorganizer-uibase"]),
+#    ("modorganizer-preview_dds",      "plugin/preview_dds",      ["Qt5", "modorganizer-uibase"]),
+    ("modorganizer-preview_base",     "plugin/preview_base",     ["Qt5", "modorganizer-uibase"]),
+    ("modorganizer-diagnose_basic",   "plugin/diagnose_basic",   ["Qt5", "modorganizer-uibase"]),
+    ("modorganizer-check_fnis",       "plugin/check_fnis",       ["Qt5", "modorganizer-uibase"]),
+    ("modorganizer-installer_bain",   "plugin/installer_bain",   ["Qt5", "modorganizer-uibase"]),
+    ("modorganizer-installer_manual", "plugin/installer_manual", ["Qt5", "modorganizer-uibase"]),
+    ("modorganizer-installer_bundle", "plugin/installer_bundle", ["Qt5", "modorganizer-uibase"]),
+    ("modorganizer-installer_quick",  "plugin/installer_quick",  ["Qt5", "modorganizer-uibase"]),
+    ("modorganizer-installer_fomod",  "plugin/installer_fomod",  ["Qt5", "modorganizer-uibase"]),
+#    ("modorganizer-plugin_python",    "plugin/plugin_python",    ["Qt5", "boost", "Python", "modorganizer-uibase"]),
+    ("modorganizer",                  "modorganizer",            ["Qt5", "boost",
+                                                                  "modorganizer-uibase", "modorganizer-archive",
+                                                                  "modorganizer-bsatk", "modorganizer-esptk",
+                                                                  "modorganizer-game_features"]),
 ]:
     build_step = cmake.CMake().arguments([
                                          "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
@@ -90,11 +92,8 @@ for git_path, path, install, dependencies in [
     for dep in dependencies:
         build_step.depend(dep)
 
-    if install:
-        build_step.install()
-
     Project(git_path)\
-        .depend(build_step
+        .depend(build_step.install()
                 .depend(github.Source("TanninOne", git_path, modorganizer_branch)
                         .set_destination(path))
                 )

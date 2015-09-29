@@ -41,7 +41,7 @@ class TaskManager(object):
     def create_graph(self, parameters):
         graph = nx.DiGraph()
         for task in self.__topLevelTask:
-            self.__add_task(graph, task, parameters)
+            self.__add_task(graph, task, parameters, 0)
         return graph
 
     def enable(self, graph, node):
@@ -60,12 +60,12 @@ class TaskManager(object):
             if graph.in_degree(node) == 0:
                 self.enable(graph, node)
 
-    def __add_task(self, graph, task, parameters):
+    def __add_task(self, graph, task, parameters, level):
         if not graph.has_node(task.name):
-            graph.add_node(task.name, task=task, enable=False)
+            graph.add_node(task.name, color='red' if level == 0 else 'blue', task=task, enable=False)
 
         for dependency in task.dependencies:
-            self.__add_task(graph, dependency, parameters)
+            self.__add_task(graph, dependency, parameters, level + 1)
             graph.add_edge(task.name, dependency.name)
 
 

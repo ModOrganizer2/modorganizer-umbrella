@@ -30,7 +30,7 @@ qt_version_minor = "0"
 
 
 skip_list = ["qtactiveqt", "qtandroidextras", "qtenginio",
-             "qtserialport", "qtsvg",
+             "qtserialport", "qtsvg", "qtwebengine",
              "qtwayland", "qtdoc", "qtconnectivity", "qtwebkit-examples"]
 
 nomake_list = ["tests", "examples"]
@@ -49,7 +49,7 @@ configure_cmd = ("configure.bat -platform {platform} -debug-and-release -force-d
 jom = Project("jom") \
     .depend(urldownload.URLDownload("http://download.qt.io/official_releases/jom/jom.zip"))
 
-Project("Qt5") \
+qt5 = Project("Qt5") \
     .depend(build.Make(lazy.Evaluate(lambda: os.path.join(jom["build_path"], "jom.exe -j {}".format(num_jobs)))).install()
             .depend("jom")
             .depend(build.Run(configure_cmd)

@@ -17,12 +17,31 @@
 
 
 from unibuild.project import Project
-from unibuild.modules import urldownload
+from unibuild.modules import urldownload, msbuild, build
+from unibuild.utility.lazy import Evaluate
+from config import config
+import os
 
 
 python_version = "2.7.10"
 
 
-Project("Python").depend(
-    urldownload.URLDownload("https://www.python.org/ftp/python/{0}/Python-{0}.tgz".format(python_version), 1)
-)
+def python_environment():
+    result = config['__environment'].copy()
+    result['Path'] += ";" + os.path.dirname(config['paths']['svn'])
+    return result
+
+
+python = Project("Python")\
+    .depend(msbuild.MSBuild("PCBuild/python.vcxproj")
+            .depend(build.Run(Evaluate(lambda: [os.path.join(config['__environment']['DevEnvDir'], "devenv.exe"),
+                                                "PCBuild/pcbuild.sln",
+                                                "/upgrade"]),
+                              name="upgrade python project")
+                    .depend(build.Run(r"Tools\buildbot\external-common.bat", environment=python_environment())
+                            .depend(urldownload.URLDownload("https://www.python.org/ftp/python/{0}/Python-{0}.tgz"
+                                                            .format(python_version), 1)
+                                    )
+                            )
+                    )
+            )

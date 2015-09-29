@@ -32,11 +32,6 @@ class Evaluate(object):
         self.__data = None
         self.__func = func
 
-    """
-    def __get__(self, instance, owner):
-        return self.__func()
-    """
-
     def __evaluate(self):
         if self.__data is None:
             self.__data = self.__func()
@@ -45,9 +40,19 @@ class Evaluate(object):
         self.__evaluate()
         return getattr(self.__data, item)
 
+    def __getitem__(self, item):
+        self.__evaluate()
+        return self.__data[item]
+
     def __str__(self):
         self.__evaluate()
         return str(self.__data)
+
+    def __len__(self):
+        if self.__data is not None:
+            return len(self.__data)
+        else:
+            return 0
 
     def __iter__(self):
         self.__evaluate()

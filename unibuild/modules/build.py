@@ -145,14 +145,18 @@ class Make(Builder):
 
 
 class Run(Builder):
-    def __init__(self, command, fail_behaviour=Task.FailBehaviour.FAIL):
+    def __init__(self, command, fail_behaviour=Task.FailBehaviour.FAIL, environment=None, working_directory=None,
+                 name=None):
         super(Run, self).__init__()
         self.__command = command
+        self.__name = name
         self.__fail_behaviour = fail_behaviour
+        self.__environment = environment
+        self.__working_directory = working_directory
 
     @property
     def name(self):
-        return "run {}".format(self.__command.split()[0])
+        return "run {}".format((self.__name or self.__command.split()[0]).replace("\\", "/"))
 
     def process(self, progress):
         if "build_path" not in self._context:
@@ -164,8 +168,8 @@ class Run(Builder):
             with open(serrpath, "w") as serr:
                 sout.write("running {}".format(self.__command))
                 proc = Popen(self.__command,
-                             env=config["__environment"],
-                             cwd=self._context["build_path"],
+                             env=self.__environment or config["__environment"],
+                             cwd=self.__working_directory or self._context["build_path"],
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()

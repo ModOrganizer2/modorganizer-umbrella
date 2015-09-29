@@ -1,3 +1,21 @@
+# Copyright (C) 2015 Sebastian Herbord. All rights reserved.
+#
+# This file is part of Mod Organizer.
+#
+# Mod Organizer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Mod Organizer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+
+
 import eggs
 from unibuild.manager import TaskManager
 from unibuild.progress import Progress
@@ -20,13 +38,14 @@ def progress_callback(percentage):
 
 
 def draw_graph(graph, filename):
-    # neither pydot nor pygraphviz reliably find graphviz on windows. gotta do everything myself...
-    from subprocess import call
+    if config['paths']['graphviz']:
+        # neither pydot nor pygraphviz reliably find graphviz on windows. gotta do everything myself...
+        from subprocess import call
 
-    graph_file_name = os.path.join(tempfile.gettempdir(), "graph.dot")
-    nx.write_dot(graph, graph_file_name)
+        graph_file_name = os.path.join(tempfile.gettempdir(), "graph.dot")
+        nx.write_dot(graph, graph_file_name)
 
-    call([config['paths']['graphviz'], "-Tpng", graph_file_name, "-o", "{}.png".format(filename)])
+        call([config['paths']['graphviz'], "-Tpng", graph_file_name, "-o", "{}.png".format(filename)])
 
 
 def extract_independent(graph):
@@ -43,7 +62,7 @@ def extract_independent(graph):
 
 
 def visual_studio_environment():
-    # when using visual stuio we need to set up the environment correctly
+    # when using visual studio we need to set up the environment correctly
     arch = "amd64" if config["architecture"] == 'x86_64' else "x86"
     proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
                  stdout=PIPE, stderr=PIPE)
@@ -61,12 +80,22 @@ def visual_studio_environment():
 
 
 def init_config(args):
-    for d in config["paths"].keys():
-        config["paths"][d] = config["paths"][d].format(base_dir=args.destination)
-    config["__environment"] = visual_studio_environment()
-    config["__build_base_path"] = args.destination
-    if "PYTHON" not in config["__environment"]:
-        config["__environment"]["PYTHON"] = sys.executable
+    for d in config['paths'].keys():
+        if isinstance(config['paths'][d], str):
+            config['paths'][d] = config['paths'][d].format(base_dir=args.destination)
+
+    for setting in args.set:
+        key, value = setting.split('=', 2)
+        path = key.split('.')
+        cur = config
+        for ele in path[:-1]:
+            cur = cur.setdefault(ele, {})
+        cur[path[-1]] = value
+
+    config['__environment'] = visual_studio_environment()
+    config['__build_base_path'] = args.destination
+    if 'PYTHON' not in config['__environment']:
+        config['__environment']['PYTHON'] = sys.executable
 
 
 def recursive_remove(graph, node):
@@ -80,6 +109,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file', default='makefile.uni.py', help='sets the build script')
     parser.add_argument('-d', '--destination', default='.', help='output directory (base for download and build)')
+    parser.add_argument('-s', '--set', nargs='*', help='set configuration parameters')
     parser.add_argument('target', nargs='*', help='make target')
     args = parser.parse_args()
 
@@ -100,6 +130,13 @@ def main():
 
     draw_graph(build_graph, "graph")
 
+    cycles = list(nx.simple_cycles(build_graph))
+    if cycles:
+        logging.error("There are cycles in the build graph")
+        for cycle in cycles:
+            logging.info(", ".join(cycle))
+        return 1
+
     if args.target:
         for target in args.target:
             manager.enable(build_graph, target)
@@ -111,23 +148,27 @@ def main():
     while independent:
         for node in independent:
             task = build_graph.node[node]["task"]
-            task.prepare()
-            if build_graph.node[node]["enable"] and not task.already_processed():
-                progress = Progress()
-                progress.set_change_callback(progress_callback)
-                logging.debug("run task \"{0}\"".format(node))
-                if task.process(progress):
-                    task.mark_success()
-                else:
-                    if task.fail_behaviour == Task.FailBehaviour.FAIL:
-                        logging.critical("task %s failed", node)
-                        return 1
-                    elif task.fail_behaviour == Task.FailBehaviour.SKIP_PROJECT:
-                        recursive_remove(build_graph, node)
-                        break
-                    elif task.fail_behaviour == Task.FailBehaviour.CONTINUE:
-                        # nothing to do
-                        pass
+            try:
+                task.prepare()
+                if build_graph.node[node]["enable"] and not task.already_processed():
+                    progress = Progress()
+                    progress.set_change_callback(progress_callback)
+                    logging.debug("run task \"{0}\"".format(node))
+                    if task.process(progress):
+                        task.mark_success()
+                    else:
+                        if task.fail_behaviour == Task.FailBehaviour.FAIL:
+                            logging.critical("task %s failed", node)
+                            return 1
+                        elif task.fail_behaviour == Task.FailBehaviour.SKIP_PROJECT:
+                            recursive_remove(build_graph, node)
+                            break
+                        elif task.fail_behaviour == Task.FailBehaviour.CONTINUE:
+                            # nothing to do
+                            pass
+            except Exception, e:
+                logging.error("Task {} failed".format(task.name))
+                raise
 
             build_graph.remove_node(node)
 

@@ -54,7 +54,7 @@ class CMake(Builder):
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
                 proc = Popen(
-                    [os.path.join(config["paths"]["cmake"], "cmake"), "-G", "NMake Makefiles", ".."] + self.__arguments,
+                    [config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments,
                     cwd=build_path,
                     env=config["__environment"],
                     stdout=sout, stderr=serr)

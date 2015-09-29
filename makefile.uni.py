@@ -36,7 +36,7 @@ Projects
 """
 
 
-from unibuild.projects import sevenzip, qt5, boost, zlib #, python
+from unibuild.projects import sevenzip, qt5, qt5webkit, boost, zlib, python, sip
 
 
 Project("Spdlog") \
@@ -69,7 +69,6 @@ for git_path, path, dependencies in [
     ("modorganizer-tool_nmmimport",   "plugin/tool_nmmimport",   ["Qt5", "modorganizer-uibase",
                                                                   "modorganizer-archive"]),
     ("modorganizer-tool_inieditor",   "plugin/tool_inieditor",   ["Qt5", "modorganizer-uibase"]),
-#    ("modorganizer-preview_dds",      "plugin/preview_dds",      ["Qt5", "modorganizer-uibase"]),
     ("modorganizer-preview_base",     "plugin/preview_base",     ["Qt5", "modorganizer-uibase"]),
     ("modorganizer-diagnose_basic",   "plugin/diagnose_basic",   ["Qt5", "modorganizer-uibase"]),
     ("modorganizer-check_fnis",       "plugin/check_fnis",       ["Qt5", "modorganizer-uibase"]),
@@ -78,8 +77,9 @@ for git_path, path, dependencies in [
     ("modorganizer-installer_bundle", "plugin/installer_bundle", ["Qt5", "modorganizer-uibase"]),
     ("modorganizer-installer_quick",  "plugin/installer_quick",  ["Qt5", "modorganizer-uibase"]),
     ("modorganizer-installer_fomod",  "plugin/installer_fomod",  ["Qt5", "modorganizer-uibase"]),
-#    ("modorganizer-plugin_python",    "plugin/plugin_python",    ["Qt5", "boost", "Python", "modorganizer-uibase"]),
-    ("modorganizer",                  "modorganizer",            ["Qt5", "boost",
+    ("modorganizer-plugin_python",    "plugin/plugin_python",    ["Qt5", "boost", "Python", "modorganizer-uibase",
+                                                                  "sip"]),
+    ("modorganizer",                  "modorganizer",            ["Qt5", "webkit", "boost",
                                                                   "modorganizer-uibase", "modorganizer-archive",
                                                                   "modorganizer-bsatk", "modorganizer-esptk",
                                                                   "modorganizer-game_features"]),

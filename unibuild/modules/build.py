@@ -162,14 +162,16 @@ class Run(Builder):
         if "build_path" not in self._context:
             logging.error("source path not known for {},"
                           " are you missing a matching retrieval script?".format(self.name))
+
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
-                sout.write("running {}".format(self.__command))
+                sout.write("running {} in {}".format(self.__command,
+                                                     self.__working_directory))
                 proc = Popen(self.__command,
-                             env=self.__environment or config["__environment"],
-                             cwd=self.__working_directory or self._context["build_path"],
+                             env=dict(self.__environment) or config["__environment"],
+                             cwd=str(self.__working_directory) or str(self._context["build_path"]),
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()

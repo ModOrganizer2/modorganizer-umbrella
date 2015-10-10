@@ -57,3 +57,7 @@ class Evaluate(object):
     def __iter__(self):
         self.__evaluate()
         return iter(self.__data)
+
+    def __add__(self, other):
+        self.__evaluate()
+        return self.__data + other

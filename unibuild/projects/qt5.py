@@ -17,7 +17,7 @@
 
 
 from unibuild import Project, Task
-from unibuild.modules import build, patch, git, urldownload
+from unibuild.modules import build, patch, git, urldownload, sourceforge
 from config import config
 import unibuild.utility.lazy as lazy
 import os
@@ -49,16 +49,52 @@ configure_cmd = ("configure.bat -platform {platform} -debug-and-release -force-d
 jom = Project("jom") \
     .depend(urldownload.URLDownload("http://download.qt.io/official_releases/jom/jom.zip"))
 
+
+grep_version = "2.5.4"
+
+
+grep = Project('grep') \
+    .depend(urldownload.URLDownload("http://downloads.sourceforge.net/project/gnuwin32/grep/{0}/grep-{0}-bin.zip"
+                                    .format(grep_version)))\
+    .depend(sourceforge.Release("gnuwin32", "grep/{0}/grep-{0}-dep.zip".format(grep_version)))
+
+flex = Project('flex') \
+    .depend(urldownload.URLDownload("http://downloads.sourceforge.net/project/winflexbison/win_flex_bison-latest.zip"))
+
+
+def webkit_env():
+    result = config['__environment'].copy()
+
+    result['Path'] = result['Path'] + ";" + ";".join([
+        os.path.join(grep['build_path'], "bin"),
+        flex['build_path'],
+        os.path.dirname(config['paths']['ruby']),
+        os.path.dirname(config['paths']['perl']),
+        os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
+        os.path.join(config["paths"]["build"], "qt5", "bin")
+    ])
+
+    return result
+
+
 qt5 = Project("Qt5") \
-    .depend(build.Make(lazy.Evaluate(lambda: os.path.join(jom["build_path"], "jom.exe -j {}".format(num_jobs)))).install()
-            .depend("jom")
-            .depend(build.Run(configure_cmd)
-                    .depend(patch.Replace("qtbase/configure.bat", "if not exist %QTSRC%.gitignore goto sconf", "")
-                            .depend(build.Run("perl init-repository")
-                                    .set_fail_behaviour(Task.FailBehaviour.CONTINUE)
-                                    .depend(git.Clone("git://code.qt.io/qt/qt5.git", "5.5")
+    .depend(build.Make(lazy.Evaluate(lambda: os.path.join(jom["build_path"], "jom.exe -j {}".format(num_jobs))))
+            .install()
+            .depend(build.Run(r"perl Tools\Scripts\build-webkit --qt --release",
+                              environment=lazy.Evaluate(webkit_env),
+                              working_directory=lazy.Evaluate(lambda: os.path.join(qt5['build_path'], "qtwebkit")),
+                              name="build webkit")
+                    .depend("jom").depend('grep').depend('flex')
+                    .depend(build.Run(configure_cmd)
+                            .depend(patch.Replace("qtbase/configure.bat",
+                                                  "if not exist %QTSRC%.gitignore goto sconf", "")
+                                    .depend(build.Run("perl init-repository", name="init qt repository")
+                                            .set_fail_behaviour(Task.FailBehaviour.CONTINUE)
+                                            .depend(git.Clone("git://code.qt.io/qt/qt5.git", qt_version)
+                                                    )
                                             )
                                     )
                             )
                     )
             )
+#working_directory=lazy.Evaluate(lambda: os.path.join(qt5.qt5['build_path'], "qtwebkit")),

@@ -42,6 +42,8 @@ class TaskManager(object):
         graph = nx.DiGraph()
         for task in self.__topLevelTask:
             self.__add_task(graph, task, parameters, 0)
+
+        graph.concentrate = True
         return graph
 
     def enable(self, graph, node):
@@ -62,7 +64,8 @@ class TaskManager(object):
 
     def __add_task(self, graph, task, parameters, level):
         if not graph.has_node(task.name):
-            graph.add_node(task.name, color='red' if level == 0 else 'blue', task=task, enable=False)
+            graph.add_node(task.name, color='red' if level == 0 else 'blue', peripheries=max(1, 2 - level),
+                           task=task, enable=False)
 
         for dependency in task.dependencies:
             self.__add_task(graph, dependency, parameters, level + 1)

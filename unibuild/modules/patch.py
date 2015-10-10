@@ -35,12 +35,11 @@ class CreateFile(Task):
 
     @property
     def name(self):
-        return "Create File {}".format(self.__filename)
+        return "Create File {}-{}".format(self._context.name, self.__filename)
 
     def process(self, progress):
         full_path = os.path.join(self._context["build_path"], self.__filename)
         with open(full_path, 'w') as f:
-            print(str(self.__content))
             # the call to str is necessary to ensure a lazy initialised content is evaluated now
             f.write(str(self.__content))
 

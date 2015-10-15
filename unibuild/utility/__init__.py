@@ -1,1 +1,1 @@
-__author__ = 'Tannin'
+from format_dict import FormatDict

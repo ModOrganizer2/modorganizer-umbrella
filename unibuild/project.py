@@ -32,6 +32,10 @@ class Project(Task):
     def __contains__(self, keys):
         return self.__context_data.__contains__(keys)
 
+    def set_context_item(self, key, value):
+        self.__context_data[key] = value
+        return self
+
     def applies(self, parameters):
         return True
 

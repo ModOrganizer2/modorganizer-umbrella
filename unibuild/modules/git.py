@@ -18,9 +18,9 @@ class Clone(Repository):
                          cwd=self._output_file_path,
                          env=config["__environment"])
         else:
-            proc = Popen([config['paths']['git'], "clone", "-b", self._branch, 
-						  self._url, self._context["build_path"]],
-                          env=config["__environment"])
+            proc = Popen([config['paths']['git'], "clone", "-b", self._branch,
+                          self._url, self._context["build_path"]],
+                         env=config["__environment"])
         proc.communicate()
         if proc.returncode != 0:
             logging.error("failed to clone repository %s (returncode %s)", self._url, proc.returncode)

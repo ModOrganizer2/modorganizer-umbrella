@@ -20,7 +20,7 @@ def get_from_hklm(path, name, wow64=False):
 program_files_folders = [
     os.environ['ProgramFiles(x86)'],
     os.environ['ProgramFiles'],
-    "D:"
+    "D:\\"
 ]
 
 
@@ -35,7 +35,8 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',
-    'vc_version': '12.0'
+    'vc_version':   '12.0',
+    'ide_projects': False
 }
 
 config['paths'] = {
@@ -46,7 +47,7 @@ config['paths'] = {
     'cmake':         path_or_default("cmake.exe", gen_search_folders("CMake", "bin")),
     'git':           path_or_default("git.exe",   gen_search_folders("Git", "bin")),
     'perl':          path_or_default("perl.exe",  gen_search_folders("StrawberryPerl", "bin")),
-    'ruby':          path_or_default("ruby.exe",  gen_search_folders("Ruby22-x64")),
+    'ruby':          path_or_default("ruby.exe",  gen_search_folders("Ruby22-x64", "bin")),
     'svn':           path_or_default("svn.exe",   gen_search_folders("SlikSvn", "bin")),
     # we need a python that matches the build architecture
     'python':        Evaluate(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\2.7\InstallPath",

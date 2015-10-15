@@ -16,9 +16,13 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild import Project
-from unibuild.modules import github, cmake
+from unibuild import Project, TaskManager
+from unibuild.modules import github, cmake, patch
+from unibuild.utility import lazy, FormatDict
 from config import config
+import uuid
+from functools import partial
+from string import Formatter
 
 
 """
@@ -63,6 +67,15 @@ for git_path, path, dependencies in [
     ("modorganizer-helper",           "helper",                  ["Qt5"]),
     ("modorganizer-game_gamebryo",    "plugin/game_gamebryo",    ["Qt5", "modorganizer-uibase",
                                                                   "modorganizer-game_features"]),
+    ("modorganizer-game_oblivion",    "plugin/game_oblivion",    ["Qt5", "modorganizer-uibase",
+                                                                  "modorganizer-game_gamebryo",
+                                                                  "modorganizer-game_features"]),
+    ("modorganizer-game_fallout3",    "plugin/game_fallout3",    ["Qt5", "modorganizer-uibase",
+                                                                  "modorganizer-game_gamebryo",
+                                                                  "modorganizer-game_features"]),
+    ("modorganizer-game_falloutnv",   "plugin/game_falloutnv",   ["Qt5", "modorganizer-uibase",
+                                                                  "modorganizer-game_gamebryo",
+                                                                  "modorganizer-game_features"]),
     ("modorganizer-game_skyrim",      "plugin/game_skyrim",      ["Qt5", "modorganizer-uibase",
                                                                   "modorganizer-game_gamebryo",
                                                                   "modorganizer-game_features"]),
@@ -79,21 +92,46 @@ for git_path, path, dependencies in [
     ("modorganizer-installer_fomod",  "plugin/installer_fomod",  ["Qt5", "modorganizer-uibase"]),
     ("modorganizer-plugin_python",    "plugin/plugin_python",    ["Qt5", "boost", "Python", "modorganizer-uibase",
                                                                   "sip"]),
-    ("modorganizer",                  "modorganizer",            ["Qt5", "webkit", "boost",
+    ("modorganizer",                  "modorganizer",            ["Qt5", "boost",
                                                                   "modorganizer-uibase", "modorganizer-archive",
                                                                   "modorganizer-bsatk", "modorganizer-esptk",
                                                                   "modorganizer-game_features"]),
 ]:
-    build_step = cmake.CMake().arguments([
-                                         "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
-                                         "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
-                                         "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config["__build_base_path"])
-                                         ])
+    build_step = cmake.CMake().arguments(
+        [
+            "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
+            "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
+            "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config["__build_base_path"])
+        ]
+    ).install()
+
     for dep in dependencies:
         build_step.depend(dep)
 
-    Project(git_path)\
-        .depend(build_step.install()
-                .depend(github.Source("TanninOne", git_path, modorganizer_branch)
-                        .set_destination(path))
+    build_step.depend(github.Source("TanninOne", git_path, modorganizer_branch)
+                      .set_destination(path))
+
+    project = Project(git_path)
+
+    if config['ide_projects']:
+        def gen_userfile_content(project):
+            with open("CMakeLists.txt.user.template", 'r') as f:
+                res = Formatter().vformat(f.read(), [], FormatDict({'build_dir': project['edit_path']}))
+                return res
+
+        project.depend(
+            patch.CreateFile("CMakeLists.txt.user", lazy.Evaluate(partial(gen_userfile_content, project))).depend(
+                cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(
+                    [
+                        "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
+                        "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
+                        "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/'))
+                    ]
+                ).depend(
+                    build_step
                 )
+            )
+        )
+    else:
+        project.depend(build_step)
+

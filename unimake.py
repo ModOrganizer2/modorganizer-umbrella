@@ -45,7 +45,10 @@ def draw_graph(graph, filename):
         graph_file_name = os.path.join(tempfile.gettempdir(), "graph.dot")
         nx.write_dot(graph, graph_file_name)
 
-        call([config['paths']['graphviz'], "-Tpng", graph_file_name, "-o", "{}.png".format(filename)])
+        call([config['paths']['graphviz'],
+              "-Tpng", "-Edir=back", "-Gsplines=ortho", "-Grankdir=BT", "-Gconcentrate=true", "-Nshape=box", "-Gdpi=192",
+              graph_file_name,
+              "-o", "{}.png".format(filename)])
 
 
 def extract_independent(graph):
@@ -109,7 +112,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file', default='makefile.uni.py', help='sets the build script')
     parser.add_argument('-d', '--destination', default='.', help='output directory (base for download and build)')
-    parser.add_argument('-s', '--set', nargs='*', help='set configuration parameters')
+    parser.add_argument('-s', '--set', action='append', help='set configuration parameters')
     parser.add_argument('target', nargs='*', help='make target')
     args = parser.parse_args()
 
@@ -146,6 +149,7 @@ def main():
     logging.debug("processing tasks")
     independent = extract_independent(build_graph)
     while independent:
+
         for node in independent:
             task = build_graph.node[node]["task"]
             try:

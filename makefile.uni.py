@@ -40,7 +40,7 @@ Projects
 """
 
 
-from unibuild.projects import sevenzip, qt5, qt5webkit, boost, zlib, python, sip
+from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip
 
 
 Project("Spdlog") \

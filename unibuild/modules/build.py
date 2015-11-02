@@ -30,10 +30,11 @@ EXECUTABLE = 3
 
 class CPP(Builder):
 
-    def __init__(self):
+    def __init__(self, cflags=None):
         super(CPP, self).__init__()
         self.__type = EXECUTABLE
         self.__targets = []
+        self.__cflags = cflags or ["-nologo", "-O2", "-MD"]
 
     @property
     def name(self):
@@ -70,10 +71,12 @@ class CPP(Builder):
 
     def gen_makefile(self, path):
         with open(os.path.join(path, "unimakefile"), "w") as mf:
+            mf.write("CFLAGS={}\n\n".format(" ".join(self.__cflags)))
             for target in self.__targets:
                 files = target[1] or []
                 for f in files:
-                    mf.write("{0}: {1}\n\n".format(self.__to_obj(f), f))
+                    mf.write("{}:\n".format(self.__to_obj(f)))
+                    mf.write("\t{cl} -c $(CFLAGS) -Fo {file}\n\n".format(cl="cl", file=f))
 
                 mf.write("{0}: {1}\n\t{2}\n\n".format(target[0],
                                                       " ".join([self.__to_obj(f) for f in files]),
@@ -92,7 +95,9 @@ class CPP(Builder):
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
         with open(soutpath, "a") as sout:
             with open(serrpath, "a") as serr:
-                proc = Popen("{} /f unimakefile all".format(config["tools"]["make"]),
+                command = "{} /f unimakefile all".format(config["tools"]["make"])
+                sout.write("running {} in {}\n".format(command, self._context['build_path']))
+                proc = Popen(command,
                              env=config["__environment"],
                              cwd=self._context["build_path"],
                              shell=True,
@@ -158,6 +163,20 @@ class Make(Builder):
         return True
 
 
+class Execute(Builder):
+    def __init__(self, function, name=None):
+        super(Execute, self).__init__()
+        self.__function = function
+        self.__name = name
+
+    @property
+    def name(self):
+        return "execute {}_{}".format(self._context.name, self.__name or self.__function.func_name)
+
+    def process(self, progress):
+        return self.__function(context=self._context)
+
+
 class Run(Builder):
     def __init__(self, command, fail_behaviour=Task.FailBehaviour.FAIL, environment=None, working_directory=None,
                  name=None):
@@ -184,8 +203,8 @@ class Run(Builder):
                 sout.write("running {} in {}".format(self.__command,
                                                      self.__working_directory))
                 proc = Popen(self.__command,
-                             env=dict(self.__environment) or config["__environment"],
-                             cwd=str(self.__working_directory) or str(self._context["build_path"]),
+                             env=dict(self.__environment) if self.__environment else config["__environment"],
+                             cwd=str(self.__working_directory) if self.__working_directory else str(self._context["build_path"]),
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()

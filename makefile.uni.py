@@ -16,20 +16,19 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild import Project, TaskManager
-from unibuild.modules import github, cmake, patch
+from unibuild import Project
+from unibuild.modules import github, cmake, patch, git
 from unibuild.utility import lazy, FormatDict
 from config import config
-import uuid
 from functools import partial
 from string import Formatter
+import os
 
 
 """
 Settings
 """
 
-config["build_type"] = "RelWithDebInfo"
 modorganizer_branch = "master"
 
 loot_version = "v0.8.0"
@@ -43,12 +42,6 @@ Projects
 from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip
 
 
-Project("Spdlog") \
-    .depend(github.Source("gabime", "spdlog", "master"))
-
-Project("CppFormat") \
-    .depend(github.Source("cppformat", "cppformat", "master"))
-
 Project("LootApi") \
     .depend(github.Release("loot", "loot", loot_version, "LOOT.API.{}".format(loot_version), "7z")
             .set_destination("lootapi"))
@@ -56,6 +49,8 @@ Project("LootApi") \
 Project("modorganizer-game_features") \
     .depend(github.Source("TanninOne", "modorganizer-game_features", modorganizer_branch)
             .set_destination("plugin/game_features"))
+
+#tl_repo = git.SuperRepository(os.path.join(config["__build_base_path"], "build"))
 
 for git_path, path, dependencies in [
     ("modorganizer-archive",          "archive",                 ["7zip", "Qt5"]),

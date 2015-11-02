@@ -95,6 +95,9 @@ def init_config(args):
             cur = cur.setdefault(ele, {})
         cur[path[-1]] = value
 
+    if config['architecture'] not in ['x86_64', 'x86']:
+        raise ValueError("only architectures supported are x86 and x86_64")
+
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = args.destination
     if 'PYTHON' not in config['__environment']:
@@ -157,7 +160,10 @@ def main():
                 if build_graph.node[node]["enable"] and not task.already_processed():
                     progress = Progress()
                     progress.set_change_callback(progress_callback)
-                    logging.debug("run task \"{0}\"".format(node))
+                    if isinstance(task, Project):
+                        logging.debug("finished project \"{}\"".format(node))
+                    else:
+                        logging.debug("run task \"{}\"".format(node))
                     if task.process(progress):
                         task.mark_success()
                     else:

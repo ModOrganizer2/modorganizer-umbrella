@@ -19,23 +19,36 @@
 from unibuild import Project
 from unibuild.modules import build, sourceforge
 from config import config
+from glob import glob
+import shutil
+import os
 
 
 udis_version = "1.7"
 udis_version_minor = "2"
 
-Project("Udis86") \
-    .depend((build.CPP().type(build.STATIC_LIB)
-             .sources("libudis86", ["libudis86/decode.c",
-                                    "libudis86/itab.c",
-                                    "libudis86/syn.c",
-                                    "libudis86/syn-att.c",
-                                    "libudis86/syn-intel.c",
-                                    "libudis86/udis86.c"])
-             .custom("libudis86/itab.c",
-                     cmd="{PYTHON} scripts/ud_itab.py docs/x86/optable.xml libudis86".format(**config["__environment"]))
-             )
-            .depend(sourceforge.Release("udis86", "udis86/{0}/udis86-{0}.{1}.tar.gz".format(udis_version,
-                                                                                            udis_version_minor)))
-            )
 
+def install(context):
+    for f in glob(os.path.join(context['build_path'], "*.lib")):
+        shutil.copy(f, os.path.join(config["__build_base_path"], "install", "libs"))
+    return True
+
+
+Project("Udis86") \
+    .depend(build.Execute(install)
+            .depend((build.CPP().type(build.STATIC_LIB)
+                     .sources("libudis86", ["libudis86/decode.c",
+                                            "libudis86/itab.c",
+                                            "libudis86/syn.c",
+                                            "libudis86/syn-att.c",
+                                            "libudis86/syn-intel.c",
+                                            "libudis86/udis86.c"])
+                     .custom("libudis86/itab.c",
+                             cmd="{PYTHON} scripts/ud_itab.py docs/x86/optable.xml"
+                                 " libudis86".format(**config["__environment"]))
+                     )
+                    .depend(sourceforge.Release("udis86", "udis86/{0}/udis86-{0}.{1}.tar.gz".format(udis_version,
+                                                                                                    udis_version_minor),
+                                                tree_depth=1))
+                    )
+            )

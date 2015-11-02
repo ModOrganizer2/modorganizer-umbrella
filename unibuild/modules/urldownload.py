@@ -38,23 +38,21 @@ class URLDownload(Retrieval):
         if name.lower().endswith(".tar"):
             name, e2 = os.path.splitext(name)
 
-        output_file_path = os.path.join(config["paths"]["build"], name)
-        self._context["build_path"] = output_file_path
+        if "build_path" not in self._context:
+            output_file_path = os.path.join(config["paths"]["build"], name)
+            self._context["build_path"] = output_file_path
 
     def process(self, progress):
         output_file_path = self._context["build_path"]
         archive_file_path = os.path.join(config["paths"]["download"], self.__file_name)
 
-        if os.path.isdir(output_file_path):
-            logging.info("File already extracted: {0}".format(output_file_path))
+        if os.path.isfile(archive_file_path):
+            logging.info("File already downloaded: {0}".format(archive_file_path))
         else:
-            if os.path.isfile(archive_file_path):
-                logging.info("File already downloaded: {0}".format(archive_file_path))
-            else:
-                logging.info("File not yet downloaded: {0}".format(archive_file_path))
-                self.download(archive_file_path, progress)
+            logging.info("File not yet downloaded: {0}".format(archive_file_path))
+            self.download(archive_file_path, progress)
 
-            self.extract(archive_file_path, output_file_path, progress)
+        self.extract(archive_file_path, output_file_path, progress)
 
         builddir = os.listdir(self._context["build_path"])
         if len(builddir) == 1:
@@ -86,7 +84,8 @@ class URLDownload(Retrieval):
 
         logging.info("Extracting {0}".format(self.__url))
 
-        os.makedirs(output_file_path)
+        if not os.path.isdir(output_file_path):
+            os.makedirs(output_file_path)
         filename, extension = os.path.splitext(self.__file_name)
         if extension == ".gz" or extension == ".tgz":
             with tarfile.open(archive_file_path, 'r:gz') as arch:

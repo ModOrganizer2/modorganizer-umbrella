@@ -17,16 +17,26 @@
 
 
 from unibuild import Project
-from unibuild.modules import cmake, googlecode
+from unibuild.modules import cmake, googlecode, build
 from config import config
+import shutil
+import os
+from glob import glob
 
 
 googletest_version = "1.7.0"
 
-Project("GTest") \
-    .depend(cmake.CMake().arguments(["-Dgtest_force_shared_crt=ON",
-                                     "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"])
-                                     ])
-            .depend(googlecode.Release("googletest", "gtest-{0}.zip".format(googletest_version)))
-            )
 
+def install(context):
+    for f in glob(os.path.join(context['build_path'], "build", "*.lib")):
+        shutil.copy(f, os.path.join(config["__build_base_path"], "install", "libs"))
+    return True
+
+
+Project("GTest") \
+    .depend(build.Execute(install)
+            .depend(cmake.CMake().arguments(["-Dgtest_force_shared_crt=ON",
+                                             "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"])
+                                             ])
+                    .depend(googlecode.Release("googletest", "gtest-{0}.zip".format(googletest_version), 1)))
+            )

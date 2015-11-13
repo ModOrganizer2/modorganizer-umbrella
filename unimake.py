@@ -87,13 +87,14 @@ def init_config(args):
         if isinstance(config['paths'][d], str):
             config['paths'][d] = config['paths'][d].format(base_dir=args.destination)
 
-    for setting in args.set:
-        key, value = setting.split('=', 2)
-        path = key.split('.')
-        cur = config
-        for ele in path[:-1]:
-            cur = cur.setdefault(ele, {})
-        cur[path[-1]] = value
+    if args.set:
+        for setting in args.set:
+            key, value = setting.split('=', 2)
+            path = key.split('.')
+            cur = config
+            for ele in path[:-1]:
+                cur = cur.setdefault(ele, {})
+            cur[path[-1]] = value
 
     if config['architecture'] not in ['x86_64', 'x86']:
         raise ValueError("only architectures supported are x86 and x86_64")
@@ -152,7 +153,6 @@ def main():
     logging.debug("processing tasks")
     independent = extract_independent(build_graph)
     while independent:
-
         for node in independent:
             task = build_graph.node[node]["task"]
             try:

@@ -21,6 +21,7 @@ class Retrieval(Task):
     def applies(self, parameters):
         return True
 
+    @property
     def name(self):
         return
 

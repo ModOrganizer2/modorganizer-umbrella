@@ -32,10 +32,12 @@ class Release(URLDownload):
 
 
 class Source(Clone):
-    def __init__(self, author, project, tag):
+    def __init__(self, author, project, tag, super_repository=None):
         super(Source, self).__init__("https://github.com/{author}/{project}.git".format(author=author,
                                                                                         project=project,
-                                                                                        tag=tag), "master")
+                                                                                        tag=tag),
+                                     "master", super_repository)
         #super(Source, self).__init__("https://github.com/{author}/{project}/archive/{tag}.zip".format(), 1)
         # don't use the tag as the file name, otherwise we get name collisions on "master" or other generic names
         #self.set_destination(project)
+

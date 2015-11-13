@@ -41,9 +41,7 @@ class SipConfigure(build.Builder):
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
                 bp = self._context['build_path']
-                print(os.path.dirname(config['paths']['python']))
-                print(config['paths'])
-                proc = Popen([config['paths']['python'], "configure.py",
+                proc = Popen([str(config['paths']['python']), "configure.py",
                               "-b", bp, "-d", bp, "-v", bp],
                              env=config["__environment"],
                              cwd=self._context["build_path"],
@@ -61,7 +59,7 @@ class SipConfigure(build.Builder):
 Project('sip') \
     .depend(build.Make()
             .depend(SipConfigure()
-                    .depend(sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version)))
+                    .depend(sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1))
                     )
             )
 

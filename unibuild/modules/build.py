@@ -1,5 +1,35 @@
-
-__author__ = 'Tannin'
+# Copyright (C) 2015 Sebastian Herbord. All rights reserved.
+#
+# This file is part of Mod Organizer.
+#
+# Mod Organizer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Mod Organizer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (C) 2015 Sebastian Herbord. All rights reserved.
+#
+# This file is part of Mod Organizer.
+#
+# Mod Organizer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Mod Organizer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
 from unibuild.builder import Builder
@@ -169,9 +199,10 @@ class Run(Builder):
             with open(serrpath, "w") as serr:
                 sout.write("running {} in {}".format(self.__command,
                                                      self.__working_directory))
+                environment = dict(self.__environment or config["__environment"])
                 proc = Popen(self.__command,
-                             env=dict(self.__environment) or config["__environment"],
-                             cwd=str(self.__working_directory) or str(self._context["build_path"]),
+                             env=environment,
+                             cwd=str(self.__working_directory or self._context["build_path"]),
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()

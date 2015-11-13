@@ -32,8 +32,15 @@ import os.path
 import argparse
 
 
-def progress_callback(percentage):
-    sys.stdout.write("\r%d%%" % percentage)
+def progress_callback(job, percentage):
+    if not percentage:
+        sys.stdout.write("\n")
+    else:
+        pb_length = 50
+        filled = int((pb_length * percentage) / 100)  # cast to int may be necessary in python 3
+        #sys.stdout.write("\r%d%%" % percentage)
+        sys.stdout.write("\r%s[%s%s] %d%%" % (job, "=" * filled, " " * (pb_length -filled), percentage))
+
     sys.stdout.flush()
 
 
@@ -176,6 +183,7 @@ def main():
                         elif task.fail_behaviour == Task.FailBehaviour.CONTINUE:
                             # nothing to do
                             pass
+                    sys.stdout.write("\n")
             except Exception, e:
                 logging.error("Task {} failed".format(task.name))
                 raise

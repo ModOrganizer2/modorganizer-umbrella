@@ -41,7 +41,7 @@ class SipConfigure(build.Builder):
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
                 bp = self._context['build_path']
-                proc = Popen([config['paths']['python'], "configure.py",
+                proc = Popen([str(config['paths']['python']), "configure.py",
                               "-b", bp, "-d", bp, "-v", bp],
                              env=config["__environment"],
                              cwd=self._context["build_path"],

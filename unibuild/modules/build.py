@@ -202,9 +202,10 @@ class Run(Builder):
             with open(serrpath, "w") as serr:
                 sout.write("running {} in {}".format(self.__command,
                                                      self.__working_directory))
+                environment = dict(self.__environment or config["__environment"])
                 proc = Popen(self.__command,
-                             env=dict(self.__environment) if self.__environment else config["__environment"],
-                             cwd=str(self.__working_directory) if self.__working_directory else str(self._context["build_path"]),
+                             env=environment,
+                             cwd=str(self.__working_directory or self._context["build_path"]),
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()

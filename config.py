@@ -54,8 +54,9 @@ config = {
     },
     'architecture': 'x86_64',
     'vc_version':   '12.0',
-    'ide_projects': False,
     'build_type': "RelWithDebInfo",
+    'ide_projects': True,
+    'prefer_binary_dependencies': False # currently non-functional
 }
 
 config['paths'] = {

@@ -21,11 +21,18 @@ def download(url, filename):
 
 path = os.path.abspath(os.path.join(os.path.realpath(__file__), os.pardir))
 
+
 for dep in ["https://pypi.python.org/packages/2.7/n/networkx/networkx-1.10-py2.7.egg",
             "https://pypi.python.org/packages/2.5/p/pydot/pydot-1.0.2-py2.5.egg"]:
     eggpath = os.path.join(path, os.path.basename(dep))
     download(dep, eggpath)
     sys.path.append(eggpath)
+
+for dep in ["decorator"]:
+    destpath = "{0}/{1}".format(path, dep)
+    if not os.path.exists(destpath):
+        pip.main(["install", "--target={0}".format(destpath), dep])
+    sys.path.append(destpath)
 
 """ neither of these work. particularly building pygraphviz requires a specific VC version in a specific location
 

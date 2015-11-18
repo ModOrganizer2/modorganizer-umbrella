@@ -4,6 +4,8 @@ downloads
 progress
 Thumbs.db
 eggs/*.egg
+eggs/decorator
 graph.png
 .idea
 7za.exe
+complete.uni.py

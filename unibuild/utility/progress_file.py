@@ -16,20 +16,19 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild import Project
-from unibuild.modules import cmake, github
-from config import config
+import os
 
 
-Project("AsmJit") \
-    .depend(cmake.CMake().arguments(
-    [
-        "-DASMJIT_STATIC=TRUE",
-        "-DASMJIT_DISABLE_COMPILER=TRUE",
-        "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/')),
-        "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
-    ]).install()
-            .depend(github.Source("kobalicek", "asmjit", "master")
-                    .set_destination("asmjit"))
-            )
+class ProgressFile(file):
 
+    def __init__(self, filename, progress_cb):
+        super(ProgressFile, self).__init__(filename)
+        assert callable(progress_cb)
+        self.__progress_cb = progress_cb
+        self.seek(0, os.SEEK_END)
+        self.__size = self.tell()
+        self.seek(0)
+
+    def read(self, size):
+        self.__progress_cb(self.tell(), self.__size)
+        return file.read(self, size)

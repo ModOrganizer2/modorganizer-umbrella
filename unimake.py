@@ -32,8 +32,15 @@ import os.path
 import argparse
 
 
-def progress_callback(percentage):
-    sys.stdout.write("\r%d%%" % percentage)
+def progress_callback(job, percentage):
+    if not percentage:
+        sys.stdout.write("\n")
+    else:
+        pb_length = 50
+        filled = int((pb_length * percentage) / 100)  # cast to int may be necessary in python 3
+        #sys.stdout.write("\r%d%%" % percentage)
+        sys.stdout.write("\r%s[%s%s] %d%%" % (job, "=" * filled, " " * (pb_length -filled), percentage))
+
     sys.stdout.flush()
 
 
@@ -87,13 +94,17 @@ def init_config(args):
         if isinstance(config['paths'][d], str):
             config['paths'][d] = config['paths'][d].format(base_dir=args.destination)
 
-    for setting in args.set:
-        key, value = setting.split('=', 2)
-        path = key.split('.')
-        cur = config
-        for ele in path[:-1]:
-            cur = cur.setdefault(ele, {})
-        cur[path[-1]] = value
+    if args.set:
+        for setting in args.set:
+            key, value = setting.split('=', 2)
+            path = key.split('.')
+            cur = config
+            for ele in path[:-1]:
+                cur = cur.setdefault(ele, {})
+            cur[path[-1]] = value
+
+    if config['architecture'] not in ['x86_64', 'x86']:
+        raise ValueError("only architectures supported are x86 and x86_64")
 
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = args.destination
@@ -149,7 +160,6 @@ def main():
     logging.debug("processing tasks")
     independent = extract_independent(build_graph)
     while independent:
-
         for node in independent:
             task = build_graph.node[node]["task"]
             try:
@@ -157,7 +167,10 @@ def main():
                 if build_graph.node[node]["enable"] and not task.already_processed():
                     progress = Progress()
                     progress.set_change_callback(progress_callback)
-                    logging.debug("run task \"{0}\"".format(node))
+                    if isinstance(task, Project):
+                        logging.debug("finished project \"{}\"".format(node))
+                    else:
+                        logging.debug("run task \"{}\"".format(node))
                     if task.process(progress):
                         task.mark_success()
                     else:
@@ -170,6 +183,7 @@ def main():
                         elif task.fail_behaviour == Task.FailBehaviour.CONTINUE:
                             # nothing to do
                             pass
+                    sys.stdout.write("\n")
             except Exception, e:
                 logging.error("Task {} failed".format(task.name))
                 raise

@@ -21,6 +21,7 @@ from unibuild.manager import TaskManager
 from unibuild.progress import Progress
 from unibuild.project import Project
 from unibuild import Task
+from unibuild.utility import CIDict
 from config import config
 from subprocess import Popen, PIPE
 import imp
@@ -33,13 +34,13 @@ import argparse
 
 
 def progress_callback(job, percentage):
-    if not percentage:
+    if not percentage and not job:
         sys.stdout.write("\n")
     else:
         pb_length = 50
         filled = int((pb_length * percentage) / 100)  # cast to int may be necessary in python 3
         #sys.stdout.write("\r%d%%" % percentage)
-        sys.stdout.write("\r%s[%s%s] %d%%" % (job, "=" * filled, " " * (pb_length -filled), percentage))
+        sys.stdout.write("\r%s [%s%s] %d%%" % (job, "=" * filled, " " * (pb_length - filled), percentage))
 
     sys.stdout.flush()
 
@@ -81,7 +82,7 @@ def visual_studio_environment():
         logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
         return False
 
-    vcenv = {}
+    vcenv = CIDict()
 
     for line in stdout.splitlines():
         key, value = line.split("=", 1)
@@ -124,6 +125,7 @@ def main():
     parser.add_argument('-f', '--file', default='makefile.uni.py', help='sets the build script')
     parser.add_argument('-d', '--destination', default='.', help='output directory (base for download and build)')
     parser.add_argument('-s', '--set', action='append', help='set configuration parameters')
+    parser.add_argument('-g', '--graph', action='store_true', help='update dependency graph')
     parser.add_argument('target', nargs='*', help='make target')
     args = parser.parse_args()
 
@@ -142,7 +144,8 @@ def main():
     build_graph = manager.create_graph({})
     assert isinstance(build_graph, nx.DiGraph)
 
-    draw_graph(build_graph, "graph")
+    if args.graph:
+        draw_graph(build_graph, "graph")
 
     cycles = list(nx.simple_cycles(build_graph))
     if cycles:
@@ -185,7 +188,7 @@ def main():
                             pass
                     sys.stdout.write("\n")
             except Exception, e:
-                logging.error("Task {} failed".format(task.name))
+                logging.error("Task {} failed: {}".format(task.name, e))
                 raise
 
             build_graph.remove_node(node)

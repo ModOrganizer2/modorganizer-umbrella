@@ -63,6 +63,7 @@ class URLDownload(Retrieval):
             self._context["build_path"] = output_file_path
 
     def process(self, progress):
+        logging.info("processing download")
         output_file_path = self._context["build_path"]
         archive_file_path = os.path.join(config["paths"]["download"], self.__file_name)
 
@@ -76,8 +77,8 @@ class URLDownload(Retrieval):
                 self.download(archive_file_path, progress)
             progress.finish()
 
-            self.extract(archive_file_path, output_file_path, progress)
-            progress.finish()
+        self.extract(archive_file_path, output_file_path, progress)
+        progress.finish()
 
         builddir = os.listdir(self._context["build_path"])
         if len(builddir) == 1:
@@ -109,11 +110,11 @@ class URLDownload(Retrieval):
         def progress_func(pos, size):
             progress.value = int(pos * 100 / size)
 
+        logging.info("Extracting {0}".format(self.__url))
+
         progress.value = 0
         progress.job = "Extracting"
         output_file_path = u"\\\\?\\" + os.path.abspath(output_file_path)
-
-        logging.info("Extracting {0}".format(self.__url))
 
         os.makedirs(output_file_path)
         with on_failure(lambda: shutil.rmtree(output_file_path)):

@@ -24,7 +24,7 @@ import logging
 
 
 class Clone(Repository):
-    def __init__(self, url, branch):
+    def __init__(self, url, branch="default"):
         super(Clone, self).__init__(url, branch)
 
     def prepare(self):

@@ -16,25 +16,26 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild import Project
 from unibuild.modules import sourceforge, build
-from subprocess import Popen
+from unibuild.utility import lazy
+from unibuild import Project
 from config import config
+from subprocess import Popen
 import os
 import logging
+
+import qt5  # import to get at qt version information
+import sip
 import python
 
 
-sip_version = "4.16.9"
-
-
-class SipConfigure(build.Builder):
+class PyQt5Configure(build.Builder):
     def __init__(self):
-        super(SipConfigure, self).__init__()
+        super(PyQt5Configure, self).__init__()
 
     @property
     def name(self):
-        return "sip configure"
+        return "pyqt configure"
 
     def process(self, progress):
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
@@ -43,26 +44,35 @@ class SipConfigure(build.Builder):
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
 
-                proc = Popen([str(config['paths']['python']), "configure.py",
-                              "-b", bp, "-d", bp, "-v", bp, "-e", bp],
-                             env=config["__environment"],
+                env = config['__environment'].copy()
+                env['path'] = env['path'] + ";" + ";".join([
+                    os.path.join(config["paths"]["build"], "qt5", "bin"),
+                    os.path.join(config["paths"]["build"], "sip-{}".format(sip.sip_version)),
+                ])
+
+                proc = Popen([str(config['paths']['python']), "configure.py", "--confirm-license",
+                              "-b", bp, "-d", bp, "-v", bp],
+                             env=env,
                              cwd=self._context["build_path"],
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()
                 if proc.returncode != 0:
-                    logging.error("failed to run sip configure.py (returncode %s), see %s and %s",
+                    logging.error("failed to run pyqt configure.py (returncode %s), see %s and %s",
                                   proc.returncode, soutpath, serrpath)
                     return False
 
         return True
 
 
-Project('sip') \
+Project("PyQt5") \
     .depend(build.Make().install()
-            .depend(SipConfigure()
-                    .depend(sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1))
+            .depend(PyQt5Configure()
+                    .depend("sip").depend("Qt5")
+                    .depend(sourceforge.Release("pyqt",
+                                                "PyQt5/PyQt-{0}.{1}/PyQt-gpl-{0}.{1}.zip"
+                                                .format(qt5.qt_version, qt5.qt_version_minor),
+                                                tree_depth=1))
                     )
             )
 
-#http://downloads.sourceforge.net/project/pyqt/sip/sip-4.16.9/sip-4.16.9.zip

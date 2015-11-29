@@ -21,6 +21,8 @@ from unibuild.modules import urldownload, msbuild, build
 from unibuild.utility.lazy import Evaluate
 from config import config
 import os
+import shutil
+from glob import glob
 
 
 python_version = "2.7.10"
@@ -31,6 +33,7 @@ def python_environment():
     result = config['__environment'].copy()
     result['Path'] += ";" + os.path.dirname(config['paths']['svn'])
     return result
+
 
 def upgrade_args():
     env = config['__environment']
@@ -48,9 +51,9 @@ if False:
     filename = "python-{0}{1}.msi".format(
         python_version,
         ".amd64" if config['architecture'] == "x86_64" else ""
-
     )
-    python = Project("Python")\
+
+    python = Project("Python") \
         .depend(build.Run("msiexec /i {0} TARGETDIR={1} /qn ADDLOCAL=DefaultFeature,SharedCRT"
                           .format(os.path.join(config['paths']['download'], filename),
                                   os.path.join(config['paths']['build'], "python-{}".format(python_version))
@@ -65,12 +68,24 @@ if False:
                         )
                 )
 else:
-    python = Project("Python")\
-        .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
-                .depend(build.Run(Evaluate(upgrade_args), name="upgrade python project")
-                        .depend(build.Run(r"Tools\buildbot\external-common.bat", environment=python_environment())
-                                .depend(urldownload.URLDownload("{0}/{1}/Python-{1}.tgz"
-                                                                .format(python_url, python_version), 1)
+    def install(context):
+        path_segments = [context['build_path'], "PCbuild"]
+        if config['architecture'] == "x86_64":
+            path_segments.append("amd64")
+        path_segments.append("*.lib")
+        for f in glob(os.path.join(*path_segments)):
+            shutil.copy(f, os.path.join(config["__build_base_path"], "install", "libs"))
+        return True
+
+    python = Project("Python") \
+        .depend(build.Execute(install)
+                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
+                        .depend(build.Run(Evaluate(upgrade_args), name="upgrade python project")
+                                .depend(build.Run(r"Tools\buildbot\external-common.bat",
+                                                  environment=python_environment())
+                                        .depend(urldownload.URLDownload("{0}/{1}/Python-{1}.tgz"
+                                                                        .format(python_url, python_version), 1)
+                                                )
                                         )
                                 )
                         )

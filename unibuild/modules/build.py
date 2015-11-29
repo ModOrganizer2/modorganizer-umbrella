@@ -110,6 +110,40 @@ class CPP(Builder):
         return True
 
 
+class Install(Builder):
+    def __init__(self, make_tool=None):
+        super(Install, self).__init__()
+        self.__make_tool = make_tool or config['tools']['make']
+
+    @property
+    def name(self):
+        if self._context is None:
+            return "make install"
+        else:
+            return "make install {0}".format(self._context.name)
+
+    def process(self, progress):
+        if "build_path" not in self._context:
+            logging.error("source path not known for {},"
+                          " are you missing a matching retrieval script?".format(self.name()))
+        soutpath = os.path.join(self._context["build_path"], "stdout.log")
+        serrpath = os.path.join(self._context["build_path"], "stderr.log")
+
+        with open(soutpath, "a") as sout:
+            with open(serrpath, "a") as serr:
+                proc = Popen([config['tools']['make'], "install"],
+                             shell=True,
+                             env=config["__environment"],
+                             cwd=self._context["build_path"],
+                             stdout=sout, stderr=serr)
+                proc.communicate()
+                if proc.returncode != 0:
+                    logging.error("failed to install (returncode %s), see %s and %s",
+                                  proc.returncode, soutpath, serrpath)
+                    return False
+        return True
+
+
 class Make(Builder):
     def __init__(self, make_tool=None):
         super(Make, self).__init__()
@@ -189,7 +223,9 @@ class Run(Builder):
 
     @property
     def name(self):
-        return "run {}".format((self.__name or self.__command.split()[0]).replace("\\", "/"))
+        return "run {}".format((self.__name
+                                if self.__name is not None
+                                else self.__command.split()[0]).replace("\\", "/"))
 
     def process(self, progress):
         if "build_path" not in self._context:
@@ -202,10 +238,16 @@ class Run(Builder):
             with open(serrpath, "w") as serr:
                 sout.write("running {} in {}".format(self.__command,
                                                      self.__working_directory))
-                environment = dict(self.__environment or config["__environment"])
+                environment = dict(self.__environment
+                                   if self.__environment is not None
+                                   else config["__environment"])
+                cwd = str(self.__working_directory
+                          if self.__working_directory is not None
+                          else self._context["build_path"])
+                print(cwd)
                 proc = Popen(self.__command,
                              env=environment,
-                             cwd=str(self.__working_directory or self._context["build_path"]),
+                             cwd=cwd,
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()

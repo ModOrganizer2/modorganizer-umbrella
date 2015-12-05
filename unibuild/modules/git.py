@@ -82,7 +82,6 @@ class Clone(Repository):
         self._context["build_path"] = self._output_file_path
 
     def process(self, progress):
-        print("{} - {}".format(self._output_file_path, os.path.isdir(self._output_file_path)))
         if os.path.isdir(self._output_file_path):
             proc = Popen([config['paths']['git'], "pull"],
                          cwd=self._output_file_path,

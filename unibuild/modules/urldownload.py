@@ -66,8 +66,8 @@ class URLDownload(Retrieval):
         output_file_path = self._context["build_path"]
         archive_file_path = os.path.join(config["paths"]["download"], self.__file_name)
 
-        if os.path.isfile(archive_file_path):
-            logging.info("File already downloaded: {0}".format(archive_file_path))
+        if os.path.isfile(output_file_path):
+            logging.info("File already extracted: {0}".format(archive_file_path))
         else:
             if os.path.isfile(archive_file_path):
                 logging.info("File already downloaded: {0}".format(archive_file_path))

@@ -16,19 +16,17 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from task import Task
+from unibuild import Task
 
 
-class Builder(Task):
+class Success(Task):
+    def __init__(self, name):
+        super(Success, self).__init__()
+        self.__name = name
 
-    def __init__(self):
-        super(Builder, self).__init__()
-
-    def applies(self, parameters):
-        return True
-
+    @property
     def name(self):
-        return
+        return "dummy {}".format(self.__name)
 
     def process(self, progress):
-        return
+        return True

@@ -107,7 +107,7 @@ class Clone(Repository):
 
     @staticmethod
     def _expiration():
-        return 60 * 60 * 24  # one day
+        return config.get('repo_update_frequency', 60 * 60 * 24)   # default: one day
 
     def set_destination(self, destination_name):
         self.__base_name = destination_name.replace("/", os.path.sep)

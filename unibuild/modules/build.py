@@ -16,10 +16,11 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from unibuild import Task
 from unibuild.builder import Builder
+from unibuild.utility import lazy
 from subprocess import Popen
 from config import config
-from unibuild import Task
 import os.path
 import logging
 
@@ -142,7 +143,6 @@ class Make(Builder):
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()
-                #-debug-and-release -force-debug-info -opensource -confirm-license -mp -no-compile-examples -nomake tests -nomake examples -no-angle -opengl desktop -no-icu -skip qtactiveqt -skip qtandroidextras -skip qtenginio -skip qtsensors -skip qtserialport -skip qtsvg -skip qtwebkit -skip qtpim -skip qttools -skip qtwebchannel -skip qtwayland -skip qtdoc -skip qtconnectivity -skip qtwebkit-examples
                 if proc.returncode != 0:
                     logging.error("failed to run make (returncode %s), see %s and %s",
                                   proc.returncode, soutpath, serrpath)
@@ -189,7 +189,12 @@ class Run(Builder):
 
     @property
     def name(self):
-        return "run {}".format((self.__name or self.__command.split()[0]).replace("\\", "/"))
+        if self.__name:
+            return "run {}".format(self.__name)
+        elif isinstance(self.__command, lazy.Evaluate):
+            raise Exception("when using lazy evaluation for the command line, a name needs to be provided")
+        else:
+            return "run {}".format(self.__command.split()[0]).replace("\\", "/")
 
     def process(self, progress):
         if "build_path" not in self._context:
@@ -200,12 +205,13 @@ class Run(Builder):
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
-                sout.write("running {} in {}".format(self.__command,
-                                                     self.__working_directory))
                 environment = dict(self.__environment or config["__environment"])
+                cwd = str(self.__working_directory or self._context["build_path"])
+                sout.write("running {} in {}".format(self.__command,
+                                                     cwd))
                 proc = Popen(self.__command,
                              env=environment,
-                             cwd=str(self.__working_directory or self._context["build_path"]),
+                             cwd=cwd,
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()

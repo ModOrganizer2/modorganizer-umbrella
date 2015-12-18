@@ -56,6 +56,7 @@ config = {
     'vc_version':   '12.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': True,
+    'repo_update_frequency': 60 * 60 * 24,  # in seconds
     'prefer_binary_dependencies': False # currently non-functional
 }
 

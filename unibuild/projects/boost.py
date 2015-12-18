@@ -27,7 +27,7 @@ config_template = ("using python : 2.7 : {0}\\PCbuild\\python.exe\n"
 Project("boost") \
     .depend(b2.B2().arguments(["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
                                "toolset=msvc-12.0",
-                               "link=static"
+                               "link=shared"
                                ] + ["--with-{0}".format(component) for component in boost_components])
             .depend(patch.CreateFile("user-config.jam",
                                      Evaluate(lambda: config_template.format(

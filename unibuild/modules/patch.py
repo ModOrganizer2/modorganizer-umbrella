@@ -1,5 +1,6 @@
 from unibuild.task import Task
 import os.path
+import shutil
 
 
 class Replace(Task):
@@ -23,6 +24,27 @@ class Replace(Task):
 
         with open(full_path, "w") as f:
             f.write(data)
+        return True
+
+
+class Copy(Task):
+
+    def __init__(self, source, destination):
+        super(Copy, self).__init__()
+        self.__source = source
+        self.__destination = destination
+
+    @property
+    def name(self):
+        return "Copy {}".format(self.__source)
+
+    def process(self, progress):
+        full_source = os.path.join(self._context["build_path"], self.__source)
+        full_destination = os.path.join(self._context["build_path"], self.__destination)
+        dest_dir = os.path.dirname(full_destination)
+        if not os.path.exists(full_destination):
+            os.makedirs(full_destination)
+        shutil.copy(full_source, full_destination)
         return True
 
 

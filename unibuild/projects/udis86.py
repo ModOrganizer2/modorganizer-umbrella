@@ -44,7 +44,7 @@ Project("Udis86") \
                                             "libudis86/syn-intel.c",
                                             "libudis86/udis86.c"])
                      .custom("libudis86/itab.c",
-                             cmd="{PYTHON} scripts/ud_itab.py docs/x86/optable.xml"
+                             cmd="{python} scripts/ud_itab.py docs/x86/optable.xml"
                                  " libudis86".format(**config["__environment"]))
                      )
                     .depend(sourceforge.Release("udis86", "udis86/{0}/udis86-{0}.{1}.tar.gz".format(udis_version,

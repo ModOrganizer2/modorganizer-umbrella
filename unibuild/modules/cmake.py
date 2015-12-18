@@ -14,31 +14,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-# Copyright (C) 2015 Sebastian Herbord. All rights reserved.
-#
-# This file is part of Mod Organizer.
-#
-# Mod Organizer is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Mod Organizer is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
 from unibuild.builder import Builder
 from unibuild.utility.enum import enum
-from subprocess import Popen
+from unibuild.utility.context_objects import on_exit
+from subprocess import Popen, PIPE
 from config import config
 import os.path
 import logging
 import shutil
+import re
 
 
 class CMake(Builder):
@@ -84,42 +70,56 @@ class CMake(Builder):
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
 
-        with open(soutpath, "w") as sout:
-            with open(serrpath, "w") as serr:
-                proc = Popen(
-                    [config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments,
-                    cwd=build_path,
-                    env=config["__environment"],
-                    stdout=sout, stderr=serr)
-                proc.communicate()
-                if proc.returncode != 0:
-                    logging.error("failed to generate makefile (returncode %s), see %s and %s",
-                                  proc.returncode, soutpath, serrpath)
-                    return False
+        try:
+            with on_exit(lambda: progress.finish()):
+                with open(soutpath, "w") as sout:
+                    with open(serrpath, "w") as serr:
+                        proc = Popen(
+                            [config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments,
+                            cwd=build_path,
+                            env=config["__environment"],
+                            stdout=sout, stderr=serr)
+                        proc.communicate()
+                        if proc.returncode != 0:
+                            raise Exception("failed to generate makefile (returncode %s), see %s and %s" %
+                                            (proc.returncode, soutpath, serrpath))
 
-                proc = Popen([config['tools']['make'], "verbose=1"],
-                             shell=True,
-                             env=config["__environment"],
-                             cwd=build_path,
-                             stdout=sout, stderr=serr)
-                proc.communicate()
-                if proc.returncode != 0:
-                    logging.error("failed to build (returncode %s), see %s and %s",
-                                  proc.returncode, soutpath, serrpath)
-                    return False
+                        proc = Popen([config['tools']['make'], "verbose=1"],
+                                     shell=True,
+                                     env=config["__environment"],
+                                     cwd=build_path,
+                                     stdout=PIPE, stderr=serr)
+                        progress.job = "Compiling"
+                        progress.maximum = 100
+                        while proc.poll() is None:
+                            while True:
+                                line = proc.stdout.readline()
+                                if line != '':
+                                    match = re.search("^\\[([0-9 ][0-9 ][0-9])%\\]", line)
+                                    if match is not None:
+                                        progress.value = int(match.group(1))
+                                    sout.write(line)
+                                else:
+                                    break
 
-                if self.__install:
-                    proc = Popen([config['tools']['make'], "install"],
-                                 shell=True,
-                                 env=config["__environment"],
-                                 cwd=build_path,
-                                 stdout=sout, stderr=serr)
-                    proc.communicate()
-                    if proc.returncode != 0:
-                        logging.error("failed to install (returncode %s), see %s and %s",
-                                      proc.returncode, soutpath, serrpath)
-                        return False
+                        if proc.returncode != 0:
+                            raise Exception("failed to build (returncode %s), see %s and %s" %
+                                            (proc.returncode, soutpath, serrpath))
 
+                        if self.__install:
+                            proc = Popen([config['tools']['make'], "install"],
+                                         shell=True,
+                                         env=config["__environment"],
+                                         cwd=build_path,
+                                         stdout=sout, stderr=serr)
+                            proc.communicate()
+                            if proc.returncode != 0:
+                                raise Exception("failed to install (returncode %s), see %s and %s" %
+                                                (proc.returncode, soutpath, serrpath))
+                                return False
+        except Exception, e:
+            logging.error(e.message)
+            return False
         return True
 
 

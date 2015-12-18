@@ -23,15 +23,14 @@ class ProgressFile(file):
 
     def __init__(self, filename, progress_cb):
         super(ProgressFile, self).__init__(filename, "rb")
+
         assert callable(progress_cb)
         self.__progress_cb = progress_cb
         self.seek(0, os.SEEK_END)
         self.__size = self.tell()
         self.seek(0, os.SEEK_SET)
 
-    def read(self, size=None):
+    def read(self, *args, **kwargs):
         self.__progress_cb(self.tell(), self.__size)
-        if size is None:
-            return super(ProgressFile, self).read()
-        else:
-            return super(ProgressFile, self).read(size)
+
+        return super(ProgressFile, self).read(*args, **kwargs)

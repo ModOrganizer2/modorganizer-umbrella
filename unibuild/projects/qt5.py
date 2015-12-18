@@ -23,6 +23,9 @@ import unibuild.utility.lazy as lazy
 import os
 import multiprocessing
 
+from unibuild.projects import openssl
+
+
 qt_download_url = "http://download.qt.io/official_releases/qt"
 qt_download_ext = "tar.gz"
 qt_version = "5.5"
@@ -60,7 +63,7 @@ else:
     num_jobs = multiprocessing.cpu_count() * 2
 
     configure_cmd = ("configure.bat -platform {platform} -debug-and-release -force-debug-info -opensource -confirm-license "
-                    "-mp -no-compile-examples -no-angle -opengl desktop -prefix {path}/qt5 "
+                    "-mp -no-compile-examples -no-angle -opengl desktop -ssl -openssl-linked -prefix {path}/qt5 "
                     "{skip} {nomake}").format(path=config["paths"]["build"],
                                             platform=platform,
                                             skip=" ".join(["-skip {}".format(s) for s in skip_list]),
@@ -115,6 +118,7 @@ else:
                                                         )
                                                 )
                                         )
+                                .depend("openssl")
                                 )
                         )
                 )

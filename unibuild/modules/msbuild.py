@@ -26,10 +26,11 @@ import os
 
 class MSBuild(Builder):
 
-    def __init__(self, solution, project=None):
+    def __init__(self, solution, project=None, working_directory=None):
         super(MSBuild, self).__init__()
         self.__solution = solution
         self.__project = project
+        self.__working_directory = working_directory
 
     @property
     def name(self):
@@ -58,10 +59,11 @@ class MSBuild(Builder):
                 args = ["msbuild", self.__solution, "/m", "/property:Configuration=Release"]
                 if self.__project:
                     args.append("/target:{}".format(self.__project))
+
                 proc = Popen(
                     args,
                     shell=True,
-                    cwd=self._context['build_path'],
+                    cwd=str(self.__working_directory or self._context["build_path"]),
                     env=config["__environment"],
                     stdout=sout, stderr=serr)
                 proc.communicate()

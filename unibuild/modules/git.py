@@ -82,7 +82,7 @@ class Clone(Repository):
         self._context["build_path"] = self._output_file_path
 
     def process(self, progress):
-        if os.path.isdir(self._output_file_path):
+        if os.path.exists(os.path.join(self._output_file_path, ".git")):
             proc = Popen([config['paths']['git'], "pull"],
                          cwd=self._output_file_path,
                          env=config["__environment"])
@@ -90,11 +90,12 @@ class Clone(Repository):
             if self.__super_repository is not None:
                 proc = Popen([config['paths']['git'], "submodule", "add",
                               "--force", "--name", self.__base_name,
-                              self._url
+                              self._url, self.__base_name
                               ],
                              cwd=self.__super_repository.path,
                              env=config['__environment'])
             else:
+                print(" ".join([config['paths']['git'], "clone", "-b", self._branch, self._url, self._context["build_path"]]))
                 proc = Popen([config['paths']['git'], "clone", "-b", self._branch,
                               self._url, self._context["build_path"]],
                              env=config["__environment"])
@@ -107,7 +108,7 @@ class Clone(Repository):
 
     @staticmethod
     def _expiration():
-        return 60 * 60 * 24  # one day
+        return config.get('repo_update_frequency', 60 * 60 * 24)   # default: one day
 
     def set_destination(self, destination_name):
         self.__base_name = destination_name.replace("/", os.path.sep)

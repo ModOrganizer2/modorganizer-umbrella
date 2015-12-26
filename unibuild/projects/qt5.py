@@ -17,11 +17,13 @@
 
 
 from unibuild import Project, Task
-from unibuild.modules import build, patch, git, urldownload, sourceforge
+from unibuild.modules import build, patch, git, urldownload, sourceforge, dummy
 from config import config
 import unibuild.utility.lazy as lazy
 import os
 import multiprocessing
+import itertools
+
 
 from unibuild.projects import openssl
 
@@ -30,7 +32,11 @@ qt_download_url = "http://download.qt.io/official_releases/qt"
 qt_download_ext = "tar.gz"
 qt_version = "5.5"
 qt_version_minor = "1"
+grep_version = "2.5.4"
+# these two should be deduced from the config
 qt_bin_variant = "msvc2013"
+grep_version = "2.5.4"
+platform = "win32-msvc2013"
 
 
 #if config.get('prefer_binary_dependencies', False):
@@ -58,23 +64,23 @@ else:
 
     nomake_list = ["tests", "examples"]
 
-    platform = "win32-msvc2013"
-
     num_jobs = multiprocessing.cpu_count() * 2
 
-    configure_cmd = ("configure.bat -platform {platform} -debug-and-release -force-debug-info -opensource -confirm-license "
-                    "-mp -no-compile-examples -no-angle -opengl desktop -ssl -openssl-linked -prefix {path}/qt5 "
-                    "{skip} {nomake}").format(path=config["paths"]["build"],
-                                            platform=platform,
-                                            skip=" ".join(["-skip {}".format(s) for s in skip_list]),
-                                            nomake=" ".join(["-nomake {}".format(n) for n in nomake_list]))
+    configure_cmd = lambda: ["configure.bat",
+                             "-platform", platform,
+                             "-debug-and-release", "-force-debug-info",
+                             "-opensource", "-confirm-license",
+                             "-c++11", "-mp", "-no-compile-examples",
+                             "-no-angle", "-opengl", "desktop",
+                             "-ssl", "-openssl-linked",
+                             "-I", os.path.join(openssl.openssl['build_path'], "include"),
+                             "-L", os.path.join(openssl.openssl['build_path'], "lib", "VC", "static"),
+                             "-prefix", "{}/qt5".format(config["paths"]["build"])] \
+                            + list(itertools.chain(*[("-skip", s) for s in skip_list])) \
+                            + list(itertools.chain(*[("-nomake", n) for n in nomake_list]))
 
     jom = Project("jom") \
         .depend(urldownload.URLDownload("http://download.qt.io/official_releases/jom/jom.zip"))
-
-
-    grep_version = "2.5.4"
-
 
     grep = Project('grep') \
         .depend(urldownload.URLDownload("http://downloads.sourceforge.net/project/gnuwin32/grep/{0}/grep-{0}-bin.zip"
@@ -82,8 +88,7 @@ else:
         .depend(sourceforge.Release("gnuwin32", "grep/{0}/grep-{0}-dep.zip".format(grep_version)))
 
     flex = Project('flex') \
-        .depend(urldownload.URLDownload("http://downloads.sourceforge.net/project/winflexbison/win_flex_bison-latest.zip"))
-
+        .depend(sourceforge.Release("winflexbison", "win_flex_bison-latest.zip"))
 
     def webkit_env():
         print(config['paths'])
@@ -98,32 +103,37 @@ else:
             os.path.join(config["paths"]["build"], "qt5", "bin")
         ])
 
-        from pprint import pprint
-        pprint(result)
-
-
         return result
 
+    build_webkit = build.Run(r"perl Tools\Scripts\build-webkit --qt --release",
+                            environment=lazy.Evaluate(webkit_env),
+                            working_directory=lazy.Evaluate(lambda: os.path.join(qt5['build_path'], "qtwebkit")),
+                            name="build webkit")\
+                        .depend(patch.Replace("qtwebkit/Source/WebCore/platform/text/TextEncodingRegistry.cpp",
+                                              "#if OS(WINDOWS) && USE(WCHAR_UNICODE)",
+                                              "#if OS(WINCE) && USE(WCHAR_UNICODE)"))\
+                        .depend('grep').depend('flex')
+
+    # uncomment to build webkit
+    #build_webkit = dummy.Success("webkit")
+
+    init_repo = build.Run("perl init-repository", name="init qt repository")\
+                        .set_fail_behaviour(Task.FailBehaviour.CONTINUE)\
+                        .depend(git.Clone("git://code.qt.io/qt/qt5.git", qt_version))
 
     qt5 = Project("Qt5") \
         .depend(build.Make(lazy.Evaluate(lambda: os.path.join(jom["build_path"], "jom.exe -j {}".format(num_jobs))))
                 .install()
-                .depend(build.Run(r"perl Tools\Scripts\build-webkit --qt --release",
-                                environment=lazy.Evaluate(webkit_env),
-                                working_directory=lazy.Evaluate(lambda: os.path.join(qt5['build_path'], "qtwebkit")),
-                                name="build webkit")
-                        .depend("jom").depend('grep').depend('flex')
-                        .depend(build.Run(configure_cmd)
+                .depend(build_webkit
+                        .depend("jom")
+                        .depend(build.Run(lazy.Evaluate(configure_cmd),
+                                          name="configure qt"
+                                          )
                                 .depend(patch.Replace("qtbase/configure.bat",
-                                                    "if not exist %QTSRC%.gitignore goto sconf", "")
-                                        .depend(build.Run("perl init-repository", name="init qt repository")
-                                                .set_fail_behaviour(Task.FailBehaviour.CONTINUE)
-                                                .depend(git.Clone("git://code.qt.io/qt/qt5.git", qt_version)
-                                                        )
-                                                )
+                                                      "if not exist %QTSRC%.gitignore goto sconf", "")
+                                        .depend(init_repo)
                                         )
                                 .depend("openssl")
                                 )
                         )
                 )
-    working_directory=lazy.Evaluate(lambda: os.path.join(qt5.qt5['build_path'], "qtwebkit")),

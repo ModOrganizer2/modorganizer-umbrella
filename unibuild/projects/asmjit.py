@@ -21,6 +21,10 @@ from unibuild.modules import cmake, github
 from config import config
 
 
+# asmjit doesn't currently have any tags/branches but not every commit is usable
+asmjit_tag = "31c0b467101bf53d15c8f0cbc2d40107a9ff1ea6"
+
+
 Project("AsmJit") \
     .depend(cmake.CMake().arguments(
     [
@@ -29,7 +33,7 @@ Project("AsmJit") \
         "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/')),
         "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
     ]).install()
-            .depend(github.Source("kobalicek", "asmjit", "master")
+            .depend(github.Source("kobalicek", "asmjit", asmjit_tag)
                     .set_destination("asmjit"))
             )
 

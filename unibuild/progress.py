@@ -49,7 +49,7 @@ class Progress(object):
             self.__changeCallback(self.__job, self.__value * 100 / self.__maximum)
 
     def finish(self):
-        self.__changeCallback(self.__job, None)
+        self.__changeCallback(None, None)
 
     def set_change_callback(self, callback):
         self.__changeCallback = callback

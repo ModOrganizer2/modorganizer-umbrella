@@ -19,8 +19,8 @@
 from unibuild import Project
 from unibuild.modules import cmake, googlecode, build
 from config import config
-import shutil
 import os
+import shutil
 from glob import glob
 
 

@@ -1,6 +1,5 @@
 from unibuild import Project
 from unibuild.modules import b2, sourceforge, patch
-from unibuild.utility.lazy import Evaluate
 from unibuild.projects import python
 from config import config
 import os
@@ -30,14 +29,14 @@ Project("boost") \
                                "link=shared"
                                ] + ["--with-{0}".format(component) for component in boost_components])
             .depend(patch.CreateFile("user-config.jam",
-                                     Evaluate(lambda: config_template.format(
-                                         os.path.dirname(python.python['build_path']),
-                                         "64" if config['architecture'] == "x86_64" else "32")
-                                              )
+                                     lambda: config_template.format(
+                                             os.path.dirname(python.python['build_path']),
+                                             "64" if config['architecture'] == "x86_64" else "32")
                                      )
                     .depend(sourceforge.Release("boost",
                                                 "boost/{0}/boost_{1}.tar.bz2".format(boost_version,
                                                                                      boost_version.replace(".", "_")),
                                                 tree_depth=1))
                     )
-            )
+            ) \
+    .depend("Python")

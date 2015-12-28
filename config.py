@@ -17,7 +17,6 @@
 
 
 from _winreg import *
-from unibuild.utility.lazy import Evaluate
 import os
 
 
@@ -38,6 +37,7 @@ def get_from_hklm(path, name, wow64=False):
 program_files_folders = [
     os.environ['ProgramFiles(x86)'],
     os.environ['ProgramFiles'],
+    "C:\\",
     "D:\\"
 ]
 
@@ -71,10 +71,11 @@ config['paths'] = {
     'perl':          path_or_default("perl.exe",  gen_search_folders("StrawberryPerl", "bin")),
     'ruby':          path_or_default("ruby.exe",  gen_search_folders("Ruby22-x64", "bin")),
     'svn':           path_or_default("svn.exe",   gen_search_folders("SlikSvn", "bin")),
+    '7z':            path_or_default("7z.exe",    gen_search_folders("7-Zip")),
     # we need a python that matches the build architecture
-    'python':        Evaluate(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\2.7\InstallPath",
-                                                                 "", config['architecture'] == "x86"),
-                                                   "python.exe")),
+    'python':        lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\2.7\InstallPath",
+                                                        "", config['architecture'] == "x86"),
+                                          "python.exe"),
     'visual_studio': os.path.realpath(
         os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\{}".format(config['vc_version']),
                                    "InstallDir", True),

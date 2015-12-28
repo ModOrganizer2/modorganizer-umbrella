@@ -163,7 +163,7 @@ class CMakeEdit(Builder):
             return "CodeBlocks - NMake Makefiles"
 
     def prepare(self):
-        self._context['edit_path'] = os.path.join(self._context["build_path"], "edit")
+        self._context['edit_path'] = os.path.join(self._context['build_path'], "edit")
 
     def process(self, progress):
         if "build_path" not in self._context:

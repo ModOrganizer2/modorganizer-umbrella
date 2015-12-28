@@ -1,4 +1,5 @@
 from unibuild.task import Task
+from unibuild.utility.lazy import Lazy
 import os.path
 import shutil
 
@@ -31,38 +32,50 @@ class Copy(Task):
 
     def __init__(self, source, destination):
         super(Copy, self).__init__()
-        self.__source = source
-        self.__destination = destination
+        if isinstance(source, str):
+            source = [source]
+        self.__source = Lazy(source)
+        self.__destination = Lazy(destination)
 
     @property
     def name(self):
-        return "Copy {}".format(self.__source)
+        if self.__source.type() == list:
+            return "Copy {}...".format(self.__source()[0])
+        else:
+            return "Copy {}".format(self.__source.peek())
 
     def process(self, progress):
-        full_source = os.path.join(self._context["build_path"], self.__source)
-        full_destination = os.path.join(self._context["build_path"], self.__destination)
-        dest_dir = os.path.dirname(full_destination)
-        if not os.path.exists(full_destination):
-            os.makedirs(full_destination)
-        shutil.copy(full_source, full_destination)
+        if os.path.isabs(self.__destination()):
+            full_destination = self.__destination()
+        else:
+            full_destination = os.path.join(self._context["build_path"], self.__destination())
+
+        for source in self.__source():
+            if not os.path.isabs(source):
+                source = os.path.join(self._context["build_path"], source)
+            if not os.path.exists(full_destination):
+                os.makedirs(full_destination)
+            shutil.copy(source, full_destination)
         return True
 
 
 class CreateFile(Task):
-
     def __init__(self, filename, content):
         super(CreateFile, self).__init__()
         self.__filename = filename
-        self.__content = content
+        self.__content = Lazy(content)
 
     @property
     def name(self):
-        return "Create File {}-{}".format(self._context.name, self.__filename)
+        if self._context is not None:
+            return "Create File {}-{}".format(self._context.name, self.__filename)
+        else:
+            return "Create File {}".format(self.__filename)
 
     def process(self, progress):
         full_path = os.path.join(self._context["build_path"], self.__filename)
         with open(full_path, 'w') as f:
             # the call to str is necessary to ensure a lazy initialised content is evaluated now
-            f.write(str(self.__content))
+            f.write(self.__content())
 
         return True

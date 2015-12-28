@@ -18,7 +18,6 @@
 
 from unibuild.project import Project
 from unibuild.modules import urldownload, msbuild, build
-from unibuild.utility.lazy import Evaluate
 from config import config
 import os
 import shutil
@@ -80,7 +79,7 @@ else:
     python = Project("Python") \
         .depend(build.Execute(install)
                 .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
-                        .depend(build.Run(Evaluate(upgrade_args), name="upgrade python project")
+                        .depend(build.Run(upgrade_args, name="upgrade python project")
                                 .depend(build.Run(r"Tools\buildbot\external-common.bat",
                                                   environment=python_environment())
                                         .depend(urldownload.URLDownload("{0}/{1}/Python-{1}.tgz"

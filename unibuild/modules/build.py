@@ -18,7 +18,7 @@
 
 from unibuild import Task
 from unibuild.builder import Builder
-from unibuild.utility import lazy
+from unibuild.utility.lazy import Lazy
 from subprocess import Popen
 from config import config
 import os.path
@@ -114,7 +114,7 @@ class CPP(Builder):
 class Install(Builder):
     def __init__(self, make_tool=None):
         super(Install, self).__init__()
-        self.__make_tool = make_tool or config['tools']['make']
+        self.__make_tool = Lazy(make_tool or config['tools']['make'])ü
 
     @property
     def name(self):
@@ -132,7 +132,7 @@ class Install(Builder):
 
         with open(soutpath, "a") as sout:
             with open(serrpath, "a") as serr:
-                proc = Popen([config['tools']['make'], "install"],
+                proc = Popen([self.__make_tool(), "install"],
                              shell=True,
                              env=config["__environment"],
                              cwd=self._context["build_path"],
@@ -146,10 +146,12 @@ class Install(Builder):
 
 
 class Make(Builder):
-    def __init__(self, make_tool=None):
+    def __init__(self, make_tool=None, environment=None, working_directory=None):
         super(Make, self).__init__()
         self.__install = False
-        self.__make_tool = make_tool or config['tools']['make']
+        self.__make_tool = Lazy(make_tool or config['tools']['make'])
+        self.__environment = Lazy(environment)
+        self.__working_directory = Lazy(working_directory)
 
     @property
     def name(self):
@@ -171,9 +173,16 @@ class Make(Builder):
 
         with open(soutpath, "a") as sout:
             with open(serrpath, "a") as serr:
-                proc = Popen(self.__make_tool.split(" "),
-                             env=config["__environment"],
-                             cwd=self._context["build_path"],
+                environment = dict(self.__environment()
+                                   if self.__environment() is not None
+                                   else config["__environment"])
+                cwd = str(self.__working_directory()
+                          if self.__working_directory() is not None
+                          else self._context["build_path"])
+
+                proc = Popen(self.__make_tool().split(" "),
+                             env=environment,
+                             cwd=cwd,
                              shell=True,
                              stdout=sout, stderr=serr)
                 proc.communicate()
@@ -185,8 +194,8 @@ class Make(Builder):
                 if self.__install:
                     proc = Popen([config['tools']['make'], "install"],
                                  shell=True,
-                                 env=config["__environment"],
-                                 cwd=self._context["build_path"],
+                                 env=environment,
+                                 cwd=cwd,
                                  stdout=sout, stderr=serr)
                     proc.communicate()
                     if proc.returncode != 0:
@@ -205,7 +214,10 @@ class Execute(Builder):
 
     @property
     def name(self):
-        return "execute {}_{}".format(self._context.name, self.__name or self.__function.func_name)
+        if self._context is None:
+            return "execute {}".format(self.__name or self.__function.func_name)
+        else:
+            return "execute {}_{}".format(self._context.name, self.__name or self.__function.func_name)
 
     def process(self, progress):
         return self.__function(context=self._context)
@@ -215,20 +227,18 @@ class Run(Builder):
     def __init__(self, command, fail_behaviour=Task.FailBehaviour.FAIL, environment=None, working_directory=None,
                  name=None):
         super(Run, self).__init__()
-        self.__command = command
+        self.__command = Lazy(command)
         self.__name = name
         self.__fail_behaviour = fail_behaviour
-        self.__environment = environment
-        self.__working_directory = working_directory
+        self.__environment = Lazy(environment)
+        self.__working_directory = Lazy(working_directory)
 
     @property
     def name(self):
         if self.__name:
             return "run {}".format(self.__name)
-        elif isinstance(self.__command, lazy.Evaluate):
-            raise Exception("when using lazy evaluation for the command line, a name needs to be provided")
         else:
-            return "run {}".format(self.__command.split()[0]).replace("\\", "/")
+            return "run {}".format(self.__command.peek().split()[0]).replace("\\", "/")
 
     def process(self, progress):
         if "build_path" not in self._context:
@@ -239,15 +249,14 @@ class Run(Builder):
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
-                sout.write("running {} in {}".format(self.__command,
-                                                     self.__working_directory))
-                environment = dict(self.__environment
-                                   if self.__environment is not None
+                environment = dict(self.__environment()
+                                   if self.__environment() is not None
                                    else config["__environment"])
-                cwd = str(self.__working_directory
-                          if self.__working_directory is not None
+                cwd = str(self.__working_directory()
+                          if self.__working_directory() is not None
                           else self._context["build_path"])
-                proc = Popen(self.__command,
+                sout.write("running {} in {}".format(self.__command(), cwd))
+                proc = Popen(self.__command(),
                              env=environment,
                              cwd=cwd,
                              shell=True,
@@ -255,7 +264,7 @@ class Run(Builder):
                 proc.communicate()
                 if proc.returncode != 0:
                     logging.error("failed to run %s (returncode %s), see %s and %s",
-                                  self.__command, proc.returncode, soutpath, serrpath)
+                                  self.__command(), proc.returncode, soutpath, serrpath)
                     return False
 
         return True

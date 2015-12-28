@@ -31,6 +31,7 @@ import networkx as nx
 import tempfile
 import os.path
 import argparse
+import re
 
 
 def progress_callback(job, percentage):
@@ -57,6 +58,8 @@ def draw_graph(graph, filename):
               "-Tpng", "-Edir=back", "-Gsplines=ortho", "-Grankdir=BT", "-Gconcentrate=true", "-Nshape=box", "-Gdpi=192",
               graph_file_name,
               "-o", "{}.png".format(filename)])
+    else:
+        print("graphviz path not set")
 
 
 def extract_independent(graph):
@@ -109,8 +112,43 @@ def init_config(args):
 
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = args.destination
+
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable
+
+    qtcreator_config_path = r"C:/Users/Tannin/AppData/Roaming/QtProject"
+
+    if os.path.isdir(qtcreator_config_path):
+        from ConfigParser import RawConfigParser
+        parser = RawConfigParser()
+        parser.read(os.path.join(qtcreator_config_path, "qtcreator.ini"))
+        config['qt_environment_id'] = parser.get('ProjectExplorer', 'Settings\\EnvironmentId')
+        config['qt_environment_id'] = re.sub(r"@ByteArray\((.*)\)", r"\1", config['qt_environment_id'])
+
+        import xml.etree.ElementTree as ET
+        tree = ET.parse(os.path.join(qtcreator_config_path, "qtcreator", "profiles.xml"))
+        root = tree.getroot()
+
+        profiles = []
+
+        for profile in root.findall("data/valuemap"):
+            profiles.append((profile.find("value[@key='PE.Profile.Id']").text,
+                             profile.find("value[@key='PE.Profile.Name']").text))
+
+        arch = "64bit" if config["architecture"] == 'x86_64' else "32bit"
+        profiles = filter(lambda x: arch in x[1], sorted(profiles, reverse=True))[0]
+
+        config['qt_profile_id'] = profiles[0]
+        config['qt_profile_name'] = profiles[1].replace("%{Qt:Version}", "5.4.0")
+
+        """
+        kits = sorted([kit.text
+                       for kit in root.findall("./data/valuemap/value[@key='Name']")
+                       if arch in kit.text],
+                      reverse=True)[0]
+
+        print(kits)
+        """
 
 
 def recursive_remove(graph, node):
@@ -162,12 +200,13 @@ def main():
 
     logging.debug("processing tasks")
     independent = extract_independent(build_graph)
+
     while independent:
         for node in independent:
-            task = build_graph.node[node]["task"]
+            task = build_graph.node[node]['task']
             try:
                 task.prepare()
-                if build_graph.node[node]["enable"] and not task.already_processed():
+                if build_graph.node[node]['enable'] and not task.already_processed():
                     progress = Progress()
                     progress.set_change_callback(progress_callback)
                     if isinstance(task, Project):

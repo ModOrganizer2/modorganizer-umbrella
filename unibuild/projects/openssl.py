@@ -23,12 +23,19 @@ from subprocess import Popen
 import os
 import logging
 import time
+import shutil
 
 
 # currently binary installation only
 
 
 openssl_version = "1.0.2e"
+
+libeay = "libeay32MD.lib"
+ssleay = "ssleay32MD.lib"
+# installation happens concurrently in separate process. We need to wait for all relevant files to exist,
+# and can determine failure only by timeout
+timeout = 15   # seconds
 
 
 def bitness():
@@ -48,7 +55,22 @@ def build_func(context):
         logging.error("failed to run installer (returncode %s)",
                       proc.returncode)
         return False
-    # TODO: installation happens concurrently in separate process. Wait for all relevant files to exist?
+    libeay_path = os.path.join(context['build_path'], "lib", "VC", "static", libeay)
+    ssleay_path = os.path.join(context['build_path'], "lib", "VC", "static", ssleay)
+    wait_counter = timeout
+    while wait_counter > 0:
+        if os.path.isfile(libeay_path) and os.path.isfile(ssleay_path):
+            break
+        else:
+            time.sleep(1.0)
+    # wait a bit longer because the installer may have been in the process of writing the file
+    time.sleep(1.0)
+
+    # need to make a copy of the libs we plan to use because the mechanism qt offers to set the lib
+    # name seems to be broken on windows. Consequently maybe we should do this in the qt project
+    shutil.copy(libeay, os.path.join(context['build_path'], "lib", "VC", "static", "libeay32.dll"))
+    shutil.copy(ssleay, os.path.join(context['build_path'], "lib", "VC", "static", "ssleay32.dll"))
+
     return True
 
 

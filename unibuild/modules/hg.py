@@ -48,7 +48,7 @@ class Clone(Repository):
 
     @staticmethod
     def _expiration():
-        return 60 * 60 * 24  # one day
+        return config.get('repo_update_frequency', 60 * 60 * 24)   # default: one day
 
     def set_destination(self, destination_name):
         self._output_file_path = os.path.join(config["paths"]["build"], destination_name)

@@ -61,3 +61,42 @@ class Evaluate(object):
     def __add__(self, other):
         self.__evaluate()
         return self.__data + other
+
+
+class Lazy(object):
+    class UniPeek(object):
+        def __init__(self, func):
+            self.__func = func
+
+        def __getitem__(self, key):
+            return str(self.__func)
+
+    def __init__(self, val):
+        if callable(val):
+            self.__value = None
+            self.__func = val
+        else:
+            self.__value = val
+            self.__func = None
+
+    def __call__(self):
+        if self.__value is None:
+            self.__value = self.__func()
+        return self.__value
+
+    def type(self):
+        if self.__value is None:
+            return None
+        else:
+            return type(self.__value)
+
+    def peek(self):
+        if self.__value is None:
+            return self.__func.func_doc
+        else:
+            return self.__value
+
+
+def doclambda(func, doc):
+    func.__doc__ = doc
+    return func

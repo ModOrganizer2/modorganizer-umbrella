@@ -75,9 +75,43 @@ Project("modorganizer-game_features") \
     .depend(github.Source("TanninOne", "modorganizer-game_features", "master", super_repository=tl_repo)
             .set_destination("game_features"))
 
+
+def gen_userfile_content(project):
+    with open("CMakeLists.txt.user.template", 'r') as f:
+        res = Formatter().vformat(f.read(), [], FormatDict({
+            'build_dir'     : project['edit_path'],
+            'environment_id': config['qt_environment_id'],
+            'profile_name'  : config['qt_profile_name'],
+            'profile_id'    : config['qt_profile_id']
+        }))
+        return res
+
+
+cmake_parameters = [
+    "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
+    "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
+    "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config["__build_base_path"])
+]
+
+
+usvfs = Project("usvfs") \
+    .depend(cmake.CMake().arguments(cmake_parameters +
+                                    ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
+            .install())
+
+
+usvfs.depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, usvfs))
+             .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
+                     .depend(github.Source("TanninOne", "usvfs", "master")
+                             .set_destination("usvfs"))
+                     .depend("AsmJit").depend("Udis86").depend("GTest")
+                     )
+             )
+
+
 for git_path, path, branch, dependencies in [
     ("modorganizer-archive",           "archive",           "master",          ["7zip", "Qt5"]),
-    ("modorganizer-uibase",            "uibase",            "master",          ["Qt5", "boost"]),
+    ("modorganizer-uibase",            "uibase",            "new_vfs_library", ["Qt5", "boost"]),
     ("modorganizer-lootcli",           "lootcli",           "master",          ["LootApi", "Qt5", "boost"]),
     ("modorganizer-esptk",             "esptk",             "master",          ["boost"]),
     ("modorganizer-bsatk",             "bsatk",             "master",          ["zlib"]),
@@ -118,42 +152,25 @@ for git_path, path, branch, dependencies in [
     ("modorganizer",                   "modorganizer",      "new_vfs_library", ["Qt5", "boost",
                                                                                 "modorganizer-uibase", "modorganizer-archive",
                                                                                 "modorganizer-bsatk", "modorganizer-esptk",
-                                                                                "modorganizer-game_features"]),
+                                                                                "modorganizer-game_features",
+                                                                                "usvfs"]),
 ]:
-    build_step = cmake.CMake().arguments(
-        [
-            "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
-            "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
-            "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config["__build_base_path"])
-        ]
-    ).install()
+    build_step = cmake.CMake().arguments(cmake_parameters).install()
 
     for dep in dependencies:
         build_step.depend(dep)
 
-    build_step.depend(github.Source("TanninOne", git_path, branch, super_repository=tl_repo)
-                      .set_destination(path))
-
     project = Project(git_path)
 
     if config['ide_projects']:
-        def gen_userfile_content(project):
-            with open("CMakeLists.txt.user.template", 'r') as f:
-                res = Formatter().vformat(f.read(), [], FormatDict({'build_dir': project['edit_path']}))
-                return res
-
-        project.depend(
-            patch.CreateFile("CMakeLists.txt.user", lazy.Evaluate(partial(gen_userfile_content, project))).depend(
-                cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(
-                    [
-                        "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
-                        "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
-                        "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/'))
-                    ]
-                ).depend(
-                    build_step
-                )
-            )
-        )
+        project.depend(build_step
+                       .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
+                               .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
+                                       .depend(github.Source("TanninOne", git_path, branch, super_repository=tl_repo)
+                                               .set_destination(path))
+                                       )
+                               )
+                       )
     else:
         project.depend(build_step)
+

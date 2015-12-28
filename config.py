@@ -56,7 +56,10 @@ config = {
     'vc_version':   '12.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': True,
-    'prefer_binary_dependencies': False # currently non-functional
+    'prefer_binary_dependencies': False,  # currently non-functional
+    'optimize': False                     # activate link-time code generation and other optimization.
+                                          # This massively increases build time but produces smaller
+                                          # binaries and marginally faster code
 }
 
 config['paths'] = {

@@ -120,13 +120,16 @@ for git_path, path, branch, dependencies in [
                                                                                 "modorganizer-bsatk", "modorganizer-esptk",
                                                                                 "modorganizer-game_features"]),
 ]:
-    build_step = cmake.CMake().arguments(
-        [
+    arguments = [
             "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
             "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
-            "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config["__build_base_path"])
+            "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config["__build_base_path"]),
         ]
-    ).install()
+
+    if config.get('optimize', False):
+        arguments.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")
+
+    build_step = cmake.CMake().arguments(arguments).install()
 
     for dep in dependencies:
         build_step.depend(dep)
@@ -144,15 +147,8 @@ for git_path, path, branch, dependencies in [
 
         project.depend(
             patch.CreateFile("CMakeLists.txt.user", lazy.Evaluate(partial(gen_userfile_content, project))).depend(
-                cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(
-                    [
-                        "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
-                        "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
-                        "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/'))
-                    ]
-                ).depend(
-                    build_step
-                )
+                cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(arguments)
+                    .depend(build_step)
             )
         )
     else:

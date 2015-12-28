@@ -244,7 +244,6 @@ class Run(Builder):
                 cwd = str(self.__working_directory
                           if self.__working_directory is not None
                           else self._context["build_path"])
-                print(cwd)
                 proc = Popen(self.__command,
                              env=environment,
                              cwd=cwd,

@@ -1,3 +1,21 @@
+# Copyright (C) 2015 Sebastian Herbord. All rights reserved.
+#
+# This file is part of Mod Organizer.
+#
+# Mod Organizer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Mod Organizer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+
+
 from manager import TaskManager
 import os.path
 import time
@@ -5,6 +23,10 @@ from config import config
 
 
 class Task(object):
+    """
+    base class of all elements in the dependency graph
+    """
+
     class FailBehaviour:
         FAIL = 1
         CONTINUE = 2
@@ -15,9 +37,11 @@ class Task(object):
         self._context = None
         self.__fail_behaviour = Task.FailBehaviour.FAIL
 
+    @property
     def name(self):
         return
 
+    @property
     def settings(self):
         return {}
 
@@ -66,6 +90,13 @@ class Task(object):
             pass
 
     def depend(self, task):
+        """
+        add a task as a dependency of this one. This means that the dependent task has to be fulfilled
+        before this one will be processed.
+        The order in which dependencies are fulfilled is arbitrary however, you can not control which
+        of two sibling Tasks is processed first. This is because independent tasks could be processed
+        asynchronously and they may be also be dependencies for a third task.
+        """
         if type(task) == str:
             task_obj = TaskManager().get_task(task)
             if task_obj is None:
@@ -75,11 +106,12 @@ class Task(object):
         else:
             if self._context:
                 task.set_context(self._context)
+
         self.__dependencies.append(task)
         return self
 
     def set_context(self, context):
-        if not self._context:
+        if self._context is None:
             self._context = context
             for dep in self.__dependencies:
                 dep.set_context(context)

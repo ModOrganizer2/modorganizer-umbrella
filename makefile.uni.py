@@ -38,6 +38,7 @@ Projects
 
 
 from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5
+from unibuild.projects import asmjit, udis86, googletest
 
 
 Project("LootApi") \
@@ -60,7 +61,7 @@ ncc = Project("NCC") \
                       .format("-debug" if config['build_type'] == "Debug" else "-release",
                               os.path.join(config['__build_base_path'], "install", "bin")),
                       working_directory=lazy.Evaluate(lambda: ncc['build_path']))
-            .depend(patch.Copy("NexusClient.sln", "../nmm/NexusClient.sln")
+            .depend(patch.Copy("NexusClient.sln", "../nmm")
                     .depend(github.Source("TanninOne", "modorganizer-NCC", "master")
                             .set_destination(os.path.join("NCC", "NexusClientCli"))
                             .depend(hg.Clone("http://hg.code.sf.net/p/nexusmodmanager/codehgdev45")
@@ -112,7 +113,7 @@ usvfs.depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_conten
 for git_path, path, branch, dependencies in [
     ("modorganizer-archive",           "archive",           "master",          ["7zip", "Qt5"]),
     ("modorganizer-uibase",            "uibase",            "new_vfs_library", ["Qt5", "boost"]),
-    ("modorganizer-lootcli",           "lootcli",           "master",          ["LootApi", "Qt5", "boost"]),
+    ("modorganizer-lootcli",           "lootcli",           "master",          ["LootApi", "boost"]),
     ("modorganizer-esptk",             "esptk",             "master",          ["boost"]),
     ("modorganizer-bsatk",             "bsatk",             "master",          ["zlib"]),
     ("modorganizer-nxmhandler",        "nxmhandler",        "master",          ["Qt5"]),

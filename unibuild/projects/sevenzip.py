@@ -26,11 +26,4 @@ sevenzip_version = "9.20"
 # sevenzip is not built here as we only use its source
 Project("7zip") \
     .depend(urldownload.URLDownload("http://www.7-zip.org/a/7z{}.tar.bz2".format(sevenzip_version.replace(".", ""))))
-""" alternative download from sourceforge, but doesn't seem to contain the 9.20 source
-
-    sourceforge.Release("sevenzip",
-                                "7-Zip/{0}/7z{1}-src.7z".format(sevenzip_version,
-                                                                         sevenzip_version.replace(".", ""))))
-
-"""
 

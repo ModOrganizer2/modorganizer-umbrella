@@ -44,7 +44,11 @@ class SipConfigure(build.Builder):
                 bp = python.python['build_path']
 
                 proc = Popen([str(config['paths']['python']), "configure.py",
-                              "-b", bp, "-d", bp, "-v", bp, "-e", bp],
+                              "-b", bp,
+                              "-d", os.path.join(bp, "Lib", "site-packages"),
+                              "-v", os.path.join(bp, "sip"),
+                              "-e", os.path.join(bp, "include")
+                              ],
                              env=config["__environment"],
                              cwd=self._context["build_path"],
                              shell=True,
@@ -64,5 +68,3 @@ Project('sip') \
                     .depend(sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1))
                     )
             )
-
-#http://downloads.sourceforge.net/project/pyqt/sip/sip-4.16.9/sip-4.16.9.zip

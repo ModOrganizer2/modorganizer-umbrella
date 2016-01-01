@@ -114,7 +114,7 @@ class CPP(Builder):
 class Install(Builder):
     def __init__(self, make_tool=None):
         super(Install, self).__init__()
-        self.__make_tool = Lazy(make_tool or config['tools']['make'])ü
+        self.__make_tool = Lazy(make_tool or config['tools']['make'])
 
     @property
     def name(self):

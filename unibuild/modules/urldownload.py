@@ -58,14 +58,14 @@ class URLDownload(Retrieval):
         if name.lower().endswith(".tar"):
             name, e2 = os.path.splitext(name)
 
-        if "build_path" not in self._context:
-            output_file_path = os.path.join(config["paths"]["build"], name)
-            self._context["build_path"] = output_file_path
+        if 'build_path' not in self._context:
+            output_file_path = os.path.join(config['paths']['build'], name)
+            self._context['build_path'] = output_file_path
 
     def process(self, progress):
         logging.info("processing download")
-        output_file_path = self._context["build_path"]
-        archive_file_path = os.path.join(config["paths"]["download"], self.__file_name)
+        output_file_path = self._context['build_path']
+        archive_file_path = os.path.join(config['paths']['download'], self.__file_name)
 
         if os.path.isfile(output_file_path):
             logging.info("File already extracted: {0}".format(archive_file_path))
@@ -77,7 +77,8 @@ class URLDownload(Retrieval):
                 self.download(archive_file_path, progress)
             progress.finish()
 
-        self.extract(archive_file_path, output_file_path, progress)
+        if not self.extract(archive_file_path, output_file_path, progress):
+            return False
         progress.finish()
 
         builddir = os.listdir(self._context["build_path"])
@@ -116,7 +117,11 @@ class URLDownload(Retrieval):
         progress.job = "Extracting"
         output_file_path = u"\\\\?\\" + os.path.abspath(output_file_path)
 
-        os.makedirs(output_file_path)
+        try:
+            os.makedirs(output_file_path)
+        except Exception, e:
+            # doesn't matter if the directory already exists.
+
         with on_failure(lambda: shutil.rmtree(output_file_path)):
             filename, extension = os.path.splitext(self.__file_name)
             if extension == ".gz" or extension == ".tgz":
@@ -135,13 +140,15 @@ class URLDownload(Retrieval):
                     arch.extractall(output_file_path)
                 archive_file.close()
             elif extension == ".7z":
-                subprocess.call(["7za", "x", archive_file_path, "-o {}".format(output_file_path)])
+                proc = subprocess.Popen([config['paths']['7z'], "x", archive_file_path, "-o{}".format(output_file_path)])
+                if proc.wait() != 0:
+                    return False
             elif extension in [".exe", ".msi"]:
                 # installers need to be handled by the caller
-                return
+                return True
             else:
                 logging.error("unsupported file extension {0}".format(extension))
-                return
+                return False
 
             for i in range(self.__tree_depth):
                 sub_dirs = os.listdir(output_file_path)
@@ -154,3 +161,4 @@ class URLDownload(Retrieval):
                     shutil.move(os.path.join(source_dir, src), output_file_path)
 
                 shutil.rmtree(source_dir)
+        return True

@@ -16,8 +16,9 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild.modules import sourceforge, build
+from unibuild.modules import sourceforge, build, patch
 from unibuild.utility import lazy
+from unibuild.utility.lazy import doclambda
 from unibuild import Project
 from config import config
 from subprocess import Popen
@@ -27,6 +28,16 @@ import logging
 import qt5  # import to get at qt version information
 import sip
 import python
+
+
+def pyqt5_env():
+    res = config['__environment'].copy()
+    res['path'] = res['path'] + ";" + ";".join([
+        os.path.join(config['paths']['build'], "qt5", "bin"),
+        os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),
+    ])
+    res['pythonhome'] = python.python['build_path']
+    return res
 
 
 class PyQt5Configure(build.Builder):
@@ -44,15 +55,12 @@ class PyQt5Configure(build.Builder):
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
 
-                env = config['__environment'].copy()
-                env['path'] = env['path'] + ";" + ";".join([
-                    os.path.join(config["paths"]["build"], "qt5", "bin"),
-                    os.path.join(config["paths"]["build"], "sip-{}".format(sip.sip_version)),
-                ])
-
                 proc = Popen([str(config['paths']['python']), "configure.py", "--confirm-license",
-                              "-b", bp, "-d", bp, "-v", bp],
-                             env=env,
+                              "-b", bp,
+                              "-d", os.path.join(bp, "Lib", "site-packages"),
+                              "-v", os.path.join(bp, "sip", "PyQt5"),
+                              "--sip-incdir", os.path.join(bp, "Include")],
+                             env=pyqt5_env(),
                              cwd=self._context["build_path"],
                              shell=True,
                              stdout=sout, stderr=serr)
@@ -66,13 +74,16 @@ class PyQt5Configure(build.Builder):
 
 
 Project("PyQt5") \
-    .depend(build.Make().install()
-            .depend(PyQt5Configure()
-                    .depend("sip").depend("Qt5")
-                    .depend(sourceforge.Release("pyqt",
-                                                "PyQt5/PyQt-{0}.{1}/PyQt-gpl-{0}.{1}.zip"
-                                                .format(qt5.qt_version, qt5.qt_version_minor),
-                                                tree_depth=1))
+    .depend(patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
+                        os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll")],
+                       doclambda(lambda: python.python['build_path'], "python path"))
+            .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
+                    .depend(PyQt5Configure()
+                            .depend("sip").depend("Qt5")
+                            .depend(sourceforge.Release("pyqt",
+                                                        "PyQt5/PyQt-{0}.{1}/PyQt-gpl-{0}.{1}.zip"
+                                                        .format(qt5.qt_version, qt5.qt_version_minor),
+                                                        tree_depth=1))
+                            )
                     )
             )
-

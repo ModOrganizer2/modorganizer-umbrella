@@ -63,9 +63,12 @@ class CMake(Builder):
 
         # prepare for out-of-source build
         build_path = os.path.join(self._context["build_path"], "build")
-        if os.path.exists(build_path):
-            shutil.rmtree(build_path)
-        os.mkdir(build_path)
+        #if os.path.exists(build_path):
+        #    shutil.rmtree(build_path)
+        try:
+            os.mkdir(build_path)
+        except:
+            pass
 
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
         serrpath = os.path.join(self._context["build_path"], "stderr.log")

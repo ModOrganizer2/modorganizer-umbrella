@@ -95,6 +95,10 @@ cmake_parameters = [
 ]
 
 
+if config.get('optimize', False):
+    cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")
+
+
 usvfs = Project("usvfs") \
     .depend(cmake.CMake().arguments(cmake_parameters +
                                     ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])

@@ -121,6 +121,7 @@ class URLDownload(Retrieval):
             os.makedirs(output_file_path)
         except Exception, e:
             # doesn't matter if the directory already exists.
+            pass
 
         with on_failure(lambda: shutil.rmtree(output_file_path)):
             filename, extension = os.path.splitext(self.__file_name)

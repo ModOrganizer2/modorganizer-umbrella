@@ -179,3 +179,25 @@ for git_path, path, branch, dependencies in [
     else:
         project.depend(build_step)
 
+
+def python_zip_collect(context):
+    import libpatterns
+    import glob
+    from zipfile import ZipFile
+
+    ip = os.path.join(config['__build_base_path'], "install", "bin")
+    bp = python.python['build_path']
+
+    with ZipFile(os.path.join(ip, "python27.zip"), "w") as pyzip:
+        for pattern in libpatterns.patterns:
+            for f in glob.iglob(os.path.join(bp, pattern)):
+                pyzip.write(f, f[len(bp):])
+
+    return True
+
+
+Project("python_zip") \
+    .depend(build.Execute(python_zip_collect)
+            .depend("Python")
+            )
+

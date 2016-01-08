@@ -99,17 +99,17 @@ if config.get('optimize', False):
     cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")
 
 
-usvfs = Project("usvfs") \
-    .depend(cmake.CMake().arguments(cmake_parameters +
-                                    ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
-            .install())
+usvfs = Project("usvfs")
 
-
-usvfs.depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, usvfs))
-             .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
-                     .depend(github.Source("TanninOne", "usvfs", "master")
-                             .set_destination("usvfs"))
-                     .depend("AsmJit").depend("Udis86").depend("GTest")
+usvfs.depend(cmake.CMake().arguments(cmake_parameters +
+                                     ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
+             .install()
+             .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, usvfs))
+                     .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
+                             .depend(github.Source("TanninOne", "usvfs", "master")
+                                     .set_destination("usvfs"))
+                             .depend("AsmJit").depend("Udis86").depend("GTest")
+                             )
                      )
              )
 

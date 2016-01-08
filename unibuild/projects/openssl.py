@@ -45,6 +45,7 @@ filename = "Win{}OpenSSL-{}.exe".format(bitness(), openssl_version.replace(".", 
 
 url = "https://slproweb.com/download/{}".format(filename)
 
+
 def build_func(context):
     proc = Popen([os.path.join(config['paths']['download'], filename),
                   "/VERYSILENT", "/DIR={}".format(context['build_path'])],

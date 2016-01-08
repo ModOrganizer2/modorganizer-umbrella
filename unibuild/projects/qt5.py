@@ -31,7 +31,7 @@ qt_download_url = "http://download.qt.io/official_releases/qt"
 qt_download_ext = "tar.gz"
 qt_version = "5.5"
 qt_version_minor = "1"
-qt_inst_path = "{}/qt5".format(config["paths"]["build"])
+qt_inst_path = "{}/qt5".format(config["paths"]["build"]).replace("/", os.path.sep)
 grep_version = "2.5.4"
 # these two should be deduced from the config
 qt_bin_variant = "msvc2013"
@@ -75,7 +75,7 @@ else:
                                       "-ssl", "-openssl-linked",
                                       "-I", os.path.join(openssl.openssl['build_path'], "include"),
                                       "-L", os.path.join(openssl.openssl['build_path']),
-                                      "OPENSSL_LIBS=\"-lssleay32 -llibeay32 -lgdi32 -lUser32\"",
+                                      "OPENSSL_LIBS=\"-lssleay32MD -llibeay32MD -lgdi32 -lUser32\"",
                                       "-prefix", qt_inst_path] \
                                      + list(itertools.chain(*[("-skip", s) for s in skip_list])) \
                                      + list(itertools.chain(*[("-nomake", n) for n in nomake_list])))
@@ -119,9 +119,9 @@ else:
     # comment to build webkit
     #build_webkit = dummy.Success("webkit")
 
-    init_repo = build.Run("perl init-repository", name="init qt repository")\
-                        .set_fail_behaviour(Task.FailBehaviour.CONTINUE)\
-                        .depend(git.Clone("git://code.qt.io/qt/qt5.git", qt_version))
+    init_repo = build.Run("perl init-repository", name="init qt repository") \
+        .set_fail_behaviour(Task.FailBehaviour.CONTINUE) \
+        .depend(git.Clone("git://code.qt.io/qt/qt5.git", qt_version))
 
     qt5 = Project("Qt5") \
         .depend(build.Install()

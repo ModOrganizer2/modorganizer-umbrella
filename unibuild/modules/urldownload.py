@@ -119,7 +119,7 @@ class URLDownload(Retrieval):
 
         try:
             os.makedirs(output_file_path)
-        except Exception, e:
+        except Exception:
             # doesn't matter if the directory already exists.
             pass
 

@@ -64,13 +64,6 @@ class Evaluate(object):
 
 
 class Lazy(object):
-    class UniPeek(object):
-        def __init__(self, func):
-            self.__func = func
-
-        def __getitem__(self, key):
-            return str(self.__func)
-
     def __init__(self, val):
         if callable(val):
             self.__value = None
@@ -80,8 +73,9 @@ class Lazy(object):
             self.__func = None
 
     def __call__(self):
-        if self.__value is None:
+        if self.__func is not None:
             self.__value = self.__func()
+            self.__func = None
         return self.__value
 
     def type(self):

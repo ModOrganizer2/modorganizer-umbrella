@@ -101,16 +101,14 @@ if config.get('optimize', False):
 
 usvfs = Project("usvfs")
 
-usvfs_build_step = cmake.CMake().arguments(cmake_parameters + ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])\
-    .install()
-
-usvfs.depend(usvfs_build_step
+usvfs.depend(cmake.CMake().arguments(cmake_parameters +
+                                     ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
+             .install()
              .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, usvfs))
                      .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
-                             .depend(github.Source("TanninOne", "usvfs", "master").set_destination("usvfs"))
-                             .depend("AsmJit")
-                             .depend("Udis86")
-                             .depend("GTest")
+                             .depend(github.Source("TanninOne", "usvfs", "master")
+                                     .set_destination("usvfs"))
+                             .depend("AsmJit").depend("Udis86").depend("GTest")
                              )
                      )
              )
@@ -180,4 +178,26 @@ for git_path, path, branch, dependencies in [
                        )
     else:
         project.depend(build_step)
+
+
+def python_zip_collect(context):
+    import libpatterns
+    import glob
+    from zipfile import ZipFile
+
+    ip = os.path.join(config['__build_base_path'], "install", "bin")
+    bp = python.python['build_path']
+
+    with ZipFile(os.path.join(ip, "python27.zip"), "w") as pyzip:
+        for pattern in libpatterns.patterns:
+            for f in glob.iglob(os.path.join(bp, pattern)):
+                pyzip.write(f, f[len(bp):])
+
+    return True
+
+
+Project("python_zip") \
+    .depend(build.Execute(python_zip_collect)
+            .depend("Python")
+            )
 

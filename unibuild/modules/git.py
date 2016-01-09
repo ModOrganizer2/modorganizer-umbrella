@@ -67,10 +67,12 @@ class SuperRepository(Task):
 
 
 class Clone(Repository):
-    def __init__(self, url, branch, super_repository=None):
+    def __init__(self, url, branch, super_repository=None, update=True):
         super(Clone, self).__init__(url, branch)
+
         self.__super_repository = super_repository
         self.__base_name = os.path.basename(self._url)
+        self.__update = update
         if self.__super_repository is not None:
             self._output_file_path = os.path.join(self.__super_repository.path, self.__determine_name())
             self.depend(super_repository)
@@ -82,10 +84,12 @@ class Clone(Repository):
         self._context['build_path'] = self._output_file_path
 
     def process(self, progress):
+        proc = None
         if os.path.exists(os.path.join(self._output_file_path, ".git")):
-            proc = Popen([config['paths']['git'], "pull"],
-                         cwd=self._output_file_path,
-                         env=config["__environment"])
+            if self.__update:
+                proc = Popen([config['paths']['git'], "pull"],
+                             cwd=self._output_file_path,
+                             env=config["__environment"])
         else:
             if self.__super_repository is not None:
                 proc = Popen([config['paths']['git'], "submodule", "add",
@@ -98,10 +102,12 @@ class Clone(Repository):
                 proc = Popen([config['paths']['git'], "clone", "-b", self._branch,
                               self._url, self._context["build_path"]],
                              env=config["__environment"])
-        proc.communicate()
-        if proc.returncode != 0:
-            logging.error("failed to clone repository %s (returncode %s)", self._url, proc.returncode)
-            return False
+
+        if proc is not None:
+            proc.communicate()
+            if proc.returncode != 0:
+                logging.error("failed to clone repository %s (returncode %s)", self._url, proc.returncode)
+                return False
 
         return True
 

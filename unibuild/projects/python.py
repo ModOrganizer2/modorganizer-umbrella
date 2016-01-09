@@ -24,7 +24,7 @@ import shutil
 from glob import glob
 
 
-python_version = "2.7.10"
+python_version = "2.7.11"
 python_url = "https://www.python.org/ftp/python"
 
 

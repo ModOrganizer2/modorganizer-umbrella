@@ -33,7 +33,7 @@ Project("AsmJit") \
         "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/')),
         "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
     ]).install()
-            .depend(github.Source("kobalicek", "asmjit", asmjit_tag)
+            .depend(github.Source("kobalicek", "asmjit", asmjit_tag, update=False)
                     .set_destination("asmjit"))
             )
 

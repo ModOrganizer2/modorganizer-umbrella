@@ -64,6 +64,7 @@ class SipConfigure(build.Builder):
 
 Project('sip') \
     .depend(build.Make().install()
+            .depend("Python")
             .depend(SipConfigure()
                     .depend(sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1))
                     )

@@ -111,7 +111,7 @@ def init_config(args):
         raise ValueError("only architectures supported are x86 and x86_64")
 
     config['__environment'] = visual_studio_environment()
-    config['__build_base_path'] = args.destination
+    config['__build_base_path'] = os.path.abspath(args.destination)
 
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable

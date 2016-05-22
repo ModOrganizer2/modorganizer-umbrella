@@ -56,6 +56,9 @@ config = {
     'vc_version':   '12.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': True,
+    'offline': False,                       # if set, non-mandatory network requests won't be made.
+                                            # This is stuff like updating source repositories. The initial
+                                            # download of course can't be surpressed.
     'prefer_binary_dependencies': False,    # currently non-functional
     'optimize': False,                      # activate link-time code generation and other optimization.
                                             # This massively increases build time but produces smaller

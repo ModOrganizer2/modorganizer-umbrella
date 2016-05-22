@@ -45,6 +45,7 @@ filename = "Win{}OpenSSL-{}.exe".format(bitness(), openssl_version.replace(".", 
 
 url = "https://slproweb.com/download/{}".format(filename)
 
+
 def build_func(context):
     proc = Popen([os.path.join(config['paths']['download'], filename),
                   "/VERYSILENT", "/DIR={}".format(context['build_path'])],
@@ -65,11 +66,6 @@ def build_func(context):
             time.sleep(1.0)
     # wait a bit longer because the installer may have been in the process of writing the file
     time.sleep(1.0)
-
-    # need to make a copy of the libs we plan to use because the mechanism qt offers to set the lib
-    # name seems to be broken on windows. Consequently maybe we should do this in the qt project
-    shutil.copy(libeay, os.path.join(context['build_path'], "lib", "VC", "static", "libeay32.dll"))
-    shutil.copy(ssleay, os.path.join(context['build_path'], "lib", "VC", "static", "ssleay32.dll"))
 
     return True
 

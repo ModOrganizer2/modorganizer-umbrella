@@ -17,19 +17,21 @@
 
 
 from unibuild import Project
-from unibuild.modules import cmake, googlecode, build
+from unibuild.modules import cmake, github, build
 from config import config
 import os
 import shutil
-from glob import glob
+import fnmatch
 
 
 googletest_version = "1.7.0"
 
 
 def install(context):
-    for f in glob(os.path.join(context['build_path'], "build", "*.lib")):
-        shutil.copy(f, os.path.join(config["__build_base_path"], "install", "libs"))
+    for root, dirnames, filenames in os.walk(os.path.join(context['build_path'], "build")):
+        for filename in fnmatch.filter(filenames, "*.lib"):
+            shutil.copy(os.path.join(root, filename), os.path.join(config['__build_base_path'], "install", "libs"))
+
     return True
 
 
@@ -38,5 +40,6 @@ Project("GTest") \
             .depend(cmake.CMake().arguments(["-Dgtest_force_shared_crt=ON",
                                              "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"])
                                              ])
-                    .depend(googlecode.Release("googletest", "gtest-{0}.zip".format(googletest_version), 1)))
+                    .depend(github.Source("google", "googletest", "master")))
             )
+

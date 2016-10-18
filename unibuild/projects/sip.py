@@ -43,7 +43,7 @@ class SipConfigure(build.Builder):
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
 
-                proc = Popen([str(config['paths']['python']), "configure.py",
+                proc = Popen([config['paths']['python'](), "configure.py",
                               "-b", bp,
                               "-d", os.path.join(bp, "Lib", "site-packages"),
                               "-v", os.path.join(bp, "sip"),

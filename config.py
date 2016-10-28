@@ -62,7 +62,7 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',
-    'vc_version':   '12.0',
+    'vc_version':   '14.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': True,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
@@ -89,7 +89,7 @@ config['paths'] = {
     '7z':            path_or_default("7z.exe",    "7-Zip"),
     # we need a python that matches the build architecture
     'python':        lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\2.7\InstallPath",
-                                                        "", config['architecture'] == "x86"),
+                                                        "", config['architecture'] == "x86_64"),
                                           "python.exe"),
     'visual_studio': os.path.realpath(
         os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\{}".format(config['vc_version']),

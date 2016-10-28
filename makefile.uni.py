@@ -139,6 +139,9 @@ for git_path, path, branch, dependencies in [
     ("modorganizer-game_skyrim",       "game_skyrim",       "master",          ["Qt5", "modorganizer-uibase",
                                                                                 "modorganizer-game_gamebryo",
                                                                                 "modorganizer-game_features"]),
+    ("modorganizer-game_skyrim_se",    "game_skyrimse",     "master",          ["Qt5", "modorganizer-uibase",
+                                                                                "modorganizer-game_gamebryo",
+                                                                                "modorganizer-game_features"]),
     ("modorganizer-tool_inieditor",    "tool_inieditor",    "master",          ["Qt5", "modorganizer-uibase"]),
     ("modorganizer-tool_inibakery",    "tool_inibakery",    "master",          ["modorganizer-uibase"]),
     ("modorganizer-tool_configurator", "tool_configurator", "master",          ["PyQt5"]),
@@ -168,14 +171,24 @@ for git_path, path, branch, dependencies in [
     project = Project(git_path)
 
     if config['ide_projects']:
-        project.depend(build_step
-                       .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
-                               .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
-                                       .depend(github.Source("TanninOne", git_path, branch, super_repository=tl_repo)
-                                               .set_destination(path))
-                                       )
-                               )
-                       )
+        if git_path != "modorganizer-game_skyrim_se":
+            project.depend(build_step
+                           .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
+                                   .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
+                                           .depend(github.Source("TanninOne", git_path, branch, super_repository=tl_repo)
+                                                   .set_destination(path))
+                                           )
+                                   )
+                           )
+        else:
+            project.depend(build_step
+                           .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
+                                   .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
+                                           .depend(github.Source("Viomi", git_path, branch, super_repository=tl_repo)
+                                                   .set_destination(path))
+                                           )
+                                   )
+                           )
     else:
         project.depend(build_step)
 

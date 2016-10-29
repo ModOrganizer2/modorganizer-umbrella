@@ -17,12 +17,21 @@
 
 
 from _winreg import *
+from unibuild.utility.lazy import Lazy
 import os
 
+global missing_prerequisites
+missing_prerequisites = False
 
-def path_or_default(filename, defaults):
+def path_or_default(filename, *default):
     from distutils.spawn import find_executable
-    return find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
+    defaults = gen_search_folders(*default)
+    res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
+    if res is None:
+        print 'Cannot find', filename, 'on your path or in', os.path.join('', *default)
+        global missing_prerequisites
+        missing_prerequisites = True
+    return res
 
 
 def get_from_hklm(path, name, wow64=False):
@@ -37,6 +46,7 @@ def get_from_hklm(path, name, wow64=False):
 program_files_folders = [
     os.environ['ProgramFiles(x86)'],
     os.environ['ProgramFiles'],
+    os.environ['ProgramW6432'],
     "C:\\",
     "D:\\"
 ]
@@ -45,7 +55,7 @@ program_files_folders = [
 def gen_search_folders(*subpath):
     return [
         os.path.join(search_folder, *subpath)
-        for search_folder in program_files_folders
+            for search_folder in program_files_folders
     ]
 
 config = {
@@ -53,7 +63,7 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',
-    'vc_version':   '12.0',
+    'vc_version':   '14.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': True,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
@@ -70,18 +80,18 @@ config['paths'] = {
     'download':      "{base_dir}\\downloads",
     'build':         "{base_dir}\\build",
     'progress':      "{base_dir}\\progress",
-    'graphviz':      path_or_default("dot.exe",   gen_search_folders("Graphviz2.38", "bin")),
-    'cmake':         path_or_default("cmake.exe", gen_search_folders("CMake", "bin")),
-    'git':           path_or_default("git.exe",   gen_search_folders("Git", "bin")),
-    'hg':            path_or_default("hg.exe",    gen_search_folders("TortoiseHg")),
-    'perl':          path_or_default("perl.exe",  gen_search_folders("StrawberryPerl", "bin")),
-    'ruby':          path_or_default("ruby.exe",  gen_search_folders("Ruby22-x64", "bin")),
-    'svn':           path_or_default("svn.exe",   gen_search_folders("SlikSvn", "bin")),
-    '7z':            path_or_default("7z.exe",    gen_search_folders("7-Zip")),
+    'graphviz':      path_or_default("dot.exe",   "Graphviz2.38", "bin"),
+    'cmake':         path_or_default("cmake.exe", "CMake", "bin"),
+    'git':           path_or_default("git.exe",   "Git", "bin"),
+    'hg':            path_or_default("hg.exe",    "TortoiseHg"),
+    'perl':          path_or_default("perl.exe",  "StrawberryPerl", "bin"),
+    'ruby':          path_or_default("ruby.exe",  "Ruby22-x64", "bin"),
+    'svn':           path_or_default("svn.exe",   "SlikSvn", "bin"),
+    '7z':            path_or_default("7z.exe",    "7-Zip"),
     # we need a python that matches the build architecture
-    'python':        lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\2.7\InstallPath",
-                                                        "", config['architecture'] == "x86"),
-                                          "python.exe"),
+    'python':        Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\2.7\InstallPath",
+                                                             "", config['architecture'] == "x86"),
+                                               "python.exe")),
     'visual_studio': os.path.realpath(
         os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\{}".format(config['vc_version']),
                                    "InstallDir", True),
@@ -89,3 +99,7 @@ config['paths'] = {
                      )
     )
 }
+
+if missing_prerequisites:
+    print '\nMissing prerequisites listed above - cannot continue'
+    exit(1)

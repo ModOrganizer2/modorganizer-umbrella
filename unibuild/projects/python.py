@@ -80,7 +80,7 @@ else:
         .depend(build.Execute(install)
                 .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
                         .depend(build.Run(upgrade_args, name="upgrade python project")
-                                .depend(build.Run(r"Tools\buildbot\external-common.bat",
+                                .depend(build.Run(r"PCBuild\get_externals.bat",
                                                   environment=python_environment())
                                         .depend(urldownload.URLDownload("{0}/{1}/Python-{1}.tgz"
                                                                         .format(python_url, python_version), 1)

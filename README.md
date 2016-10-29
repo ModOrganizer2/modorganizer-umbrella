@@ -32,14 +32,23 @@ While conceptually this isn't particularly complicated, the actual build process
 - The windows variant of grep depends on dlls and the way the qt build system calls it they apparently can't be found even if they reside in the same directory as the exe.
 
 ## Dependencies
+
+All the following need to be either on your PATH, or available from Program Files, Program Files (x86), C:\ or D:\. Note that apart from ruby, these things install themselves in Program Files or Program Files (x86) by default so ruby is the only one you might need to be careful about.
+
 * python 2.7
   * decorator
-* cmake
 * visual C++ 2013 or newer
+
+* cmake
 * 7zip - specifically, the command line version (7za)
+* svn (SlinkSVN)
+* dot (from Graphviz)
+* ruby (v2.2 x64. This is the)
+* hg (TortoiseHg)
+* git
+* perl (Strawberry Perl)
 
 ## Usage
-First, check config and see if all paths are set correctly.
 
 ```
 usage: unimake.py [-h] [-f FILE] [-d DESTINATION] [target [target ...]]

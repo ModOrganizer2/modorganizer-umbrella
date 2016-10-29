@@ -89,7 +89,7 @@ config['paths'] = {
     '7z':            path_or_default("7z.exe",    "7-Zip"),
     # we need a python that matches the build architecture
     'python':        lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\2.7\InstallPath",
-                                                        "", config['architecture'] == "x86_64"),
+                                                        "", config['architecture'] == "x86"),
                                           "python.exe"),
     'visual_studio': os.path.realpath(
         os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\{}".format(config['vc_version']),

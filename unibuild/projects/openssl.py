@@ -29,7 +29,7 @@ import shutil
 # currently binary installation only
 
 
-openssl_version = "1.0.2h"
+openssl_version = "1.1.0b"
 
 libeay = "libeay32MD.lib"
 ssleay = "ssleay32MD.lib"
@@ -64,6 +64,7 @@ def build_func(context):
             break
         else:
             time.sleep(1.0)
+            wait_counter -= 1
     # wait a bit longer because the installer may have been in the process of writing the file
     time.sleep(1.0)
 

@@ -49,7 +49,6 @@ url = "https://slproweb.com/download/{}".format(filename)
 def build_func(context):
     proc = Popen([os.path.join(config['paths']['download'], filename),
                   "/VERYSILENT", "/DIR={}".format(context['build_path'])],
-                 cwd=config['paths']['download'],
                  env=config['__environment'])
     proc.communicate()
     if proc.returncode != 0:
@@ -68,6 +67,10 @@ def build_func(context):
     # wait a bit longer because the installer may have been in the process of writing the file
     time.sleep(1.0)
 
+    if wait_counter<=0:
+        logging.error("Unpacking of OpenSSL timed out");
+        return False #We timed out and nothing was installed
+    
     return True
 
 

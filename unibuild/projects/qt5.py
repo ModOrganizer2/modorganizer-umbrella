@@ -34,9 +34,9 @@ qt_version_minor = "1"
 qt_inst_path = "{}/qt5".format(config["paths"]["build"]).replace("/", os.path.sep)
 grep_version = "2.5.4"
 # these two should be deduced from the config
-qt_bin_variant = "msvc2013"
+qt_bin_variant = "msvc2015"
 grep_version = "2.5.4"
-platform = "win32-msvc2013"
+platform = "win32-msvc2015"
 
 
 #if config.get('prefer_binary_dependencies', False):

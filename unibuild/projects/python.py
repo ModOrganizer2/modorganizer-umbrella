@@ -17,14 +17,14 @@
 
 
 from unibuild.project import Project
-from unibuild.modules import urldownload, msbuild, build
+from unibuild.modules import github, msbuild, build, urldownload
 from config import config
 import os
 import shutil
 from glob import glob
 
 
-python_version = "2.7.11"
+python_version = "2.7.12"
 python_url = "https://www.python.org/ftp/python"
 
 
@@ -82,10 +82,9 @@ else:
                         .depend(build.Run(upgrade_args, name="upgrade python project")
                                 .depend(build.Run(r"PCBuild\get_externals.bat",
                                                   environment=python_environment())
-                                        .depend(urldownload.URLDownload("{0}/{1}/Python-{1}.tgz"
-                                                                        .format(python_url, python_version), 1)
+                                        .depend(github.Source("kovidgoyal", "cpython", "2.7").set_destination("Python-2.7.12")))
                                                 )
                                         )
                                 )
-                        )
-                )
+
+

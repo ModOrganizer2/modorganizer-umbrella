@@ -29,7 +29,9 @@ import os
 Settings
 """
 
-loot_version = "v0.8.0"
+loot_version = "0.10.1"
+commit_id = "gd8f8dc4"
+
 
 
 """
@@ -38,12 +40,12 @@ Projects
 
 
 from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5
-from unibuild.projects import asmjit, udis86, googletest
+from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib
 
 
 Project("LootApi") \
-    .depend(patch.Copy("loot32.dll", os.path.join(config['__build_base_path'], "install", "bin", "loot"))
-            .depend(github.Release("loot", "loot", loot_version, "LOOT.API.{}".format(loot_version), "7z")
+    .depend(patch.Copy("loot-api_{}-0-{}_dev\loot_api.dll".format(loot_version,commit_id), os.path.join(config['__build_base_path'], "install", "bin", "loot"))
+            .depend(github.Release("loot", "loot", loot_version, "loot-api_{}-0-{}_dev".format(loot_version,commit_id),"7z")
                     .set_destination("lootapi"))
             )
 
@@ -57,15 +59,15 @@ tl_repo = git.SuperRepository("modorganizer_super")
                         working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
 """
 ncc = Project("NCC") \
-    .depend(build.Run("powershell .\\publish.ps1 {0} -outputPath {1}"
+    .depend(build.Run(r"publish.bat"
                       .format("-debug" if config['build_type'] == "Debug" else "-release",
                               os.path.join(config['__build_base_path'], "install", "bin")),
                       working_directory=lazy.Evaluate(lambda: ncc['build_path']))
-            .depend(patch.Copy("NexusClient.sln", "../nmm")
-                    .depend(github.Source("TanninOne", "modorganizer-NCC", "master")
+            .depend(patch.Copy("NexusClient.sln", "../NMM")
+                    .depend(github.Source("LePresidente", "modorganizer-NCC", "master")
                             .set_destination(os.path.join("NCC", "NexusClientCli"))
-                            .depend(hg.Clone("http://hg.code.sf.net/p/nexusmodmanager/codehgdev45")
-                                    .set_destination(os.path.join("NCC", "nmm"))
+                            .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", "master")
+                                    .set_destination(os.path.join("NCC", "NMM"))
                                     )
                             )
                     )
@@ -73,7 +75,7 @@ ncc = Project("NCC") \
 #            )
 
 Project("modorganizer-game_features") \
-    .depend(github.Source("TanninOne", "modorganizer-game_features", "master", super_repository=tl_repo)
+    .depend(github.Source("LePresidente", "modorganizer-game_features", "master", super_repository=tl_repo)
             .set_destination("game_features"))
 
 
@@ -106,9 +108,9 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
              .install()
              .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, usvfs))
                      .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
-                             .depend(github.Source("TanninOne", "usvfs", "master")
+                             .depend(github.Source("LePresidente", "usvfs", "master")
                                      .set_destination("usvfs"))
-                             .depend("AsmJit").depend("Udis86").depend("GTest")
+                             .depend("AsmJit").depend("Udis86").depend("GTest").depend("spdlog")
                              )
                      )
              )
@@ -139,7 +141,7 @@ for git_path, path, branch, dependencies in [
     ("modorganizer-game_skyrim",       "game_skyrim",       "master",          ["Qt5", "modorganizer-uibase",
                                                                                 "modorganizer-game_gamebryo",
                                                                                 "modorganizer-game_features"]),
-    ("modorganizer-game_skyrim_se",    "game_skyrimse",     "master",          ["Qt5", "modorganizer-uibase",
+    ("modorganizer-game_skyrim",    "game_skyrimse",     "Skyrim_SE",          ["Qt5", "modorganizer-uibase",
                                                                                 "modorganizer-game_gamebryo",
                                                                                 "modorganizer-game_features"]),
     ("modorganizer-tool_inieditor",    "tool_inieditor",    "master",          ["Qt5", "modorganizer-uibase"]),
@@ -171,26 +173,18 @@ for git_path, path, branch, dependencies in [
     project = Project(git_path)
 
     if config['ide_projects']:
-        if git_path != "modorganizer-game_skyrim_se":
             project.depend(build_step
                            .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
                                    .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
-                                           .depend(github.Source("TanninOne", git_path, branch, super_repository=tl_repo)
+                                           .depend(github.Source("LePresidente", git_path, branch, super_repository=tl_repo)
                                                    .set_destination(path))
                                            )
                                    )
                            )
-        else:
-            project.depend(build_step
-                           .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
-                                   .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
-                                           .depend(github.Source("Viomi", git_path, branch, super_repository=tl_repo)
-                                                   .set_destination(path))
-                                           )
-                                   )
-                           )
+
     else:
-        project.depend(build_step)
+        project.depend(build_step.depend(github.Source("LePresidente", git_path, branch, super_repository=tl_repo)
+                                                   .set_destination(path)))
 
 
 def python_zip_collect(context):

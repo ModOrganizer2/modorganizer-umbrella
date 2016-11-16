@@ -28,7 +28,7 @@ def path_or_default(filename, *default):
     defaults = gen_search_folders(*default)
     res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
     if res is None:
-        print 'Cannot find', filename, 'on your path or in', os.path.join('', *default)
+        print ('Cannot find', filename, 'on your path or in', os.path.join('', *default))
         global missing_prerequisites
         missing_prerequisites = True
     return res
@@ -65,7 +65,7 @@ config = {
     'architecture': 'x86_64',
     'vc_version':   '14.0',
     'build_type': "RelWithDebInfo",
-    'ide_projects': True,
+    'ide_projects': False,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
                                             # This is stuff like updating source repositories. The initial
                                             # download of course can't be surpressed.
@@ -101,5 +101,5 @@ config['paths'] = {
 }
 
 if missing_prerequisites:
-    print '\nMissing prerequisites listed above - cannot continue'
+    print ('\nMissing prerequisites listed above - cannot continue')
     exit(1)

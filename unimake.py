@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (C) 2015 Sebastian Herbord. All rights reserved.
 #
 # This file is part of Mod Organizer.
@@ -50,8 +51,7 @@ def draw_graph(graph, filename):
     if config['paths']['graphviz']:
         # neither pydot nor pygraphviz reliably find graphviz on windows. gotta do everything myself...
         from subprocess import call
-
-        graph_file_name = os.path.join(tempfile.gettempdir(), "graph.dot")
+        graph_file_name = os.path.join(os.getcwd(), "graph.dot")
         nx.write_dot(graph, graph_file_name)
 
         call([config['paths']['graphviz'],
@@ -116,7 +116,7 @@ def init_config(args):
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable
 
-    qtcreator_config_path = r"C:/Users/Tannin/AppData/Roaming/QtProject"
+    qtcreator_config_path = r"C:/Users/modorganizer/AppData/Roaming/QtProject"
 
     if os.path.isdir(qtcreator_config_path):
         from ConfigParser import RawConfigParser
@@ -226,7 +226,7 @@ def main():
                             # nothing to do
                             pass
                     sys.stdout.write("\n")
-            except Exception, e:
+            except Exception as e:
                 logging.error("Task {} failed: {}".format(task.name, e))
                 raise
 

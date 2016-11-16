@@ -63,18 +63,16 @@ ncc = Project("NCC") \
                       .format("-debug" if config['build_type'] == "Debug" else "-release",
                               os.path.join(config['__build_base_path'], "install", "bin")),
                       working_directory=lazy.Evaluate(lambda: ncc['build_path']))
-.depend(msbuild.MSBuild("../nmm/NexusClient.sln", "NexusClientCli",
-                        working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
-            .depend(patch.Copy("NexusClient.sln", "../nmm")
+            .depend(patch.Copy("NexusClient.sln", "../NMM")
                     .depend(github.Source("LePresidente", "modorganizer-NCC", "master")
                             .set_destination(os.path.join("NCC", "NexusClientCli"))
                             .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", "master")
-                                    .set_destination(os.path.join("NCC", "nmm"))
+                                    .set_destination(os.path.join("NCC", "NMM"))
                                     )
                             )
                     )
             )
-            )
+#            )
 
 Project("modorganizer-game_features") \
     .depend(github.Source("LePresidente", "modorganizer-game_features", "master", super_repository=tl_repo)

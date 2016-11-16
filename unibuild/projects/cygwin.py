@@ -56,8 +56,8 @@ def build_func(context):
         logging.error("failed to run installer (returncode %s)",
                       proc.returncode)
         return False
-    dos2unix_path = os.path.join(context['build_path'],"cygwin","bin", "dos2unix.exe")
-    make_path = os.path.join(context['build_path'],"cygwin", "bin", "make.exe")
+    dos2unix_path = os.path.join(context['build_path'],"../cygwin","bin", "dos2unix.exe")
+    make_path = os.path.join(context['build_path'],"../cygwin", "bin", "make.exe")
     wait_counter = timeout
     while wait_counter > 0:
         if os.path.isfile(dos2unix_path) and os.path.isfile(make_path):

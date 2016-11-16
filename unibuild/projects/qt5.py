@@ -24,7 +24,7 @@ import multiprocessing
 import itertools
 
 
-from unibuild.projects import openssl, cygwin
+from unibuild.projects import openssl, cygwin,  icu
 
 
 qt_download_url = "http://download.qt.io/official_releases/qt"
@@ -36,8 +36,7 @@ grep_version = "2.5.4"
 # these two should be deduced from the config
 qt_bin_variant = "msvc2015"
 grep_version = "2.5.4"
-icu_version = "54"
-icu_version_minor = "1"
+
 platform = "win32-msvc2015"
 
 
@@ -76,7 +75,9 @@ else:
                                       "-no-angle", "-opengl", "desktop",
                                       "-ssl", "-openssl-linked",
                                       "-I", os.path.join(openssl.openssl['build_path'], "include"),
+                                      "-I", os.path.join(config["paths"]["build"], "icu", "source", "include"),
                                       "-L", os.path.join(openssl.openssl['build_path'], "lib","VC"),
+                                      "-L", os.path.join(config["paths"]["build"], "icu", "source", "bin"),
                                       "OPENSSL_LIBS=\"-lssleay32MD -llibeay32MD -lgdi32 -lUser32\"",
                                       "-prefix", qt_inst_path] \
                                      + list(itertools.chain(*[("-skip", s) for s in skip_list])) \
@@ -94,10 +95,6 @@ else:
     flex = Project('flex') \
         .depend(sourceforge.Release("winflexbison", "win_flex_bison-latest.zip"))
 
-    icu = Project('icu') \
-        .depend(sourceforge.Release("icu", "ICU4C/{0}.{1}/icu4c-{0}_{1}-src.zip".format(icu_version,icu_version_minor),tree_depth=1)
-                .set_destination("icu")).depend("cygwin")
-
     def webkit_env():
         result = config['__environment'].copy()
 
@@ -108,6 +105,7 @@ else:
             os.path.dirname(config['paths']['perl']),
             os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
             os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "bin"),
+            os.path.join(config["paths"]["build"], "icu", "source", "bin"),
             os.path.join(config["paths"]["build"], "qt5", "bin")
         ])
 

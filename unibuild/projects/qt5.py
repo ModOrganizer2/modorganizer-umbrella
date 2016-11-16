@@ -74,7 +74,7 @@ else:
                                       "-no-angle", "-opengl", "desktop",
                                       "-ssl", "-openssl-linked",
                                       "-I", os.path.join(openssl.openssl['build_path'], "include"),
-                                      "-L", os.path.join(openssl.openssl['build_path']),
+                                      "-L", os.path.join(openssl.openssl['build_path'], "lib","VC"),
                                       "OPENSSL_LIBS=\"-lssleay32MD -llibeay32MD -lgdi32 -lUser32\"",
                                       "-prefix", qt_inst_path] \
                                      + list(itertools.chain(*[("-skip", s) for s in skip_list])) \

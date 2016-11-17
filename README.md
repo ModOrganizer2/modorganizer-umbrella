@@ -30,20 +30,23 @@ Some more details:
 While conceptually this isn't particularly complicated, the actual build process for some tools are massively complex. Some issues I have not been able to work around yet:
 - I can't seem to "make install" the qt webkit subproject properly. After building I have to manually move around files to impossible locations (#include "../../../../Source/and/so/on"-the f???)
 - The windows variant of grep depends on dlls and the way the qt build system calls it they apparently can't be found even if they reside in the same directory as the exe.
+- If openssl fails to install. Make sure you either click yes to the UAC message, or disable UAC in windows
 
 ## Dependencies
 
+Windows 7 and up (64bit)
+
 All the following need to be either on your PATH, or available from Program Files, Program Files (x86), C:\ or D:\. Note that apart from ruby, these things install themselves in Program Files or Program Files (x86) by default so ruby is the only one you might need to be careful about.
 
-* python 2.7
+* python 2.7 (2.7.12 x64)
   * decorator
-* visual C++ 2013 or newer
+* visual C++ 2015
 
 * cmake
 * 7zip - specifically, the command line version (7za)
 * svn (SlinkSVN)
 * dot (from Graphviz)
-* ruby (v2.2 x64. This is the)
+* ruby (v2.2 x64)
 * hg (TortoiseHg)
 * git
 * perl (Strawberry Perl)

@@ -75,9 +75,9 @@ else:
                                       "-no-angle", "-opengl", "desktop",
                                       "-ssl", "-openssl-linked",
                                       "-I", os.path.join(openssl.openssl['build_path'], "include"),
-                                      "-I", os.path.join(config["paths"]["build"], "icu", "source", "include"),
+                                      "-I", os.path.join(config["paths"]["build"], "icu", "dist", "include"),
                                       "-L", os.path.join(openssl.openssl['build_path'], "lib","VC"),
-                                      "-L", os.path.join(config["paths"]["build"], "icu", "source", "bin"),
+                                      "-L", os.path.join(config["paths"]["build"], "icu", "dist", "bin"),
                                       "OPENSSL_LIBS=\"-lssleay32MD -llibeay32MD -lgdi32 -lUser32\"",
                                       "-prefix", qt_inst_path] \
                                      + list(itertools.chain(*[("-skip", s) for s in skip_list])) \
@@ -105,7 +105,7 @@ else:
             os.path.dirname(config['paths']['perl']),
             os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
             os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "bin"),
-            os.path.join(config["paths"]["build"], "icu", "source", "bin"),
+            os.path.join(config["paths"]["build"], "icu", "dist", "bin"),
             os.path.join(config["paths"]["build"], "qt5", "bin")
         ])
 

@@ -15,10 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
-
 from unibuild import Project
 from unibuild.modules import build, sourceforge, patch
 from config import config
+import subprocess
 import os
 
 icu_version = "54"
@@ -33,7 +33,11 @@ build_icu = build.Run(r"make && make install",
                       environment=icu_environment(),
                       working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))
 
-configure_icu = build.Run(r"bash runConfigureICU Cygwin/MSVC",
+current_dir_cygwin = subprocess.check_output(r"cygpath {}".format(os.path.join(config["paths"]["build"], "icu", "dist")),
+                        shell=True,
+                        env=icu_environment())
+
+configure_icu = build.Run(r"bash runConfigureICU Cygwin/MSVC --prefix {}".format(current_dir_cygwin),
                       environment=icu_environment(),
                       working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))
 

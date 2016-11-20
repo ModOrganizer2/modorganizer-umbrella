@@ -44,8 +44,8 @@ from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib
 
 
 Project("LootApi") \
-    .depend(patch.Copy("loot-api_{}-0-{}_dev\loot_api.dll".format(loot_version,commit_id), os.path.join(config['__build_base_path'], "install", "bin", "loot"))
-            .depend(github.Release("loot", "loot", loot_version, "loot-api_{}-0-{}_dev".format(loot_version,commit_id),"7z")
+    .depend(patch.Copy("loot_api.dll".format(loot_version,commit_id), os.path.join(config['__build_base_path'], "install", "bin", "loot"))
+            .depend(github.Release("loot", "loot", loot_version, "loot-api_{}-0-{}_dev".format(loot_version,commit_id),"7z",tree_depth=1)
                     .set_destination("lootapi"))
             )
 
@@ -63,16 +63,18 @@ ncc = Project("NCC") \
                       .format("-debug" if config['build_type'] == "Debug" else "-release",
                               os.path.join(config['__build_base_path'], "install", "bin")),
                       working_directory=lazy.Evaluate(lambda: ncc['build_path']))
-            .depend(patch.Copy("NexusClient.sln", "../NMM")
+            .depend(msbuild.MSBuild("../nmm/NexusClient.sln", "NexusClientCli",
+                        working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
+            .depend(patch.Copy("NexusClient.sln", "../nmm")
                     .depend(github.Source("LePresidente", "modorganizer-NCC", "master")
                             .set_destination(os.path.join("NCC", "NexusClientCli"))
                             .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", "master")
-                                    .set_destination(os.path.join("NCC", "NMM"))
+                                    .set_destination(os.path.join("NCC", "nmm"))
                                     )
                             )
                     )
             )
-#            )
+           )
 
 Project("modorganizer-game_features") \
     .depend(github.Source("LePresidente", "modorganizer-game_features", "master", super_repository=tl_repo)
@@ -106,13 +108,14 @@ usvfs = Project("usvfs")
 usvfs.depend(cmake.CMake().arguments(cmake_parameters +
                                      ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
              .install()
-             .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, usvfs))
+            # TODO Not sure why this is required, will look into it at a later stage once we get the rest to build
+            # .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, usvfs))
                      .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
                              .depend(github.Source("LePresidente", "usvfs", "master")
                                      .set_destination("usvfs"))
-                             .depend("AsmJit").depend("Udis86").depend("GTest").depend("spdlog")
+                             .depend("AsmJit").depend("Udis86").depend("GTest").depend("fmtlib").depend("spdlog")
                              )
-                     )
+             #        )
              )
 
 
@@ -173,18 +176,19 @@ for git_path, path, branch, dependencies in [
     project = Project(git_path)
 
     if config['ide_projects']:
+            # TODO This has been disabled in config as currently the breaking the build
             project.depend(build_step
                            .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
                                    .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
                                            .depend(github.Source("LePresidente", git_path, branch, super_repository=tl_repo)
-                                                   .set_destination(path))
+                                                   .set_destination(path)).depend("cygwin")
                                            )
                                    )
                            )
 
     else:
         project.depend(build_step.depend(github.Source("LePresidente", git_path, branch, super_repository=tl_repo)
-                                                   .set_destination(path)))
+                                                   .set_destination(path))).depend("cygwin")
 
 
 def python_zip_collect(context):

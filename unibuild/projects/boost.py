@@ -5,7 +5,7 @@ from config import config
 import os
 
 
-boost_version = "1.61.0"
+boost_version = "1.60.0"
 boost_components = [
     "date_time",
     "coroutine",
@@ -22,11 +22,13 @@ config_template = ("using python : 2.7 : {0}\\PCbuild\\python.exe\n"
                    "  : {0}\\PCbuild\\lib\n"
                    "  : <address-model>{1} ;")
 
-
 Project("boost") \
     .depend(b2.B2().arguments(["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
                                "toolset=msvc-14.0",
-                               "link=shared"
+                               "link=static",
+                               "runtime-link=shared",
+                               "threading=multi",
+                               "variant=release"
                                ] + ["--with-{0}".format(component) for component in boost_components])
             .depend(patch.CreateFile("user-config.jam",
                                      lambda: config_template.format(

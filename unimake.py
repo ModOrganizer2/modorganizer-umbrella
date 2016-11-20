@@ -1,4 +1,3 @@
-from __future__ import print_function
 # Copyright (C) 2015 Sebastian Herbord. All rights reserved.
 #
 # This file is part of Mod Organizer.
@@ -139,7 +138,7 @@ def init_config(args):
         profiles = filter(lambda x: arch in x[1], sorted(profiles, reverse=True))[0]
 
         config['qt_profile_id'] = profiles[0]
-        config['qt_profile_name'] = profiles[1].replace("%{Qt:Version}", "5.4.0")
+        config['qt_profile_name'] = profiles[1].replace("%{Qt:Version}", "5.5.1")
 
         """
         kits = sorted([kit.text
@@ -226,7 +225,7 @@ def main():
                             # nothing to do
                             pass
                     sys.stdout.write("\n")
-            except Exception as e:
+            except Exception, e:
                 logging.error("Task {} failed: {}".format(task.name, e))
                 raise
 

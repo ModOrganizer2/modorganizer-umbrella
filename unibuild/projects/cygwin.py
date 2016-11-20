@@ -26,11 +26,6 @@ import time
 import shutil
 
 
-# currently binary installation only
-
-
-openssl_version = "1.0.2j"
-
 # installation happens concurrently in separate process. We need to wait for all relevant files to exist,
 # and can determine failure only by timeout
 timeout = 15   # seconds

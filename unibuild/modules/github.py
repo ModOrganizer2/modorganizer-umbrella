@@ -21,14 +21,14 @@ from git import Clone
 
 
 class Release(URLDownload):
-    def __init__(self, author, project, version, filename, extension="zip"):
+    def __init__(self, author, project, version, filename, extension="zip", tree_depth=0):
         super(Release, self) \
             .__init__("https://github.com/{author}/{project}/releases/download/{version}/"
                       "{filename}.{extension}".format(author=author,
                                                       project=project,
                                                       version=version,
                                                       filename=filename,
-                                                      extension=extension))
+                                                      extension=extension),tree_depth)
 
 
 class Source(Clone):

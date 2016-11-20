@@ -42,7 +42,7 @@ All the following need to be either on your PATH, or available from Program File
   * decorator
 * visual C++ 2015
 
-* cmake
+* cmake ( <= 3.6.3 )
 * 7zip - specifically, the command line version (7za)
 * svn (SlinkSVN)
 * dot (from Graphviz)

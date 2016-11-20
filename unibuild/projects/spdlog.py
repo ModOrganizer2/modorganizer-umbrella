@@ -15,14 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
+# TODO This is really old, should by updated to 0.13
 
 from unibuild import Project
 from unibuild.modules import cmake, github
 from config import config
 
 Project("spdlog") \
-            .depend(cmake.CMake().arguments(["-DCMAKE_BUILD_TYPE={0}".format(config["build_type"])
-                                             ])
-                    .depend(github.Source("gabime", "spdlog", "master")
+    .depend(cmake.CMake().arguments(
+    [
+        "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/')),
+        "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
+    ]).install()
+                    .depend(github.Source("TanninOne", "spdlog", "master").set_destination("spdlog")
                     )
             )

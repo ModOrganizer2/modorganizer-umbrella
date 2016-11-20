@@ -28,7 +28,7 @@ def path_or_default(filename, *default):
     defaults = gen_search_folders(*default)
     res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
     if res is None:
-        print ('Cannot find', filename, 'on your path or in', os.path.join('', *default))
+        print 'Cannot find', filename, 'on your path or in', os.path.join('', *default)
         global missing_prerequisites
         missing_prerequisites = True
     return res
@@ -83,7 +83,6 @@ config['paths'] = {
     'graphviz':      path_or_default("dot.exe",   "Graphviz2.38", "bin"),
     'cmake':         path_or_default("cmake.exe", "CMake", "bin"),
     'git':           path_or_default("git.exe",   "Git", "bin"),
-    'hg':            path_or_default("hg.exe",    "TortoiseHg"),
     'perl':          path_or_default("perl.exe",  "StrawberryPerl", "bin"),
     'ruby':          path_or_default("ruby.exe",  "Ruby22-x64", "bin"),
     'svn':           path_or_default("svn.exe",   "SlikSvn", "bin"),
@@ -101,5 +100,5 @@ config['paths'] = {
 }
 
 if missing_prerequisites:
-    print ('\nMissing prerequisites listed above - cannot continue')
+    print '\nMissing prerequisites listed above - cannot continue'
     exit(1)

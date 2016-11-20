@@ -119,7 +119,7 @@ else:
                              environment=webkit_env,
                              working_directory=lambda: os.path.join(qt5['build_path'], "qtwebkit"),
                              name="build webkit") \
-        .depend('grep').depend('flex').depend("icu")
+        .depend('grep').depend('flex')
 
     # comment to build webkit
     #build_webkit = dummy.Success("webkit")
@@ -135,14 +135,15 @@ else:
                                                                 "jom.exe -j {}".format(num_jobs)))
                                 .depend("jom")
                                 .depend(build.Run(configure_cmd, name="configure qt")
-                                        .depend(patch.Replace("qtbase/configure.bat",
-                                                              "if not exist %QTSRC%.gitignore goto sconf", "")
-                                                .depend(webkit_patch
-                                                        .depend(init_repo)
+                                        .depend("icu")
+                                                .depend(patch.Replace("qtbase/configure.bat",
+                                                             "if not exist %QTSRC%.gitignore goto sconf", "")
+                                                        .depend(webkit_patch
+                                                                .depend(init_repo)
                                                         )
                                                 )
-                                        .depend("openssl")
+                                                .depend("openssl")
                                         )
                                 )
                         )
-            )
+                )

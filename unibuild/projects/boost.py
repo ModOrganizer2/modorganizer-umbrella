@@ -24,6 +24,7 @@ config_template = ("using python : 2.7 : {0}\\PCbuild\\python.exe\n"
 
 Project("boost") \
     .depend(b2.B2().arguments(["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
+                               "-j {}".format(config['num_jobs']),
                                "toolset=msvc-14.0",
                                "link=static",
                                "runtime-link=shared",

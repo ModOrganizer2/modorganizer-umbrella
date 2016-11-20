@@ -65,8 +65,6 @@ else:
 
     nomake_list = ["tests", "examples"]
 
-    num_jobs = multiprocessing.cpu_count() * 2
-
     configure_cmd = lambda: " ".join(["configure.bat",
                                       "-platform", platform,
                                       "-debug-and-release", "-force-debug-info",
@@ -132,7 +130,7 @@ else:
         .depend(build.Install()
                 .depend(build_webkit
                         .depend(build.Make(lambda: os.path.join(jom["build_path"],
-                                                                "jom.exe -j {}".format(num_jobs)))
+                                                                "jom.exe -j {}".format(config['num_jobs'])))
                                 .depend("jom")
                                 .depend(build.Run(configure_cmd, name="configure qt")
                                         .depend("icu")

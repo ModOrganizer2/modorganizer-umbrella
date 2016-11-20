@@ -19,6 +19,7 @@
 from _winreg import *
 from unibuild.utility.lazy import Lazy
 import os
+import multiprocessing
 
 global missing_prerequisites
 missing_prerequisites = False
@@ -74,6 +75,7 @@ config = {
                                             # This massively increases build time but produces smaller
                                             # binaries and marginally faster code
     'repo_update_frequency': 60 * 60 * 24,  # in seconds
+    'num_jobs': multiprocessing.cpu_count() + 1,
 }
 
 config['paths'] = {

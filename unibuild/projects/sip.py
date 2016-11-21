@@ -27,6 +27,11 @@ import python
 
 sip_version = "4.16.9"
 
+def sip_environment():
+    result = config['__environment'].copy()
+    result['LIB'] += os.path.join(config['paths']['build'],"Python-2.7.12","PCbuild","amd64")
+    return result
+
 
 class SipConfigure(build.Builder):
     def __init__(self):
@@ -43,7 +48,7 @@ class SipConfigure(build.Builder):
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
 
-                proc = Popen([config['paths']['python'](), "configure.py",
+                proc = Popen([os.path.join(python.python['build_path'],"PCbuild","amd64","python.exe"), "configure.py",
                               "-b", bp,
                               "-d", os.path.join(bp, "Lib", "site-packages"),
                               "-v", os.path.join(bp, "sip"),
@@ -63,7 +68,7 @@ class SipConfigure(build.Builder):
 
 
 Project('sip') \
-    .depend(build.Make().install()
+    .depend(build.Make(environment=sip_environment()).install()
             .depend("Python")
             .depend(SipConfigure()
                     .depend(sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1))

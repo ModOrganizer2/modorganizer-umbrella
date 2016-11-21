@@ -20,8 +20,8 @@ from unibuild import Project, Task
 from unibuild.modules import build, patch, git, urldownload, sourceforge, dummy
 from config import config
 import os
-import multiprocessing
 import itertools
+import python
 
 
 from unibuild.projects import openssl, cygwin,  icu
@@ -38,6 +38,14 @@ qt_bin_variant = "msvc2015"
 grep_version = "2.5.4"
 
 platform = "win32-msvc2015"
+
+def qt5_environment():
+    result = config['__environment'].copy()
+    result['Path'] += ";" + os.path.join(config['paths']['build'], "icu", "dist", "bin")
+    result['INCLUDE'] += os.path.join(config['paths']['build'], "icu", "dist", "include")
+    result['LIB'] += os.path.join(config['paths']['build'], "icu", "dist", "lib")
+    #result['pythonhome'] = python.python['build_path']
+    return result
 
 
 #if config.get('prefer_binary_dependencies', False):
@@ -73,9 +81,7 @@ else:
                                       "-no-angle", "-opengl", "desktop",
                                       "-ssl", "-openssl-linked",
                                       "-I", os.path.join(openssl.openssl['build_path'], "include"),
-                                      "-I", os.path.join(config["paths"]["build"], "icu", "dist", "include"),
                                       "-L", os.path.join(openssl.openssl['build_path'], "lib","VC"),
-                                      "-L", os.path.join(config["paths"]["build"], "icu", "dist", "lib"),
                                       "OPENSSL_LIBS=\"-lssleay32MD -llibeay32MD -lgdi32 -lUser32\"",
                                       "-prefix", qt_inst_path] \
                                      + list(itertools.chain(*[("-skip", s) for s in skip_list])) \
@@ -103,7 +109,6 @@ else:
             os.path.dirname(config['paths']['perl']),
             os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
             os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "bin"),
-            os.path.join(config["paths"]["build"], "icu", "dist", "bin"),
             os.path.join(config["paths"]["build"], "qt5", "bin")
         ])
 
@@ -130,9 +135,9 @@ else:
         .depend(build.Install()
                 .depend(build_webkit
                         .depend(build.Make(lambda: os.path.join(jom["build_path"],
-                                                                "jom.exe -j {}".format(config['num_jobs'])))
+                                                                "jom.exe -j {}".format(config['num_jobs'])),environment=qt5_environment())
                                 .depend("jom")
-                                .depend(build.Run(configure_cmd, name="configure qt")
+                                .depend(build.Run(configure_cmd, name="configure qt",environment=qt5_environment())
                                         .depend("icu")
                                                 .depend(patch.Replace("qtbase/configure.bat",
                                                              "if not exist %QTSRC%.gitignore goto sconf", "")

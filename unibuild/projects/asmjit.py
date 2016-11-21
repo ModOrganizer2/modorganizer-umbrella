@@ -22,7 +22,7 @@ from config import config
 
 
 # asmjit doesn't currently have any tags/branches but not every commit is usable
-asmjit_tag = "31c0b467101bf53d15c8f0cbc2d40107a9ff1ea6"
+asmjit_tag = "master"
 
 
 Project("AsmJit") \

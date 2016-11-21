@@ -29,10 +29,8 @@ import os
 Settings
 """
 
-loot_version = "0.10.1"
-commit_id = "gd8f8dc4"
-
-
+loot_version = "0.9.2"
+commit_id = "g6b58f92"
 
 """
 Projects
@@ -42,12 +40,13 @@ Projects
 from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5
 from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib
 
-
+# TODO modorganizer-lootcli needs an overhaul as the api has changed alot
 Project("LootApi") \
     .depend(patch.Copy("loot_api.dll".format(loot_version,commit_id), os.path.join(config['__build_base_path'], "install", "bin", "loot"))
             .depend(github.Release("loot", "loot", loot_version, "loot-api_{}-0-{}_dev".format(loot_version,commit_id),"7z",tree_depth=1)
                     .set_destination("lootapi"))
-            )
+           )
+
 
 tl_repo = git.SuperRepository("modorganizer_super")
 

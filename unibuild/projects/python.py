@@ -22,10 +22,18 @@ from config import config
 import os
 import shutil
 from glob import glob
+import errno
 
 
 python_version = "2.7.12"
 python_url = "https://www.python.org/ftp/python"
+
+def make_sure_path_exists(path):
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
 
 
 def python_environment():
@@ -68,6 +76,7 @@ if False:
                 )
 else:
     def install(context):
+        make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "libs"))
         path_segments = [context['build_path'], "PCbuild"]
         if config['architecture'] == "x86_64":
             path_segments.append("amd64")
@@ -77,14 +86,16 @@ else:
         return True
 
     python = Project("Python") \
-        .depend(build.Execute(install)
-                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
-                        .depend(build.Run(upgrade_args, name="upgrade python project")
-                                .depend(build.Run(r"PCBuild\get_externals.bat",
-                                                  environment=python_environment())
-                                        .depend(github.Source("kovidgoyal", "cpython", "2.7").set_destination("Python-2.7.12")))
-                                                )
-                                        )
-                                )
+         .depend(build.Execute(install)
+                 .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
+                         .depend(build.Run(upgrade_args, name="upgrade python project")
+                                 .depend(build.Run(r"PCBuild\get_externals.bat",
+                                                   environment=python_environment())
+                                         .depend(github.Source("LePresidente", "cpython", "2.7").set_destination("Python-2.7.12")))
+                                                 )
+                                         )
+                                 )
+
+
 
 

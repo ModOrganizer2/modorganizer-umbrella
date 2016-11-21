@@ -33,7 +33,6 @@ import os.path
 import argparse
 import re
 
-
 def progress_callback(job, percentage):
     if not percentage and not job:
         sys.stdout.write("\n")

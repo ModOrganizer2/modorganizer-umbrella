@@ -17,9 +17,9 @@ boost_components = [
 ]
 
 
-config_template = ("using python : 2.7 : {0}\\PCbuild\\python.exe\n"
-                   "  : {0}\\PCbuild\\include\n"
-                   "  : {0}\\PCbuild\\lib\n"
+config_template = ("using python : 2.7 : {0}\\PCbuild\\amd64\\python.exe\n"
+                   "  : {0}\\Include\n"
+                   "  : {0}\\Lib\n"
                    "  : <address-model>{1} ;")
 
 Project("boost") \

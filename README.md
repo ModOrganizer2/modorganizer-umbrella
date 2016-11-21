@@ -38,11 +38,11 @@ Windows 7 and up (64bit)
 
 All the following need to be either on your PATH, or available from Program Files, Program Files (x86), C:\ or D:\. Note that apart from ruby, these things install themselves in Program Files or Program Files (x86) by default so ruby is the only one you might need to be careful about.
 
-* python 2.7 (2.7.12 x64)
+* python 2.7 (2.7.12 x32)
   * decorator
 * visual C++ 2015
 
-* cmake ( <= 3.6.3 )
+* cmake
 * 7zip - specifically, the command line version (7za)
 * svn (SlinkSVN)
 * dot (from Graphviz)

@@ -21,6 +21,8 @@ from unibuild.modules import build, patch, git, urldownload, sourceforge, dummy
 from config import config
 import os
 import itertools
+from glob import glob
+import shutil
 import python
 
 
@@ -95,10 +97,15 @@ else:
             flex['build_path'],
             os.path.dirname(config['paths']['ruby']),
             os.path.dirname(config['paths']['perl']),
-            os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "bin"),
-            os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
-            os.path.join(config["paths"]["build"], "qt5", "bin")
+            os.path.join(config["paths"]["build"], "qt5", "bin"),
+            os.path.join(config['paths']['build'], "icu", "dist", "bin"),
+            os.path.join(config['paths']['build'], "icu", "dist", "lib"),
+            os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32","bin"),
         ])
+        result['INCLUDE'] += os.path.join(config['paths']['build'], "icu", "dist", "include") + ";" + \
+                             os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2j", "include")
+        result['LIB'] += os.path.join(config['paths']['build'], "icu", "dist", "lib") + ";" + \
+                         os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2j", "lib", "VC")
 
         return result
 
@@ -138,11 +145,23 @@ else:
                            environment=qt5_environment(),
                            working_directory=lambda: os.path.join(qt5['build_path']))
 
+    install_qt5 = build.Run(r"nmake install",
+                           environment=qt5_environment(),
+                           working_directory=lambda: os.path.join(qt5['build_path']))
+
+
+    def Copy_ICU_Libs(context):
+        for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "*54.lib")):
+            shutil.copy(f,  os.path.join(config["paths"]["build"], "qt5", "bin"))
+        return True
+
 
 
     qt5 = Project("Qt5") \
         .depend(build.Install()
                 .depend(build_webkit
+                    .depend(build.Execute(Copy_ICU_Libs)
+                    .depend(install_qt5
                         .depend(build_qt5
                                 .depend("jom")
                                 .depend(build.Run(configure_cmd, name="configure qt",environment=qt5_environment())
@@ -156,7 +175,9 @@ else:
                                                 .depend("openssl")
                                         )
                                 )
+                            )
                         )
+                    )
                 )
 
 

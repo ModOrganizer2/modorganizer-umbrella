@@ -26,7 +26,6 @@ import python
 
 from unibuild.projects import openssl, cygwin,  icu
 
-
 qt_download_url = "http://download.qt.io/official_releases/qt"
 qt_download_ext = "tar.gz"
 qt_version = "5.5"
@@ -38,15 +37,6 @@ qt_bin_variant = "msvc2015"
 grep_version = "2.5.4"
 
 platform = "win32-msvc2015"
-
-def qt5_environment():
-    result = config['__environment'].copy()
-    result['Path'] += ";" + os.path.join(config['paths']['build'], "icu", "dist", "bin")
-    result['INCLUDE'] += os.path.join(config['paths']['build'], "icu", "dist", "include")
-    result['LIB'] += os.path.join(config['paths']['build'], "icu", "dist", "lib")
-    #result['pythonhome'] = python.python['build_path']
-    return result
-
 
 #if config.get('prefer_binary_dependencies', False):
 if False:
@@ -80,8 +70,6 @@ else:
                                       "-mp", "-no-compile-examples",
                                       "-no-angle", "-opengl", "desktop",
                                       "-ssl", "-openssl-linked",
-                                      "-I", os.path.join(openssl.openssl['build_path'], "include"),
-                                      "-L", os.path.join(openssl.openssl['build_path'], "lib","VC"),
                                       "OPENSSL_LIBS=\"-lssleay32MD -llibeay32MD -lgdi32 -lUser32\"",
                                       "-prefix", qt_inst_path] \
                                      + list(itertools.chain(*[("-skip", s) for s in skip_list])) \
@@ -107,11 +95,26 @@ else:
             flex['build_path'],
             os.path.dirname(config['paths']['ruby']),
             os.path.dirname(config['paths']['perl']),
-            os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
             os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "bin"),
+            os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
             os.path.join(config["paths"]["build"], "qt5", "bin")
         ])
 
+        return result
+
+    # TODO using openssl['Build_path'] here breaks things, Possibly use the same setup as we do for the progress tracking to log build_paths per project and read from file using function
+
+    def qt5_environment():
+        result = config['__environment'].copy()
+        result['Path'] = result['Path'] + ";" + ";".join([
+            os.path.join(config['paths']['build'], "icu", "dist", "bin"),
+            os.path.join(config['paths']['build'], "icu", "dist", "lib"),
+            os.path.join(config['paths']['build'], "jom")])
+        result['INCLUDE'] += os.path.join(config['paths']['build'], "icu", "dist", "include") + ";" + \
+                             os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2j", "include")
+        result['LIB'] += os.path.join(config['paths']['build'], "icu", "dist", "lib") + ";" + \
+                         os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2j", "lib", "VC")
+        result['LIBPATH'] += os.path.join(config['paths']['build'], "icu", "dist", "lib")
         return result
 
     webkit_patch = patch.Replace("qtwebkit/Source/WebCore/platform/text/TextEncodingRegistry.cpp",
@@ -131,11 +134,16 @@ else:
         .set_fail_behaviour(Task.FailBehaviour.CONTINUE) \
         .depend(git.Clone("git://code.qt.io/qt/qt5.git", qt_version))
 
+    build_qt5 = build.Run(r"jom.exe -j {}".format(config['num_jobs']),
+                           environment=qt5_environment(),
+                           working_directory=lambda: os.path.join(qt5['build_path']))
+
+
+
     qt5 = Project("Qt5") \
         .depend(build.Install()
                 .depend(build_webkit
-                        .depend(build.Make(lambda: os.path.join(jom["build_path"],
-                                                                "jom.exe -j {}".format(config['num_jobs'])),environment=qt5_environment())
+                        .depend(build_qt5
                                 .depend("jom")
                                 .depend(build.Run(configure_cmd, name="configure qt",environment=qt5_environment())
                                         .depend("icu")
@@ -150,3 +158,6 @@ else:
                                 )
                         )
                 )
+
+
+

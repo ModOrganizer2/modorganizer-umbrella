@@ -92,7 +92,7 @@ class Clone(Repository):
                              env=config["__environment"])
         else:
             if self.__super_repository is not None:
-                proc = Popen([config['paths']['git'], "submodule", "add",
+                proc = Popen([config['paths']['git'], "submodule", "add", "-b", self._branch,
                               "--force", "--name", self.__base_name,
                               self._url, self.__base_name
                               ],

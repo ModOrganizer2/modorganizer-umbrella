@@ -101,6 +101,12 @@ cmake_parameters = [
 if config.get('optimize', False):
     cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")
 
+Project("githubpp") \
+        .depend(cmake.CMake().arguments(cmake_parameters).install()
+                .depend(github.Source("TanninOne", "githubpp", "master").set_destination("githubpp").depend("Qt5")
+                        )
+                )
+
 
 usvfs = Project("usvfs")
 
@@ -165,7 +171,7 @@ for git_path, path, branch, dependencies in [
                                                                                 "modorganizer-uibase", "modorganizer-archive",
                                                                                 "modorganizer-bsatk", "modorganizer-esptk",
                                                                                 "modorganizer-game_features",
-                                                                                "usvfs"]),
+                                                                                "usvfs","githubpp"]),
 ]:
     build_step = cmake.CMake().arguments(cmake_parameters).install()
 

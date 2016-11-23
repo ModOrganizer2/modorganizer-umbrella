@@ -36,6 +36,8 @@ def pyqt5_env():
         os.path.join(config['paths']['build'], "qt5", "bin"),
         os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),
     ])
+    res['LIB'] += os.path.join(config["__build_base_path"], "install", "libs")
+
     res['pythonhome'] = python.python['build_path']
     return res
 
@@ -55,7 +57,7 @@ class PyQt5Configure(build.Builder):
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
 
-                proc = Popen([config['paths']['python'](), "configure.py", "--confirm-license",
+                proc = Popen([os.path.join(python.python['build_path'],"PCbuild","amd64","python.exe"), "configure.py", "--confirm-license",
                               "-b", bp,
                               "-d", os.path.join(bp, "Lib", "site-packages"),
                               "-v", os.path.join(bp, "sip", "PyQt5"),

@@ -83,18 +83,20 @@ else:
         path_segments.append("*.lib")
         for f in glob(os.path.join(*path_segments)):
             shutil.copy(f, os.path.join(config["__build_base_path"], "install", "libs"))
+        shutil.copy([context['build_path'],"pyconfig.h.in"], [context['build_path'],"Include","pyconfig.h"])
         return True
 
     python = Project("Python") \
          .depend(build.Execute(install)
-                 .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
+                 #.depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
+                 .depend(build.Run(r"PCBuild\\build.bat -e -c Release -m -p x64",
+                                   environment=python_environment(),
+                                   working_directory=lambda: os.path.join(python['build_path']))
                          .depend(build.Run(upgrade_args, name="upgrade python project")
-                                 .depend(build.Run(r"PCBuild\get_externals.bat",
-                                                   environment=python_environment())
                                          .depend(github.Source("LePresidente", "cpython", "2.7").set_destination("Python-2.7.12")))
                                                  )
                                          )
-                                 )
+
 
 
 

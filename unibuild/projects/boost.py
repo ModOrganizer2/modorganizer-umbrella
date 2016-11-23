@@ -23,17 +23,22 @@ config_template = ("using python : 2.7 : {0}\\PCbuild\\amd64\\python.exe\n"
                    "  : <address-model>{1} ;")
 
 Project("boost") \
-    .depend(b2.B2().arguments(["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
+    .depend(b2.B2(name="Shared").arguments(["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
+                                "-a",
+                               "-j {}".format(config['num_jobs']),
+                               "toolset=msvc-14.0",
+                               "link=shared",
+                               ] + ["--with-{0}".format(component) for component in boost_components])
+        .depend(b2.B2(name="Static").arguments(["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
+                                "-a",
                                "-j {}".format(config['num_jobs']),
                                "toolset=msvc-14.0",
                                "link=static",
                                "runtime-link=shared",
-                               "threading=multi",
-                               "variant=release"
                                ] + ["--with-{0}".format(component) for component in boost_components])
             .depend(patch.CreateFile("user-config.jam",
                                      lambda: config_template.format(
-                                             os.path.dirname(python.python['build_path']),
+                                             os.path.join(os.path.dirname(python.python['build_path']),"Python-2.7.12"),
                                              "64" if config['architecture'] == "x86_64" else "32")
                                      )
                     .depend(sourceforge.Release("boost",
@@ -41,5 +46,6 @@ Project("boost") \
                                                                                      boost_version.replace(".", "_")),
                                                 tree_depth=1))
                     )
+            )
             ) \
     .depend("Python")

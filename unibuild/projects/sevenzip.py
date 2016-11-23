@@ -21,9 +21,8 @@ from unibuild.modules import urldownload
 
 
 # newer versions are beta as of now. They have slightly (?) different api as well
-sevenzip_version = "9.20"
+sevenzip_version = "16.04"
 
 # sevenzip is not built here as we only use its source
 Project("7zip") \
-    .depend(urldownload.URLDownload("http://www.7-zip.org/a/7z{}.tar.bz2".format(sevenzip_version.replace(".", ""))))
-
+    .depend(urldownload.URLDownload("http://www.7-zip.org/a/7z{}-src.7z".format(sevenzip_version.replace(".", ""))))

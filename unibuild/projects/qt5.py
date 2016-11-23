@@ -149,6 +149,11 @@ else:
                            environment=qt5_environment(),
                            working_directory=lambda: os.path.join(qt5['build_path']))
 
+    install_webkit = build.Run(r"nmake install",
+                           environment=qt5_environment(),
+                           name="Install Webkit",
+                           working_directory=lambda: os.path.join(qt5['build_path'], "qtwebkit", "WebKitBuild", "Release"))
+
 
     def Copy_ICU_Libs(context):
         for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "*54.lib")):
@@ -158,7 +163,7 @@ else:
 
 
     qt5 = Project("Qt5") \
-        .depend(build.Install()
+        .depend(install_webkit
                 .depend(build_webkit
                     .depend(build.Execute(Copy_ICU_Libs)
                     .depend(install_qt5

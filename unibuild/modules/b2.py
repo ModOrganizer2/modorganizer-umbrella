@@ -24,16 +24,19 @@ import logging
 
 class B2(Builder):
 
-    def __init__(self):
+    def __init__(self,name=None):
         super(B2, self).__init__()
         self.__arguments = []
+        self.__name = name
 
     @property
     def name(self):
         if self._context is None:
             return "b2"
         else:
-            return "b2 {0}".format(self._context.name)
+            return "b2 {}_{}".format(self._context.name, self.__name)
+
+
 
     def applies(self, parameters):
         return True

@@ -81,6 +81,7 @@ else:
         if config['architecture'] == "x86_64":
             path_segments.append("amd64")
         path_segments.append("*.lib")
+        shutil.copy(os.path.join(python['build_path'],"PC", "pyconfig.h"),os.path.join(python['build_path'], "Include","pyconfig.h"))
         for f in glob(os.path.join(*path_segments)):
             shutil.copy(f, os.path.join(config["__build_base_path"], "install", "libs"))
         return True

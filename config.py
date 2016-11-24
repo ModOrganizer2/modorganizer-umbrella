@@ -76,6 +76,10 @@ config = {
                                             # binaries and marginally faster code
     'repo_update_frequency': 60 * 60 * 24,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
+
+    #'Main_Author': 'TanninOne',
+    'Main_Author': 'LePresidente',
+
 }
 
 config['paths'] = {

@@ -65,7 +65,7 @@ ncc = Project("NCC") \
             .depend(msbuild.MSBuild("../nmm/NexusClient.sln", "NexusClientCli",
                         working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
             .depend(patch.Copy("NexusClient.sln", "../nmm")
-                    .depend(github.Source("LePresidente", "modorganizer-NCC", "master")
+                    .depend(github.Source(config['Main_Author'], "modorganizer-NCC", "master")
                             .set_destination(os.path.join("NCC", "NexusClientCli"))
                             .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", "master")
                                     .set_destination(os.path.join("NCC", "nmm"))
@@ -101,12 +101,6 @@ cmake_parameters = [
 if config.get('optimize', False):
     cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")
 
-Project("githubpp") \
-        .depend(cmake.CMake().arguments(cmake_parameters).install()
-                .depend(github.Source("TanninOne", "githubpp", "master").set_destination("githubpp").depend("Qt5")
-                        )
-                )
-
 
 usvfs = Project("usvfs")
 
@@ -116,7 +110,7 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
             # TODO Not sure why this is required, will look into it at a later stage once we get the rest to build
             # .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, usvfs))
                      .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
-                             .depend(github.Source("LePresidente", "usvfs", "master")
+                             .depend(github.Source(config['Main_Author'], "usvfs", "master")
                                      .set_destination("usvfs"))
                              .depend("AsmJit").depend("Udis86").depend("GTest").depend("fmtlib").depend("spdlog")
                              )
@@ -124,54 +118,55 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
              )
 
 
-for git_path, path, branch, dependencies in [
-    ("modorganizer-archive",           "archive",           "master",          ["7zip", "Qt5"]),
-    ("modorganizer-uibase",            "uibase",            "new_vfs_library", ["Qt5", "boost"]),
-    ("modorganizer-lootcli",           "lootcli",           "master",          ["LootApi", "boost"]),
-    ("modorganizer-esptk",             "esptk",             "master",          ["boost"]),
-    ("modorganizer-bsatk",             "bsatk",             "master",          ["zlib"]),
-    ("modorganizer-nxmhandler",        "nxmhandler",        "master",          ["Qt5"]),
-    ("modorganizer-helper",            "helper",            "master",          ["Qt5"]),
-    ("modorganizer-game_gamebryo",     "game_gamebryo",     "new_vfs_library", ["Qt5", "modorganizer-uibase",
-                                                                                "modorganizer-game_features"]),
-    ("modorganizer-game_oblivion",     "game_oblivion",     "master",          ["Qt5", "modorganizer-uibase",
-                                                                                "modorganizer-game_gamebryo",
-                                                                                "modorganizer-game_features"]),
-    ("modorganizer-game_fallout3",     "game_fallout3",     "master",          ["Qt5", "modorganizer-uibase",
-                                                                                "modorganizer-game_gamebryo",
-                                                                                "modorganizer-game_features"]),
-    ("modorganizer-game_fallout4",     "game_fallout4",     "master",          ["Qt5", "modorganizer-uibase",
-                                                                                "modorganizer-game_gamebryo",
-                                                                                "modorganizer-game_features"]),
-    ("modorganizer-game_falloutnv",    "game_falloutnv",    "master",          ["Qt5", "modorganizer-uibase",
-                                                                                "modorganizer-game_gamebryo",
-                                                                                "modorganizer-game_features"]),
-    ("modorganizer-game_skyrim",       "game_skyrim",       "master",          ["Qt5", "modorganizer-uibase",
-                                                                                "modorganizer-game_gamebryo",
-                                                                                "modorganizer-game_features"]),
-    ("modorganizer-game_skyrim",    "game_skyrimse",     "Skyrim_SE",          ["Qt5", "modorganizer-uibase",
-                                                                                "modorganizer-game_gamebryo",
-                                                                                "modorganizer-game_features"]),
-    ("modorganizer-tool_inieditor",    "tool_inieditor",    "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-tool_inibakery",    "tool_inibakery",    "master",          ["modorganizer-uibase"]),
-    ("modorganizer-tool_configurator", "tool_configurator", "master",          ["PyQt5"]),
-    ("modorganizer-preview_base",      "preview_base",      "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-diagnose_basic",    "diagnose_basic",    "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-check_fnis",        "check_fnis",        "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_bain",    "installer_bain",    "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_manual",  "installer_manual",  "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_bundle",  "installer_bundle",  "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_quick",   "installer_quick",   "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_fomod",   "installer_fomod",   "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-installer_ncc",     "installer_ncc",     "master",          ["Qt5", "modorganizer-uibase", "NCC"]),
-    ("modorganizer-bsa_extractor",     "bsa_extractor",     "master",          ["Qt5", "modorganizer-uibase"]),
-    ("modorganizer-plugin_python",     "plugin_python",     "master",          ["Qt5", "boost", "Python", "modorganizer-uibase",
+for author,git_path, path, branch, dependencies in [
+    (config['Main_Author'],               "modorganizer-archive",           "archive",           "master",          ["7zip", "Qt5"]),
+    (config['Main_Author'],               "modorganizer-uibase",            "uibase",            "new_vfs_library", ["Qt5", "boost"]),
+    (config['Main_Author'],               "modorganizer-lootcli",           "lootcli",           "master",          ["LootApi", "boost"]),
+    (config['Main_Author'],               "modorganizer-esptk",             "esptk",             "master",          ["boost"]),
+    (config['Main_Author'],               "modorganizer-bsatk",             "bsatk",             "master",          ["zlib"]),
+    (config['Main_Author'],               "modorganizer-nxmhandler",        "nxmhandler",        "master",          ["Qt5"]),
+    (config['Main_Author'],               "modorganizer-helper",            "helper",            "master",          ["Qt5"]),
+    (config['Main_Author'],               "modorganizer-game_gamebryo",     "game_gamebryo",     "new_vfs_library", ["Qt5", "modorganizer-uibase",
+                                                                                                                    "modorganizer-game_features"]),
+    (config['Main_Author'],               "modorganizer-game_oblivion",     "game_oblivion",     "master",          ["Qt5", "modorganizer-uibase",
+                                                                                                                    "modorganizer-game_gamebryo",
+                                                                                                                    "modorganizer-game_features"]),
+    (config['Main_Author'],               "modorganizer-game_fallout3",     "game_fallout3",     "master",          ["Qt5", "modorganizer-uibase",
+                                                                                                                    "modorganizer-game_gamebryo",
+                                                                                                                    "modorganizer-game_features"]),
+    (config['Main_Author'],               "modorganizer-game_fallout4",     "game_fallout4",     "master",          ["Qt5", "modorganizer-uibase",
+                                                                                                                    "modorganizer-game_gamebryo",
+                                                                                                                    "modorganizer-game_features"]),
+    (config['Main_Author'],               "modorganizer-game_falloutnv",    "game_falloutnv",    "master",          ["Qt5", "modorganizer-uibase",
+                                                                                                                    "modorganizer-game_gamebryo",
+                                                                                                                    "modorganizer-game_features"]),
+    (config['Main_Author'],               "modorganizer-game_skyrim",       "game_skyrim",       "master",          ["Qt5", "modorganizer-uibase",
+                                                                                                                    "modorganizer-game_gamebryo",
+                                                                                                                    "modorganizer-game_features"]),
+    (config['Main_Author'],               "modorganizer-game_skyrim",    "game_skyrimse",     "Skyrim_SE",          ["Qt5", "modorganizer-uibase",
+                                                                                                                    "modorganizer-game_gamebryo",
+                                                                                                                    "modorganizer-game_features"]),
+    (config['Main_Author'],               "modorganizer-tool_inieditor",    "tool_inieditor",    "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-tool_inibakery",    "tool_inibakery",    "master",          ["modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-tool_configurator", "tool_configurator", "master",          ["PyQt5"]),
+    (config['Main_Author'],               "modorganizer-preview_base",      "preview_base",      "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-diagnose_basic",    "diagnose_basic",    "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-check_fnis",        "check_fnis",        "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-installer_bain",    "installer_bain",    "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-installer_manual",  "installer_manual",  "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-installer_bundle",  "installer_bundle",  "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-installer_quick",   "installer_quick",   "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-installer_fomod",   "installer_fomod",   "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-installer_ncc",     "installer_ncc",     "master",          ["Qt5", "modorganizer-uibase", "NCC"]),
+    (config['Main_Author'],               "modorganizer-bsa_extractor",     "bsa_extractor",     "master",          ["Qt5", "modorganizer-uibase"]),
+    (config['Main_Author'],               "modorganizer-plugin_python",     "plugin_python",     "master",          ["Qt5", "boost", "Python", "modorganizer-uibase",
                                                                                 "sip"]),
-    ("modorganizer",                   "modorganizer",      "new_vfs_library", ["Qt5", "boost",
-                                                                                "modorganizer-uibase", "modorganizer-archive",
-                                                                                "modorganizer-bsatk", "modorganizer-esptk",
-                                                                                "modorganizer-game_features",
-                                                                                "usvfs","githubpp"]),
+    (config['Main_Author'],               "githubpp",                        "githubpp",          "master",           ["Qt5"]),
+    (config['Main_Author'],               "modorganizer",                   "modorganizer",      "new_vfs_library", ["Qt5", "boost",
+                                                                                                                     "modorganizer-uibase", "modorganizer-archive",
+                                                                                                                     "modorganizer-bsatk", "modorganizer-esptk",
+                                                                                                                     "modorganizer-game_features",
+                                                                                                                     "usvfs","githubpp"]),
 ]:
     build_step = cmake.CMake().arguments(cmake_parameters).install()
 
@@ -185,15 +180,15 @@ for git_path, path, branch, dependencies in [
             project.depend(build_step
                            .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
                                    .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
-                                           .depend(github.Source("LePresidente", git_path, branch, super_repository=tl_repo)
-                                                   .set_destination(path)).depend("cygwin")
+                                           .depend(github.Source(author, git_path, branch, super_repository=tl_repo)
+                                                   .set_destination(path))
                                            )
                                    )
                            )
 
     else:
-        project.depend(build_step.depend(github.Source("LePresidente", git_path, branch, super_repository=tl_repo)
-                                                   .set_destination(path))).depend("cygwin")
+        project.depend(build_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
+                                                   .set_destination(path)))
 
 
 def python_zip_collect(context):

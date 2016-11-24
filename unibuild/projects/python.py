@@ -83,7 +83,6 @@ else:
         path_segments.append("*.lib")
         for f in glob(os.path.join(*path_segments)):
             shutil.copy(f, os.path.join(config["__build_base_path"], "install", "libs"))
-        shutil.copy([context['build_path'],"pyconfig.h.in"], [context['build_path'],"Include","pyconfig.h"])
         return True
 
     python = Project("Python") \

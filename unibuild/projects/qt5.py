@@ -143,10 +143,12 @@ else:
 
     build_qt5 = build.Run(r"jom.exe -j {}".format(config['num_jobs']),
                            environment=qt5_environment(),
+                           name="Build Qt5",
                            working_directory=lambda: os.path.join(qt5['build_path']))
 
     install_qt5 = build.Run(r"nmake install",
                            environment=qt5_environment(),
+                           name="Install Qt5",
                            working_directory=lambda: os.path.join(qt5['build_path']))
 
     install_webkit = build.Run(r"nmake install",
@@ -156,7 +158,7 @@ else:
 
 
     def Copy_ICU_Libs(context):
-        for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "*54.lib")):
+        for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "*54.dll")):
             shutil.copy(f,  os.path.join(config["paths"]["build"], "qt5", "bin"))
         return True
 

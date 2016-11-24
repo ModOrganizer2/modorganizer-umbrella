@@ -38,7 +38,7 @@ Project("boost") \
                                ] + ["--with-{0}".format(component) for component in boost_components])
             .depend(patch.CreateFile("user-config.jam",
                                      lambda: config_template.format(
-                                             os.path.join(os.path.dirname(python.python['build_path']),"Python-2.7.12"),
+                                             os.path.join(os.path.dirname(python.python['build_path'])),
                                              "64" if config['architecture'] == "x86_64" else "32")
                                      )
                     .depend(sourceforge.Release("boost",

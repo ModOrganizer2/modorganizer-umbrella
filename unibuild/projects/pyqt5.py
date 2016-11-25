@@ -28,6 +28,7 @@ import logging
 import qt5  # import to get at qt version information
 import sip
 import python
+import icu
 
 
 def pyqt5_env():
@@ -37,7 +38,6 @@ def pyqt5_env():
         os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),
     ])
     res['LIB'] += os.path.join(config["__build_base_path"], "install", "libs")
-
     res['pythonhome'] = python.python['build_path']
     return res
 
@@ -77,7 +77,10 @@ class PyQt5Configure(build.Builder):
 
 Project("PyQt5") \
     .depend(patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
-                        os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll")],
+                        os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll"),
+                        os.path.join(config['paths']['build'], "icu" , "dist", "lib", "icudt54.dll"),
+                        os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuin54.dll"),
+                        os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuuc54.dll")],
                        doclambda(lambda: python.python['build_path'], "python path"))
             .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
                     .depend(PyQt5Configure()

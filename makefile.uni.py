@@ -62,7 +62,7 @@ ncc = Project("NCC") \
                       .format("-debug" if config['build_type'] == "Debug" else "-release",
                               os.path.join(config['__build_base_path'], "install", "bin")),
                       working_directory=lazy.Evaluate(lambda: ncc['build_path']))
-            .depend(msbuild.MSBuild("../nmm/NexusClient.sln", "NexusClientCli",
+            .depend(msbuild.MSBuild("../nmm/NexusClient.sln",
                         working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
             .depend(patch.Copy("NexusClient.sln", "../nmm")
                     .depend(github.Source(config['Main_Author'], "modorganizer-NCC", "master")
@@ -76,7 +76,7 @@ ncc = Project("NCC") \
            )
 
 Project("modorganizer-game_features") \
-    .depend(github.Source("LePresidente", "modorganizer-game_features", "master", super_repository=tl_repo)
+    .depend(github.Source(config['Main_Author'], "modorganizer-game_features", "master", super_repository=tl_repo)
             .set_destination("game_features"))
 
 
@@ -143,7 +143,7 @@ for author,git_path, path, branch, dependencies in [
     (config['Main_Author'],               "modorganizer-game_skyrim",       "game_skyrim",       "master",          ["Qt5", "modorganizer-uibase",
                                                                                                                     "modorganizer-game_gamebryo",
                                                                                                                     "modorganizer-game_features"]),
-    ("Viomi",                               "modorganizer-game_skyrim_se",    "game_skyrimse",     "master",        ["Qt5", "modorganizer-uibase",
+    ("Viomi",                             "modorganizer-game_skyrim_se",    "game_skyrimse",     "master",        ["Qt5", "modorganizer-uibase",
                                                                                                                     "modorganizer-game_gamebryo",
                                                                                                                     "modorganizer-game_features"]),
     (config['Main_Author'],               "modorganizer-tool_inieditor",    "tool_inieditor",    "master",          ["Qt5", "modorganizer-uibase"]),
@@ -170,6 +170,8 @@ for author,git_path, path, branch, dependencies in [
 ]:
     build_step = cmake.CMake().arguments(cmake_parameters).install()
 
+    build_step_ide = cmake.CMake().arguments(cmake_parameters).install()
+
     for dep in dependencies:
         build_step.depend(dep)
 
@@ -177,7 +179,7 @@ for author,git_path, path, branch, dependencies in [
 
     if config['ide_projects']:
             # TODO This has been disabled in config as currently the breaking the build
-            project.depend(build_step
+            project.depend(build_step_ide
                            .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
                                    .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
                                            .depend(github.Source(author, git_path, branch, super_repository=tl_repo)
@@ -189,7 +191,6 @@ for author,git_path, path, branch, dependencies in [
     else:
         project.depend(build_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                                                    .set_destination(path)))
-
 
 def python_zip_collect(context):
     import libpatterns

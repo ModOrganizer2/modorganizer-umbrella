@@ -87,7 +87,7 @@ class Clone(Repository):
         proc = None
         if os.path.exists(os.path.join(self._output_file_path, ".git")):
             if self.__update and not config.get('offline', False):
-                proc = Popen([config['paths']['git'], "pull"],
+                proc = Popen([config['paths']['git'], "pull", self._url, self._branch],
                              cwd=self._output_file_path,
                              env=config["__environment"])
         else:

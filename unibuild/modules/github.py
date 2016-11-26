@@ -21,23 +21,25 @@ from git import Clone
 
 
 class Release(URLDownload):
-    def __init__(self, author, project, version, filename, extension="zip"):
+    def __init__(self, author, project, version, filename, extension="zip", tree_depth=0):
         super(Release, self) \
             .__init__("https://github.com/{author}/{project}/releases/download/{version}/"
                       "{filename}.{extension}".format(author=author,
                                                       project=project,
                                                       version=version,
                                                       filename=filename,
-                                                      extension=extension))
+                                                      extension=extension),tree_depth)
 
 
 class Source(Clone):
-    def __init__(self, author, project, tag, super_repository=None, update=True):
+    def __init__(self, author, project, branch="master", super_repository=None, update=True):
         super(Source, self).__init__("https://github.com/{author}/{project}.git".format(author=author,
-                                                                                        project=project,
-                                                                                        tag=tag),
-                                     "master", super_repository, update)
+                                                                                        project=project),
+                                     branch, super_repository, update)
         #super(Source, self).__init__("https://github.com/{author}/{project}/archive/{tag}.zip".format(), 1)
         # don't use the tag as the file name, otherwise we get name collisions on "master" or other generic names
         #self.set_destination(project)
 
+
+
+# TODO never supported checking out by tag, should create new class here. (required by asmjit)

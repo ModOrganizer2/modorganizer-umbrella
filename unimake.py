@@ -33,7 +33,6 @@ import os.path
 import argparse
 import re
 
-
 def progress_callback(job, percentage):
     if not percentage and not job:
         sys.stdout.write("\n")
@@ -50,8 +49,7 @@ def draw_graph(graph, filename):
     if config['paths']['graphviz']:
         # neither pydot nor pygraphviz reliably find graphviz on windows. gotta do everything myself...
         from subprocess import call
-
-        graph_file_name = os.path.join(tempfile.gettempdir(), "graph.dot")
+        graph_file_name = os.path.join(os.getcwd(), "graph.dot")
         nx.write_dot(graph, graph_file_name)
 
         call([config['paths']['graphviz'],
@@ -116,7 +114,7 @@ def init_config(args):
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable
 
-    qtcreator_config_path = r"C:/Users/Tannin/AppData/Roaming/QtProject"
+    qtcreator_config_path = r"C:/Users/modorganizer/AppData/Roaming/QtProject"
 
     if os.path.isdir(qtcreator_config_path):
         from ConfigParser import RawConfigParser
@@ -139,7 +137,7 @@ def init_config(args):
         profiles = filter(lambda x: arch in x[1], sorted(profiles, reverse=True))[0]
 
         config['qt_profile_id'] = profiles[0]
-        config['qt_profile_name'] = profiles[1].replace("%{Qt:Version}", "5.4.0")
+        config['qt_profile_name'] = profiles[1].replace("%{Qt:Version}", "5.5.1")
 
         """
         kits = sorted([kit.text

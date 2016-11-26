@@ -19,6 +19,7 @@
 from _winreg import *
 from unibuild.utility.lazy import Lazy
 import os
+import multiprocessing
 
 global missing_prerequisites
 missing_prerequisites = False
@@ -65,7 +66,7 @@ config = {
     'architecture': 'x86_64',
     'vc_version':   '14.0',
     'build_type': "RelWithDebInfo",
-    'ide_projects': True,
+    'ide_projects': False,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
                                             # This is stuff like updating source repositories. The initial
                                             # download of course can't be surpressed.
@@ -74,6 +75,10 @@ config = {
                                             # This massively increases build time but produces smaller
                                             # binaries and marginally faster code
     'repo_update_frequency': 60 * 60 * 24,  # in seconds
+    'num_jobs': multiprocessing.cpu_count() + 1,
+
+    'Main_Author': 'TanninOne',
+
 }
 
 config['paths'] = {
@@ -83,7 +88,6 @@ config['paths'] = {
     'graphviz':      path_or_default("dot.exe",   "Graphviz2.38", "bin"),
     'cmake':         path_or_default("cmake.exe", "CMake", "bin"),
     'git':           path_or_default("git.exe",   "Git", "bin"),
-    'hg':            path_or_default("hg.exe",    "TortoiseHg"),
     'perl':          path_or_default("perl.exe",  "StrawberryPerl", "bin"),
     'ruby':          path_or_default("ruby.exe",  "Ruby22-x64", "bin"),
     'svn':           path_or_default("svn.exe",   "SlikSvn", "bin"),

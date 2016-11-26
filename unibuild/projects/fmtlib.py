@@ -20,20 +20,12 @@ from unibuild import Project
 from unibuild.modules import cmake, github
 from config import config
 
-
-# asmjit doesn't currently have any tags/branches but not every commit is usable
-asmjit_tag = "master"
-
-
-Project("AsmJit") \
+Project("fmtlib") \
     .depend(cmake.CMake().arguments(
-    [
-        "-DASMJIT_STATIC=TRUE",
-        "-DASMJIT_DISABLE_COMPILER=TRUE",
-        "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/')),
-        "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
-    ]).install()
-            .depend(github.Source("kobalicek", "asmjit", asmjit_tag, update=False)
-                    .set_destination("asmjit"))
+        [
+            "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/')),
+            "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
+        ]).install()
+                    .depend(github.Source("fmtlib", "fmt", "3.0.0").set_destination("fmt")
+                    )
             )
-

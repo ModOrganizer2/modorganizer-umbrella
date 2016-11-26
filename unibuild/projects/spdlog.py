@@ -15,25 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
+# TODO This is really old, should by updated to 0.13
 
 from unibuild import Project
 from unibuild.modules import cmake, github
 from config import config
 
-
-# asmjit doesn't currently have any tags/branches but not every commit is usable
-asmjit_tag = "master"
-
-
-Project("AsmJit") \
+Project("spdlog") \
     .depend(cmake.CMake().arguments(
     [
-        "-DASMJIT_STATIC=TRUE",
-        "-DASMJIT_DISABLE_COMPILER=TRUE",
         "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/')),
         "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
     ]).install()
-            .depend(github.Source("kobalicek", "asmjit", asmjit_tag, update=False)
-                    .set_destination("asmjit"))
+                    .depend(github.Source("TanninOne", "spdlog", "master").set_destination("spdlog")
+                    )
             )
-

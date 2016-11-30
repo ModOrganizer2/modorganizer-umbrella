@@ -17,7 +17,7 @@
 
 
 from unibuild import Project
-from unibuild.modules import urldownload, build
+from unibuild.modules import urldownload, build, patch
 from config import config
 from subprocess import Popen
 import os
@@ -74,8 +74,15 @@ def build_func(context):
     return True
 
 
-openssl = Project("openssl")\
+openssl = Project("openssl") \
+    .depend(patch.Copy([os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
+                                     .format("32" if config['architecture'] == 'x86' else "64",
+                                             openssl_version.replace(".","_")), "ssleay32.dll"),
+                        os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
+                                     .format("32" if config['architecture'] == 'x86' else "64",
+                                             openssl_version.replace(".", "_")), "libeay32.dll"),],
+                       os.path.join(config['__build_base_path'], "install", "bin","dlls"))
     .depend(build.Execute(build_func)
             .depend(urldownload.URLDownload(url))
-            )
+            ))
 

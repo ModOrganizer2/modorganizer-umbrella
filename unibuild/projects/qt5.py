@@ -156,17 +156,16 @@ else:
                            name="Install Webkit",
                            working_directory=lambda: os.path.join(qt5['build_path'], "qtwebkit", "WebKitBuild", "Release"))
 
-
     def Copy_ICU_Libs(context):
         for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "*54.dll")):
             shutil.copy(f,  os.path.join(config["paths"]["build"], "qt5", "bin"))
         return True
 
-
-
     qt5 = Project("Qt5") \
         .depend(install_webkit
                 .depend(build_webkit
+                        .depend(patch.Copy(os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "plugins", "platforms", "qwindows.dll"),
+                                            os.path.join(config['__build_base_path'], "install", "bin","platforms"))
                     .depend(build.Execute(Copy_ICU_Libs)
                     .depend(install_qt5
                         .depend(build_qt5
@@ -186,6 +185,6 @@ else:
                         )
                     )
                 )
-
+                )
 
 

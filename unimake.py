@@ -94,7 +94,7 @@ def visual_studio_environment():
 def init_config(args):
     for d in config['paths'].keys():
         if isinstance(config['paths'][d], str):
-            config['paths'][d] = config['paths'][d].format(base_dir=args.destination)
+            config['paths'][d] = config['paths'][d].format(base_dir=os.path.abspath(args.destination))
 
     if args.set:
         for setting in args.set:

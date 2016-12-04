@@ -20,17 +20,36 @@ from unibuild import Project
 from unibuild.modules import sourceforge, build
 from subprocess import Popen
 from config import config
+from glob import glob
 import os
 import logging
 import python
+import errno
+import shutil
 
 
 sip_version = "4.16.9"
+
 
 def sip_environment():
     result = config['__environment'].copy()
     result['LIB'] += os.path.join(config['paths']['build'],"Python-2.7.12","PCbuild","amd64")
     return result
+
+
+def make_sure_path_exists(path):
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
+
+
+def copy_pyd(context):
+        make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
+        for f in glob(os.path.join(python.python['build_path'], "Lib", "site-packages", "sip.pyd")):
+            shutil.copy(f, os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
+        return True
 
 
 class SipConfigure(build.Builder):
@@ -68,9 +87,14 @@ class SipConfigure(build.Builder):
 
 
 Project('sip') \
-    .depend(build.Make(environment=sip_environment()).install()
-            .depend(SipConfigure()
-                    .depend("Python")
-                    .depend(sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1))
+    .depend(build.Execute(copy_pyd)
+            .depend(build.Make(environment=sip_environment()).install()
+                    .depend(SipConfigure()
+                            .depend("Python")
+                                    .depend(sourceforge.Release("pyqt",
+                                                                "sip/sip-{0}/sip-{0}.zip".format(sip_version),
+                                                                1)
+                                            )
+                            )
                     )
             )

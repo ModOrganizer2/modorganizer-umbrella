@@ -40,7 +40,7 @@ All the following need to be either on your PATH, or available from Program File
 
 * python 2.7 (2.7.12 x64)
   * decorator
-* visual C++ 2015
+*  visual C++ 2013 (visual C++ 2015 broken due to https://github.com/TanninOne/usvfs/issues/1)
 
 * cmake
 * 7zip - specifically, the command line version (7za)

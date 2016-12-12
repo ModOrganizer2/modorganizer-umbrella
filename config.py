@@ -24,6 +24,7 @@ import multiprocessing
 global missing_prerequisites
 missing_prerequisites = False
 
+
 def path_or_default(filename, *default):
     from distutils.spawn import find_executable
     defaults = gen_search_folders(*default)
@@ -77,7 +78,7 @@ config = {
     'repo_update_frequency': 60 * 60 * 24,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
-    'Main_Author': 'TanninOne',
+    'Main_Author': 'LePresidente',
 
 }
 

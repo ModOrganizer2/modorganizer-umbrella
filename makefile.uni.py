@@ -38,7 +38,7 @@ Projects
 
 
 from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5
-from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib
+from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib, lz4
 
 # TODO modorganizer-lootcli needs an overhaul as the api has changed alot
 Project("LootApi") \
@@ -112,9 +112,14 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
                      .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
                              .depend(github.Source(config['Main_Author'], "usvfs", "master")
                                      .set_destination("usvfs"))
-                             .depend("AsmJit").depend("Udis86").depend("GTest").depend("fmtlib").depend("spdlog")
-                             )
-             #        )
+                             .depend("AsmJit")
+                             .depend("Udis86")
+                             .depend("GTest")
+                             .depend("fmtlib")
+                             .depend("spdlog")
+                             .depend("boost")
+             #        )_
+             )
              )
 
 
@@ -127,7 +132,7 @@ for author,git_path, path, branch, dependencies in [
     (config['Main_Author'],               "modorganizer-nxmhandler",        "nxmhandler",        "master",          ["Qt5"]),
     (config['Main_Author'],               "modorganizer-helper",            "helper",            "master",          ["Qt5"]),
     (config['Main_Author'],               "modorganizer-game_gamebryo",     "game_gamebryo",     "new_vfs_library", ["Qt5", "modorganizer-uibase",
-                                                                                                                    "modorganizer-game_features"]),
+                                                                                                                    "modorganizer-game_features", "lz4"]),
     (config['Main_Author'],               "modorganizer-game_oblivion",     "game_oblivion",     "master",          ["Qt5", "modorganizer-uibase",
                                                                                                                     "modorganizer-game_gamebryo",
                                                                                                                     "modorganizer-game_features"]),
@@ -143,7 +148,7 @@ for author,git_path, path, branch, dependencies in [
     (config['Main_Author'],               "modorganizer-game_skyrim",       "game_skyrim",       "master",          ["Qt5", "modorganizer-uibase",
                                                                                                                     "modorganizer-game_gamebryo",
                                                                                                                     "modorganizer-game_features"]),
-    ("Viomi",                             "modorganizer-game_skyrim_se",    "game_skyrimse",     "master",        ["Qt5", "modorganizer-uibase",
+    ("LePresidente",                             "modorganizer-game_skyrimSE",    "game_skyrimse",     "dev",        ["Qt5", "modorganizer-uibase",
                                                                                                                     "modorganizer-game_gamebryo",
                                                                                                                     "modorganizer-game_features"]),
     (config['Main_Author'],               "modorganizer-tool_inieditor",    "tool_inieditor",    "master",          ["Qt5", "modorganizer-uibase"]),
@@ -191,6 +196,7 @@ for author,git_path, path, branch, dependencies in [
     else:
         project.depend(build_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                                                    .set_destination(path)))
+
 
 def python_zip_collect(context):
     import libpatterns

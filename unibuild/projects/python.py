@@ -89,7 +89,7 @@ else:
     python = Project("Python") \
          .depend(build.Execute(install)
                  #.depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
-                 .depend(build.Run(r"PCBuild\\build.bat -e -c Release -m -p x64",
+                 .depend(build.Run(r"PCBuild\\build.bat -e -c Release -m -p {}".format("x64" if config['architecture'] == 'x86_64' else ""),
                                    environment=python_environment(),
                                    working_directory=lambda: os.path.join(python['build_path']))
                          .depend(build.Run(upgrade_args, name="upgrade python project")

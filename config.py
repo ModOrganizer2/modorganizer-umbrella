@@ -24,6 +24,7 @@ import multiprocessing
 global missing_prerequisites
 missing_prerequisites = False
 
+
 def path_or_default(filename, *default):
     from distutils.spawn import find_executable
     defaults = gen_search_folders(*default)

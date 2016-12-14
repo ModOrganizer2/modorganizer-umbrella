@@ -28,12 +28,14 @@ import errno
 udis_version = "1.7"
 udis_version_minor = "2"
 
+
 def make_sure_path_exists(path):
     try:
         os.makedirs(path)
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
+
 
 def install(context):
     make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "libs"))

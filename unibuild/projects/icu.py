@@ -29,6 +29,7 @@ icu_version_minor = "1"
 # and can determine failure only by timeout
 timeout = 15   # seconds
 
+
 def icu_environment():
     result = config['__environment'].copy()
     result['Path'] += ";" + os.path.join(config['paths']['build'], "cygwin", "bin")
@@ -40,10 +41,9 @@ build_icu = build.Run(r"make && make install",
                       working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))
 
 
-
-class configure_icu(build.Builder):
+class ConfigureIcu(build.Builder):
     def __init__(self):
-        super(configure_icu, self).__init__()
+        super(ConfigureIcu, self).__init__()
 
     @property
     def name(self):
@@ -62,7 +62,8 @@ class configure_icu(build.Builder):
             with open(soutpath, "w") as sout:
                 with open(serrpath, "w") as serr:
                     res = find_executable("bash", os.path.join(config['paths']['build'], "cygwin", "bin"))
-                    proc = subprocess.Popen([res, "runConfigureICU", "Cygwin/MSVC", "--prefix", "{}".format(current_dir_cygwin)],
+                    proc = subprocess.Popen([res, "runConfigureICU", "Cygwin/MSVC", "--prefix"
+                                            , "{}".format(current_dir_cygwin)],
                              env=icu_environment(),
                              cwd=os.path.join(self._context["build_path"], "source"),
                              shell=True,
@@ -77,15 +78,22 @@ class configure_icu(build.Builder):
 
 
 Convert_icu = build.Run(r"dos2unix -f configure",
-                    environment=icu_environment(),
-                    working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))
+                        environment=icu_environment(),
+                        working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))
 
 icu = Project('icu') \
         .depend(build_icu
-                .depend(configure_icu()
+                .depend(ConfigureIcu()
                         .depend(Convert_icu
-                            .depend(patch.Replace("source/io/ufile.c",
-                                                      "#if U_PLATFORM_USES_ONLY_WIN32_API", "#if U_PLATFORM_USES_ONLY_WIN32_API && _MSC_VER < 1900")
-                                .depend(sourceforge.Release("icu","ICU4C/{0}.{1}/icu4c-{0}_{1}-src.zip"
-                                                      .format(icu_version,icu_version_minor),tree_depth=1)
-                                                                .set_destination("icu")))))).depend("cygwin")
+                                .depend(patch.Replace("source/io/ufile.c",
+                                                      "#if U_PLATFORM_USES_ONLY_WIN32_API",
+                                                      "#if U_PLATFORM_USES_ONLY_WIN32_API && _MSC_VER < 1900")
+                                        .depend(sourceforge.Release("icu","ICU4C/{0}.{1}/icu4c-{0}_{1}-src.zip"
+                                                                    .format(icu_version,icu_version_minor),tree_depth=1)
+                                                                            .set_destination("icu")
+                                                )
+                                        )
+                                )
+                        )
+                )\
+        .depend("cygwin")

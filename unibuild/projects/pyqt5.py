@@ -22,24 +22,45 @@ from unibuild.utility.lazy import doclambda
 from unibuild import Project
 from config import config
 from subprocess import Popen
+from glob import glob
+import errno
+import shutil
 import os
 import logging
 
 import qt5  # import to get at qt version information
 import sip
 import python
-import icu
+
+
+def make_sure_path_exists(path):
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
 
 
 def pyqt5_env():
     res = config['__environment'].copy()
-    res['path'] = res['path'] + ";" + ";".join([
+    res['path'] = ";".join([
         os.path.join(config['paths']['build'], "qt5", "bin"),
         os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),
-    ])
-    res['LIB'] += os.path.join(config["__build_base_path"], "install", "libs")
+        ]) + ";" + res['path']
+    res['LIB'] = os.path.join(config["__build_base_path"], "install", "libs") + ";" + res['LIB']
     res['pythonhome'] = python.python['build_path']
     return res
+
+
+def copy_pyd(context):
+        make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
+        srcdir = os.path.join(python.python['build_path'], "Lib", "site-packages", "PyQt5")
+        dstdir = os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5")
+        shutil.copy(os.path.join(srcdir, "__init__.py"),dstdir)
+        shutil.copy(os.path.join(srcdir, "QtCore.pyd"), dstdir)
+        shutil.copy(os.path.join(srcdir, "QtGui.pyd"),dstdir)
+        shutil.copy(os.path.join(srcdir, "QtWidgets.pyd"), dstdir)
+        return True
 
 
 class PyQt5Configure(build.Builder):
@@ -76,19 +97,23 @@ class PyQt5Configure(build.Builder):
 
 
 Project("PyQt5") \
-    .depend(patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
-                        os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll"),
-                        os.path.join(config['paths']['build'], "icu" , "dist", "lib", "icudt54.dll"),
-                        os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuin54.dll"),
-                        os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuuc54.dll")],
-                       doclambda(lambda: python.python['build_path'], "python path"))
-            .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
-                    .depend(PyQt5Configure()
-                            .depend("sip").depend("Qt5")
-                            .depend(sourceforge.Release("pyqt",
-                                                        "PyQt5/PyQt-{0}.{1}/PyQt-gpl-{0}.{1}.zip"
-                                                        .format(qt5.qt_version, qt5.qt_version_minor),
-                                                        tree_depth=1))
+    .depend(build.Execute(copy_pyd)
+            .depend(patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
+                                os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll"),
+                                os.path.join(config['paths']['build'], "icu" , "dist", "lib", "icudt54.dll"),
+                                os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuin54.dll"),
+                                os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuuc54.dll")],
+                               doclambda(lambda: python.python['build_path'], "python path"))
+                    .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
+                            .depend(PyQt5Configure()
+                                    .depend("sip")
+                                    .depend("Qt5")
+                                    .depend(sourceforge.Release("pyqt",
+                                                                "PyQt5/PyQt-{0}.{1}/PyQt-gpl-{0}.{1}.zip"
+                                                                .format(qt5.qt_version, qt5.qt_version_minor),
+                                                                tree_depth=1))
+                                    )
                             )
                     )
             )
+

@@ -128,7 +128,7 @@ for author,git_path, path, branch, dependencies in [
     (config['Main_Author'],               "modorganizer-uibase",            "uibase",            "new_vfs_library", ["Qt5", "boost"]),
     (config['Main_Author'],               "modorganizer-lootcli",           "lootcli",           "master",          ["LootApi", "boost"]),
     (config['Main_Author'],               "modorganizer-esptk",             "esptk",             "master",          ["boost"]),
-    (config['Main_Author'],               "modorganizer-bsatk",             "bsatk",             "master",          ["zlib"]),
+    (config['Main_Author'],               "modorganizer-bsatk",             "bsatk",             "master",          ["zlib","boost"]),
     (config['Main_Author'],               "modorganizer-nxmhandler",        "nxmhandler",        "master",          ["Qt5"]),
     (config['Main_Author'],               "modorganizer-helper",            "helper",            "master",          ["Qt5"]),
     (config['Main_Author'],               "modorganizer-game_gamebryo",     "game_gamebryo",     "new_vfs_library", ["Qt5", "modorganizer-uibase",

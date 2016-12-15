@@ -36,6 +36,10 @@ Project("boost") \
                                             "-j {}".format(config['num_jobs']),
                                             "toolset=msvc-14.0",
                                             "link=shared",
+                                            "include={}".format(os.path.join(config['paths']['build'], "icu", "dist", "include", "unicode")),
+                                            "-sICU_PATH={}".format(
+                                                os.path.join(config['paths']['build'], "icu", "dist")),
+                                            "-sHAVE_ICU=1",
                                             ] + ["--with-{0}".format(component) for component in boost_components])
         .depend(b2.B2(name="Static").arguments(["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
                                                 "-a",
@@ -46,6 +50,9 @@ Project("boost") \
                                                 "toolset=msvc-14.0",
                                                 "link=static",
                                                 "runtime-link=shared",
+                                                "include={}".format(os.path.join(config['paths']['build'], "icu", "dist", "include", "unicode")),
+                                                "-sICU_PATH={}".format(os.path.join(config['paths']['build'], "icu", "dist")),
+                                                "-sHAVE_ICU=1",
                                                 ] + ["--with-{0}".format(component) for component in boost_components])
             .depend(patch.CreateFile("user-config.jam",
                                      lambda: config_template.format(
@@ -58,7 +65,6 @@ Project("boost") \
                                                 "boost/{0}/boost_{1}.tar.bz2".format(boost_version,
                                                                                      boost_version.replace(".", "_")),
                                                 tree_depth=1))
-                    ).depend("Python")
+                    ).depend("icu").depend("Python")
                 )
             )
-

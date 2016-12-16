@@ -34,7 +34,7 @@ Project("boost") \
                                                                                                    replace(".", "_")),
                                                                                    "user-config.jam")),
                                             "-j {}".format(config['num_jobs']),
-                                            "toolset=msvc-14.0",
+                                            "toolset=msvc-12.0",
                                             "link=shared",
                                             "include={}".format(os.path.join(config['paths']['build'], "icu", "dist", "include", "unicode")),
                                             "-sICU_PATH={}".format(
@@ -47,7 +47,7 @@ Project("boost") \
                                                                                        "boost_{}".format(boost_version.
                                                                                                        replace(".", "_")), "user-config.jam")),
                                                 "-j {}".format(config['num_jobs']),
-                                                "toolset=msvc-14.0",
+                                                "toolset=msvc-12.0",
                                                 "link=static",
                                                 "runtime-link=shared",
                                                 "include={}".format(os.path.join(config['paths']['build'], "icu", "dist", "include", "unicode")),

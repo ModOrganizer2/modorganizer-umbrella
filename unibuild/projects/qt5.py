@@ -31,7 +31,7 @@ from unibuild.projects import openssl, cygwin,  icu
 
 qt_download_url = "http://download.qt.io/official_releases/qt"
 qt_download_ext = "tar.gz"
-qt_version = "5.5"
+qt_version = "5.7"
 qt_version_minor = "1"
 qt_inst_path = "{}/qt5".format(config["paths"]["build"]).replace("/", os.path.sep)
 grep_version = "2.5.4"
@@ -69,7 +69,7 @@ if False:
                             filename=filename))))
 else:
     skip_list = ["qtactiveqt", "qtandroidextras", "qtenginio",
-                "qtserialport", "qtsvg", "qtwebengine",
+                "qtserialport", "qtsvg", "qtwebkit",
                 "qtwayland", "qtdoc", "qtconnectivity", "qtwebkit-examples"]
 
     nomake_list = ["tests", "examples"]
@@ -188,8 +188,6 @@ else:
         return True
 
     qt5 = Project("Qt5") \
-        .depend(install_webkit
-                .depend(build_webkit
                         .depend(build.Execute(copy_imageformats)
                                 .depend(build.Execute(copy_platform)
                                         .depend(build.Execute(copy_icu_libs)
@@ -202,7 +200,7 @@ else:
                                                                         .depend(patch
                                                                                 .Replace("qtbase/configure.bat",
                                                                                          "if not exist %QTSRC%.gitignore goto sconf","")
-                                                                                .depend(webkit_patch
+#                                                                                .depend(webkit_patch
                                                                                         .depend(init_repo)
                                                                                         )
                                                                                 )
@@ -213,6 +211,10 @@ else:
                                                         )
                                                 )
                                         )
-                                )
-                        )
-                )
+
+    #        .depend(install_webkit
+    #                .depend(build_webkit
+ #                               )
+ #                       )
+ #               )
+

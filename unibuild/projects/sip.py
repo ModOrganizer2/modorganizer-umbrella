@@ -28,7 +28,7 @@ import errno
 import shutil
 
 
-sip_version = "4.16.9"
+sip_version = "4.18.1"
 
 
 def sip_environment():

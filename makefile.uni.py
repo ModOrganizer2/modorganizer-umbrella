@@ -62,9 +62,8 @@ ncc = Project("NCC") \
                       .format("-debug" if config['build_type'] == "Debug" else "-release",
                               os.path.join(config['__build_base_path'], "install", "bin")),
                       working_directory=lazy.Evaluate(lambda: ncc['build_path']))
-            # TODO When VS2015 supported correctly this can be uncommented
-            #.depend(msbuild.MSBuild("../nmm/NexusClient.sln",
-            #            working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
+            .depend(msbuild.MSBuild("../nmm/NexusClient.sln",
+                        working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
             .depend(patch.Copy("NexusClient.sln", "../nmm")
                     .depend(github.Source(config['Main_Author'], "modorganizer-NCC", "master")
                             .set_destination(os.path.join("NCC", "NexusClientCli"))
@@ -74,7 +73,7 @@ ncc = Project("NCC") \
                             )
                     )
             )
-#           )
+           )
 
 Project("modorganizer-game_features") \
     .depend(github.Source(config['Main_Author'], "modorganizer-game_features", "master", super_repository=tl_repo)
@@ -129,7 +128,7 @@ for author,git_path, path, branch, dependencies in [
     (config['Main_Author'],               "modorganizer-uibase",            "uibase",            "new_vfs_library", ["Qt5", "boost"]),
     (config['Main_Author'],               "modorganizer-lootcli",           "lootcli",           "master",          ["LootApi", "boost"]),
     (config['Main_Author'],               "modorganizer-esptk",             "esptk",             "master",          ["boost"]),
-    (config['Main_Author'],               "modorganizer-bsatk",             "bsatk",             "master",          ["zlib","boost"]),
+    (config['Main_Author'],               "modorganizer-bsatk",             "bsatk",             "master",          ["zlib"]),
     (config['Main_Author'],               "modorganizer-nxmhandler",        "nxmhandler",        "master",          ["Qt5"]),
     (config['Main_Author'],               "modorganizer-helper",            "helper",            "master",          ["Qt5"]),
     (config['Main_Author'],               "modorganizer-game_gamebryo",     "game_gamebryo",     "new_vfs_library", ["Qt5", "modorganizer-uibase",

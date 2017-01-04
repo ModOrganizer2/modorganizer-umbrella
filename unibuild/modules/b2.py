@@ -67,7 +67,7 @@ class B2(Builder):
                                   proc.returncode, soutpath, serrpath)
                     return False
 
-                cmdline = ["bjam.exe"]
+                cmdline = ["b2.exe"]
                 if self.__arguments:
                     cmdline.extend(self.__arguments)
 

@@ -5,7 +5,7 @@ from config import config
 import os
 
 
-boost_version = "1.60.0"
+boost_version = "1.62.0"
 boost_components = [
     "date_time",
     "coroutine",

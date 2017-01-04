@@ -65,7 +65,7 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',
-    'vc_version':   '14.0',
+    'vc_version':   '12.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': False,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
@@ -78,7 +78,7 @@ config = {
     'repo_update_frequency': 60 * 60 * 24,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
-    'Main_Author': 'TanninOne',
+    'Main_Author': 'LePresidente',
 
 }
 

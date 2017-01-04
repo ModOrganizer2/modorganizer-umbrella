@@ -36,7 +36,7 @@ def icu_environment():
     return result
 
 
-build_icu = build.Run(r"make && make install".format(os.path.join(config['paths']['build'], "cygwin", "bin")),
+build_icu = build.Run(r"set PATH={};%PATH% && make && make install".format(os.path.join(config['paths']['build'], "cygwin", "bin")),
                       name="ICU Make",
                       environment=icu_environment(),
                       working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))

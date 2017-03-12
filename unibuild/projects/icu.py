@@ -22,8 +22,8 @@ import subprocess
 import os
 import logging
 
-icu_version = "54"
-icu_version_minor = "1"
+icu_version = "58"
+icu_version_minor = "2"
 
 # installation happens concurrently in separate process. We need to wait for all relevant files to exist,
 # and can determine failure only by timeout
@@ -36,7 +36,7 @@ def icu_environment():
     return result
 
 
-build_icu = build.Run(r"set PATH={};%PATH% && make && make install".format(os.path.join(config['paths']['build'], "cygwin", "bin")),
+build_icu = build.Run(r" set PATH={};%PATH% && make && make install".format(os.path.join(config['paths']['build'], "cygwin", "bin")),
                       name="ICU Make",
                       environment=icu_environment(),
                       working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))

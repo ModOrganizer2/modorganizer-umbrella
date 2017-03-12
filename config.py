@@ -65,7 +65,7 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',
-    'vc_version':   '14.0',
+    'vc_version':   '15.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': False,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
@@ -98,9 +98,14 @@ config['paths'] = {
                                                              "", config['architecture'] == "x86"),
                                                "python.exe")),
     'visual_studio': os.path.realpath(
-        os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\{}".format(config['vc_version']),
-                                   "InstallDir", True),
-                     "..", "..", "VC"
+        os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
+                                   "{}".format(config['vc_version']), True),
+                     "VC")
+    ),
+    'visual_studio2017': os.path.realpath(
+        os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
+                                   "{}".format(config['vc_version']), True),
+                     "VC", "Auxiliary","Build"
                      )
     )
 }

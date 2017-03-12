@@ -26,20 +26,20 @@ import shutil
 import python
 import errno
 
-
-from unibuild.projects import openssl, cygwin,  icu
+from unibuild.projects import openssl, cygwin, icu
 
 qt_download_url = "http://download.qt.io/official_releases/qt"
 qt_download_ext = "tar.gz"
-qt_version = "5.7"
+qt_version = "5.8"
 qt_version_minor = "1"
 qt_inst_path = "{}/qt5".format(config["paths"]["build"]).replace("/", os.path.sep)
 grep_version = "2.5.4"
 # these two should be deduced from the config
-qt_bin_variant = "msvc2015"
+qt_bin_variant = "msvc2017"
 grep_version = "2.5.4"
 
-platform = "win32-msvc2015"
+platform = "win32-msvc2017"
+
 
 def make_sure_path_exists(path):
     try:
@@ -47,6 +47,7 @@ def make_sure_path_exists(path):
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
+
 
 # if config.get('prefer_binary_dependencies', False):
 
@@ -61,16 +62,16 @@ if False:
     )
     qt5 = Project("Qt5") \
         .depend(build.Run(filename, working_directory=config['paths']['download'])
-                .depend(urldownload.URLDownload(
-                    "{url}/{ver}/{ver}.{ver_min}/{filename}"
-                    .format(url=qt_download_url,
-                            ver=qt_version,
-                            ver_min=qt_version_minor,
-                            filename=filename))))
+        .depend(urldownload.URLDownload(
+        "{url}/{ver}/{ver}.{ver_min}/{filename}"
+            .format(url=qt_download_url,
+                    ver=qt_version,
+                    ver_min=qt_version_minor,
+                    filename=filename))))
 else:
     skip_list = ["qtactiveqt", "qtandroidextras", "qtenginio",
-                "qtserialport", "qtsvg", "qtwebkit",
-                "qtwayland", "qtdoc", "qtconnectivity", "qtwebkit-examples"]
+                 "qtserialport", "qtsvg", "qtwebkit",
+                 "qtwayland", "qtdoc", "qtconnectivity", "qtwebkit-examples"]
 
     nomake_list = ["tests", "examples"]
 
@@ -91,12 +92,13 @@ else:
 
     grep = Project('grep') \
         .depend(sourceforge.Release("gnuwin32", "grep/{0}/grep-{0}-bin.zip".format(grep_version))
-                .set_destination("grep"))\
+                .set_destination("grep")) \
         .depend(sourceforge.Release("gnuwin32", "grep/{0}/grep-{0}-dep.zip".format(grep_version))
                 .set_destination("grep"))
 
     flex = Project('flex') \
         .depend(sourceforge.Release("winflexbison", "win_flex_bison-latest.zip"))
+
 
     def webkit_env():
         result = config['__environment'].copy()
@@ -109,16 +111,17 @@ else:
             os.path.join(config["paths"]["build"], "qt5", "bin"),
             os.path.join(config['paths']['build'], "icu", "dist", "bin"),
             os.path.join(config['paths']['build'], "icu", "dist", "lib"),
-            os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32","bin"),
+            os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
         ]) + ";" + result['Path']
         result['INCLUDE'] = os.path.join(config['paths']['build'], "icu", "dist", "include") + ";" + \
-                            os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2j", "include") + ";" + \
+                            os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2k", "include") + ";" + \
                             result['INCLUDE']
         result['LIB'] = os.path.join(config['paths']['build'], "icu", "dist", "lib") + ";" + \
-                        os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2j", "lib", "VC") + ";" + \
+                        os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2k", "lib", "VC") + ";" + \
                         result['LIB']
 
         return result
+
 
     # TODO using openssl['Build_path'] here breaks things,
     # Possibly use the same setup as we do for the progress
@@ -131,11 +134,12 @@ else:
             os.path.join(config['paths']['build'], "icu", "dist", "lib"),
             os.path.join(config['paths']['build'], "jom")])
         result['INCLUDE'] += os.path.join(config['paths']['build'], "icu", "dist", "include") + ";" + \
-                             os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2j", "include")
+                             os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2k", "include")
         result['LIB'] += os.path.join(config['paths']['build'], "icu", "dist", "lib") + ";" + \
-                         os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2j", "lib", "VC")
+                         os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2k", "lib", "VC")
         result['LIBPATH'] += os.path.join(config['paths']['build'], "icu", "dist", "lib")
         return result
+
 
     webkit_patch = patch.Replace("qtwebkit/Source/WebCore/platform/text/TextEncodingRegistry.cpp",
                                  "#if OS(WINDOWS) && USE(WCHAR_UNICODE)",
@@ -148,7 +152,7 @@ else:
         .depend('grep').depend('flex')
 
     # comment to build webkit
-    #build_webkit = dummy.Success("webkit")
+    # build_webkit = dummy.Success("webkit")
 
     init_repo = build.Run("perl init-repository", name="init qt repository") \
         .set_fail_behaviour(Task.FailBehaviour.CONTINUE) \
@@ -167,54 +171,59 @@ else:
     install_webkit = build.Run(r"nmake install",
                                environment=qt5_environment(),
                                name="Install Webkit",
-                               working_directory=lambda: os.path.join(qt5['build_path'], "qtwebkit", "WebKitBuild", "Release"))
+                               working_directory=lambda: os.path.join(qt5['build_path'], "qtwebkit", "WebKitBuild",
+                                                                      "Release"))
 
 
     def copy_icu_libs(context):
         for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "*54.dll")):
-            shutil.copy(f,  os.path.join(config["paths"]["build"], "qt5", "bin"))
+            shutil.copy(f, os.path.join(config["paths"]["build"], "qt5", "bin"))
         return True
+
 
     def copy_imageformats(context):
         make_sure_path_exists(os.path.join(config['__build_base_path'], "install", "bin", "dlls", "imageformats"))
         for f in glob(os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "plugins", "imageformats", "*.dll")):
-            shutil.copy(f,  os.path.join(config['__build_base_path'], "install", "bin", "dlls", "imageformats"))
+            shutil.copy(f, os.path.join(config['__build_base_path'], "install", "bin", "dlls", "imageformats"))
         return True
+
 
     def copy_platform(context):
-        make_sure_path_exists(os.path.join(config['__build_base_path'],"install", "bin","platforms"))
-        for f in glob(os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "plugins", "platforms", "qwindows.dll")):
-            shutil.copy(f,  os.path.join(config['__build_base_path'],"install", "bin","platforms"))
+        make_sure_path_exists(os.path.join(config['__build_base_path'], "install", "bin", "platforms"))
+        for f in glob(
+                os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "plugins", "platforms", "qwindows.dll")):
+            shutil.copy(f, os.path.join(config['__build_base_path'], "install", "bin", "platforms"))
         return True
 
+
     qt5 = Project("Qt5") \
-                        .depend(build.Execute(copy_imageformats)
-                                .depend(build.Execute(copy_platform)
-                                        .depend(build.Execute(copy_icu_libs)
-                                                .depend(install_qt5
-                                                        .depend(build_qt5
-                                                                .depend("jom")
-                                                                .depend(build.Run(configure_cmd,
-                                                                                  name="configure qt",
-                                                                                  environment=qt5_environment())
-                                                                        .depend(patch
-                                                                                .Replace("qtbase/configure.bat",
-                                                                                         "if not exist %QTSRC%.gitignore goto sconf","")
-#                                                                                .depend(webkit_patch
-                                                                                        .depend(init_repo)
-                                                                                        )
-                                                                                )
-                                                                        .depend("openssl")
-                                                                        .depend("icu")
-                                                                        )
+        .depend(build.Execute(copy_imageformats)
+                .depend(build.Execute(copy_platform)
+                        .depend(build.Execute(copy_icu_libs)
+                                .depend(install_qt5
+                                        .depend(build_qt5
+                                                .depend("jom")
+                                                .depend(build.Run(configure_cmd,
+                                                                  name="configure qt",
+                                                                  environment=qt5_environment())
+                                                        .depend(patch
+                                                                .Replace("qtbase/configure.bat",
+                                                                         "if not exist %QTSRC%.gitignore goto sconf",
+                                                                         "")
+                                                                #                                                                                .depend(webkit_patch
+                                                                .depend(init_repo)
                                                                 )
+                                                        .depend("icu")
+                                                        .depend("openssl")
                                                         )
                                                 )
                                         )
+                                )
+                        )
+                )
 
     #        .depend(install_webkit
     #                .depend(build_webkit
- #                               )
- #                       )
- #               )
-
+    #                               )
+    #                       )
+    #               )

@@ -76,7 +76,11 @@ def extract_independent(graph):
 def visual_studio_environment():
     # when using visual studio we need to set up the environment correctly
     arch = "amd64" if config["architecture"] == 'x86_64' else "x86"
-    proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
+    if config['vc_version'] == "15.0":
+        proc = Popen([os.path.join(config['paths']['visual_studio2017'], "vcvarsall.bat"), arch, "&&", "SET"],
+                     stdout=PIPE, stderr=PIPE)
+    else:
+        proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
                  stdout=PIPE, stderr=PIPE)
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
@@ -86,8 +90,9 @@ def visual_studio_environment():
     vcenv = CIDict()
 
     for line in stdout.splitlines():
-        key, value = line.split("=", 1)
-        vcenv[key] = value
+        if "=" in line:
+            key, value = line.split("=", 1)
+            vcenv[key] = value
     return vcenv
 
 

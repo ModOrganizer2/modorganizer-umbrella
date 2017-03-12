@@ -29,7 +29,7 @@ import shutil
 # currently binary installation only
 
 
-openssl_version = "1.0.2j"
+openssl_version = "1.0.2k"
 
 libeay = "libeay32MD.lib"
 ssleay = "ssleay32MD.lib"

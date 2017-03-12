@@ -43,7 +43,7 @@ Cygwin_Mirror = "http://mirrors.kernel.org/sourceware/cygwin/"
 
 def build_func(context):
     proc = Popen([os.path.join(config['paths']['download'], filename),
-                  "-q", "-C", "Base", "-P", "make,dos2unix,binutils", "-n", "-d", "-O", "-B", "-R", "{}/../cygwin"
+                   "-C", "Base", "-P", "make,dos2unix,binutils", "-n", "-d", "-O", "-B", "-R", "{}/../cygwin"
                  .format(context['build_path']), "-l", "{}".format(os.path.join(config['paths']['download'])),
                   "-s", "{}".format(Cygwin_Mirror)],env=config['__environment'])
     proc.communicate()

@@ -36,7 +36,7 @@ def icu_environment():
     return result
 
 
-build_icu = build.Run(r" set PATH={};%PATH% && make && make install".format(os.path.join(config['paths']['build'], "cygwin", "bin")),
+build_icu = build.Run(r"make && make install".format(os.path.join(config['paths']['build'], "cygwin", "bin")),
                       name="ICU Make",
                       environment=icu_environment(),
                       working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))
@@ -90,7 +90,7 @@ icu = Project('icu') \
                                 .depend(patch.Replace("source/io/ufile.c",
                                                       "#if U_PLATFORM_USES_ONLY_WIN32_API",
                                                       "#if U_PLATFORM_USES_ONLY_WIN32_API && _MSC_VER < 1900")
-                                        .depend(sourceforge.Release("icu","ICU4C/{0}.{1}/icu4c-{0}_{1}-src.zip"
+                                        .depend(sourceforge.Release("icu","ICU4C/{0}.{1}/icu4c-{0}_{1}-src.tgz"
                                                                     .format(icu_version,icu_version_minor),tree_depth=1)
                                                                             .set_destination("icu")
                                                 )

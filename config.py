@@ -86,7 +86,7 @@ config['paths'] = {
     'download':      "{base_dir}\\downloads",
     'build':         "{base_dir}\\build",
     'progress':      "{base_dir}\\progress",
-    'graphviz':      path_or_default("dot.exe",   "Graphviz2.38", "bin"),
+#    'graphviz':      path_or_default("dot.exe",   "Graphviz2.38", "bin"),
     'cmake':         path_or_default("cmake.exe", "CMake", "bin"),
     'git':           path_or_default("git.exe",   "Git", "bin"),
     'perl':          path_or_default("perl.exe",  "StrawberryPerl", "bin"),

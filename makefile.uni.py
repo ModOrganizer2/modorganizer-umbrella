@@ -97,7 +97,7 @@ def gen_userfile_content(project):
 cmake_parameters = [
     "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
     "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
-#	non boost git version 	"-DBOOST_ROOT={}/build/boostgit",
+#	boost git version 	"-DBOOST_ROOT={}/build/boostgit",
     "-DBOOST_ROOT={}/build/boost_{}".format(config["__build_base_path"], config["boost_version"].replace(".", "_")),
     "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config["__build_base_path"])
 ]

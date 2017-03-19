@@ -23,7 +23,7 @@ from config import config
 
 # asmjit doesn't currently have any tags/branches but not every commit is usable
 asmjit_tag = "master"
-
+asmjit_commit = "fb9f82cb61df36aa513d054e748dc6769045f33e"
 
 Project("AsmJit") \
     .depend(cmake.CMake().arguments(
@@ -33,7 +33,7 @@ Project("AsmJit") \
         "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/')),
         "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
     ]).install()
-            .depend(github.Source("kobalicek", "asmjit", asmjit_tag, update=False)
+            .depend(github.Source("kobalicek", "asmjit", asmjit_tag, update=False, commit = asmjit_commit)
                     .set_destination("asmjit"))
             )
 

@@ -47,7 +47,6 @@ All the following need to be either on your PATH, or available from Program File
 * svn (SlinkSVN)
 * dot (from Graphviz)
 * ruby (v2.2 x64)
-* hg (TortoiseHg)
 * git
 * perl (Strawberry Perl)
 
@@ -64,7 +63,6 @@ optional arguments:
   -f FILE, --file FILE  sets the build script
   -d DESTINATION, --destination DESTINATION
                         output directory (base for download and build)
-```
 
 I'd suggest to use a destination folder that isn't too deep, some dependencies don't handle long paths well.
 If the make target is left empty, everything is built.

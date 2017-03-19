@@ -96,12 +96,23 @@ else:
     jom = Project("jom") \
         .depend(urldownload.URLDownload("http://download.qt.io/official_releases/jom/jom.zip"))
 
-    grep = Project('grep') \
-        .depend(sourceforge.Release("gnuwin32", "grep/{0}/grep-{0}-bin.zip".format(grep_version))
-                .set_destination("grep")) \
+	# set_destination changes the name of the downloaded archive, so the process thought grepdep was already done. Do we need a set_archive_name ?
+    grepdep = Project('grepdep') \
+        .depend(sourceforge.Release("gnuwin32", "grep/{0}/grep-{0}-dep.zip".format(grep_version))
+                .set_destination("grepdep"))
+
+    grepbin = Project('grepbin') \
         .depend(sourceforge.Release("gnuwin32", "grep/{0}/grep-{0}-dep.zip".format(grep_version))
                 .set_destination("grep"))
 
+    grep = Project('grep') \
+		.depend(patch.Copy([os.path.join(config['paths']['build'], "grepdep", "bin", "libiconv2.dll"),
+							os.path.join(config['paths']['build'], "grepdep", "bin", "libintl3.dll"),
+							os.path.join(config['paths']['build'], "grepdep", "bin", "pcre3.dll"),
+							os.path.join(config['paths']['build'], "grepdep", "bin", "regex2.dll"),],
+							os.path.join(config['paths']['build'], "grep", "bin")))\
+		.depend('grepbin').depend('grepdep')
+		
     flex = Project('flex') \
         .depend(sourceforge.Release("winflexbison", "win_flex_bison-latest.zip"))
 
@@ -110,7 +121,7 @@ else:
         result = config['__environment'].copy()
 
         result['Path'] = ";".join([
-            os.path.join(grep['build_path'], "bin"),
+            os.path.join(config["paths"]["build"], "grep", "bin"),
             flex['build_path'],
             os.path.dirname(config['paths']['ruby']),
             os.path.dirname(config['paths']['perl']),

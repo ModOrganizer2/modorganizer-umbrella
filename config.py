@@ -41,8 +41,19 @@ def get_from_hklm(path, name, wow64=False):
     if wow64:
         flags |= KEY_WOW64_32KEY
 
-    with OpenKey(HKEY_LOCAL_MACHINE, path, 0, flags) as key:
-        return QueryValueEx(key, name)[0]
+# avoids crashing if a product is not present
+    try:
+        with OpenKey(HKEY_LOCAL_MACHINE, path, 0, flags) as key:
+            return QueryValueEx(key, name)[0]
+    except:
+        return ""
+
+# To detect the editon of VS installed as of VS 2017
+vs_editions = [
+    "enterprise",
+    "professional",
+    "community",
+]
 
 
 program_files_folders = [
@@ -80,6 +91,14 @@ config = {
 
     'Main_Author': 'LePresidente',
 
+	'qt_version':	'5.8',					# currently evolving
+	'openssl_version': '1.0.2k',			# changes often, so better to edit here
+	'zlib_version': '1.2.11',				# changes often, so better to edit here
+	'grep_version': '2.5.4',				# moved here as commented in qt5.py
+	'boost_version': '1.63.0',				# for -DBOOST_ROOT, also, it is either to change from here
+	'vc_version_for_boost': '15.0',			# boost 1.63 does not support VS 2017 yet
+	'python_version': '2.7',				# used below and in python.py
+	'python_version_minor': '.12',			# used in python.py
 }
 
 config['paths'] = {
@@ -94,20 +113,22 @@ config['paths'] = {
     'svn':           path_or_default("svn.exe",   "SlikSvn", "bin"),
     '7z':            path_or_default("7z.exe",    "7-Zip"),
     # we need a python that matches the build architecture
-    'python':        Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\2.7\InstallPath",
+    'python':        Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
                                                              "", config['architecture'] == "x86"),
                                                "python.exe")),
-    'visual_studio': os.path.realpath(
-        os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
-                                   "{}".format(config['vc_version']), True),
-                     "VC")
-    ),
-    'visual_studio2017': os.path.realpath(
-        os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
-                                   "{}".format(config['vc_version']), True),
-                     "VC", "Auxiliary","Build"
-                     )
-    )
+    'visual_studio': ""			# will be set in unimake.py after args are evaluated
+    # 'visual_studio': os.path.realpath(
+        # os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
+                                   # "{}".format(config['vc_version']), True),
+                     # "VC")
+    # ),
+    # I do not have any entry for 15.0 in SxS
+    # 'visual_studio2017': os.path.realpath(
+        # os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
+                                   # "{}".format(config['vc_version']), True),
+                     # "VC", "Auxiliary","Build"
+                     # )
+    # )
 }
 
 if missing_prerequisites:

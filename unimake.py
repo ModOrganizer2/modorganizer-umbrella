@@ -22,7 +22,7 @@ from unibuild.progress import Progress
 from unibuild.project import Project
 from unibuild import Task
 from unibuild.utility import CIDict
-from config import config
+from config import config, vs_editions, get_from_hklm
 from subprocess import Popen, PIPE
 import imp
 import sys
@@ -73,15 +73,48 @@ def extract_independent(graph):
     return independent
 
 
+def vc_year(vc_version):
+    return "2017" if vc_version == "15.0" else ""
+
+
+# No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir
+def get_visual_studio_2017_or_more(vc_version):
+    try:
+        if os.environ["VisualStudioVersion"] == vc_version:
+            p = os.path.join(os.environ["VSINSTALLDIR"], "VC", "Auxiliary", "Build")
+            f = os.path.join(p, "vcvarsall.bat")
+            res = os.path.isfile(f)
+            if res is not None:
+               return os.path.realpath(p)
+    except:
+        res = None
+
+    for edition in vs_editions:
+        s = os.environ["ProgramFiles(x86)"]
+        p = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version), edition, "VC", "Auxiliary", "Build")
+        f = os.path.join(p, "vcvarsall.bat")
+        if os.path.isfile(f):
+            return os.path.realpath(p)
+
+
+def get_visual_studio_2015_or_less(vc_version):
+    return os.path.realpath(
+        os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\{}".format(vc_version),
+                                   "InstallDir", True),
+                     "..", "..", "VC"
+                     )
+    )
+
+
+def visual_studio(vc_version):
+    config["paths"]["visual_studio"] = get_visual_studio_2015_or_less(vc_version) if vc_version < "15.0" else get_visual_studio_2017_or_more(vc_version)
+
+
 def visual_studio_environment():
     # when using visual studio we need to set up the environment correctly
     arch = "amd64" if config["architecture"] == 'x86_64' else "x86"
-    if config['vc_version'] == "15.0":
-        proc = Popen([os.path.join(config['paths']['visual_studio2017'], "vcvarsall.bat"), arch, "&&", "SET"],
+    proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
                      stdout=PIPE, stderr=PIPE)
-    else:
-        proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
-                 stdout=PIPE, stderr=PIPE)
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
         logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
@@ -113,6 +146,7 @@ def init_config(args):
     if config['architecture'] not in ['x86_64', 'x86']:
         raise ValueError("only architectures supported are x86 and x86_64")
 
+    visual_studio(config["vc_version"]) # forced set after args are evaluated
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = os.path.abspath(args.destination)
 

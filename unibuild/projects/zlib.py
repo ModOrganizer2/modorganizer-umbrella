@@ -22,7 +22,7 @@ from config import config
 import os
 
 
-zlib_version = "1.2.11"
+zlib_version = config['zlib_version']
 
 
 Project("zlib") \

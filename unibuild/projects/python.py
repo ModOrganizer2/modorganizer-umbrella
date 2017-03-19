@@ -25,7 +25,7 @@ from glob import glob
 import errno
 
 
-python_version = "2.7.12"
+python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".12")
 python_url = "https://www.python.org/ftp/python"
 
 def make_sure_path_exists(path):

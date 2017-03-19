@@ -7,7 +7,7 @@ import os
 
 boost_version = config["boost_version"]
 python_version = config["python_version"]
-vc_version = config['vc_version']
+vc_version = config['vc_version_for_boost']
 
 boost_components = [
     "date_time",

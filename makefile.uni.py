@@ -38,7 +38,7 @@ Projects
 
 
 from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5
-from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib, lz4, boostgit
+from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib, lz4
 
 # TODO modorganizer-lootcli needs an overhaul as the api has changed alot
 def bitness():
@@ -121,7 +121,6 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
                              .depend("GTest")
                              .depend("fmtlib")
                              .depend("spdlog")
-                             .depend("boostgit")
              #        )_
              )
              )
@@ -171,7 +170,7 @@ for author,git_path, path, branch, dependencies in [
     (config['Main_Author'],               "modorganizer-plugin_python",     "plugin_python",     "master",          ["Qt5", "boost", "Python", "modorganizer-uibase",
                                                                                                                     "sip"]),
     (config['Main_Author'],               "githubpp",                        "githubpp",          "master",           ["Qt5"]),
-    (config['Main_Author'],               "modorganizer",                   "modorganizer",      "QT5.7",           ["Qt5", "boostgit",
+    (config['Main_Author'],               "modorganizer",                   "modorganizer",      "QT5.7",           ["Qt5", "boost",
                                                                                                                      "modorganizer-uibase", "modorganizer-archive",
                                                                                                                      "modorganizer-bsatk", "modorganizer-esptk",
                                                                                                                      "modorganizer-game_features",

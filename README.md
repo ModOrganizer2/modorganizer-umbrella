@@ -63,6 +63,7 @@ optional arguments:
   -f FILE, --file FILE  sets the build script
   -d DESTINATION, --destination DESTINATION
                         output directory (base for download and build)
+  -s config_option_name=value, --set config_option_name=value change a config option
 
 I'd suggest to use a destination folder that isn't too deep, some dependencies don't handle long paths well.
 If the make target is left empty, everything is built.

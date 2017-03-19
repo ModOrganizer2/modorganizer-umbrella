@@ -173,7 +173,7 @@ else:
 
     init_repo = build.Run("perl init-repository", name="init qt repository") \
         .set_fail_behaviour(Task.FailBehaviour.CONTINUE) \
-        .depend(git.Clone("git://code.qt.io/qt/qt5.git", qt_version))
+        .depend(git.Clone("http://code.qt.io/qt/qt5.git", qt_version))	# Internet proxy could refuse git protocol
 
     build_qt5 = build.Run(r"jom.exe -j {}".format(config['num_jobs']),
                           environment=qt5_environment(),

@@ -41,9 +41,12 @@ from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5
 from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib, lz4, boostgit
 
 # TODO modorganizer-lootcli needs an overhaul as the api has changed alot
+def bitness():
+    return "x64" if config['architecture'] == "x86_64" else "Win32"
+	
 Project("LootApi") \
     .depend(patch.Copy("loot_api.dll".format(loot_version,commit_id), os.path.join(config['__build_base_path'], "install", "bin", "loot"))
-            .depend(github.Release("loot", "loot", loot_version, "loot-api_{}-0-{}_dev_x64".format(loot_version,commit_id),"7z",tree_depth=1)
+            .depend(github.Release("loot", "loot", loot_version, "loot-api_{}-0-{}_dev_{}".format(loot_version, commit_id, bitness()),"7z",tree_depth=1)
                     .set_destination("lootapi"))
            )
 
@@ -94,6 +97,7 @@ def gen_userfile_content(project):
 cmake_parameters = [
     "-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
     "-DDEPENDENCIES_DIR={}/build".format(config["__build_base_path"]),
+	"-DBOOST_ROOT={}/build/boost_{}".format(config["__build_base_path"], config["boost_version"].replace(".", "_")),
     "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config["__build_base_path"])
 ]
 

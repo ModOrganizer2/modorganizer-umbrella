@@ -153,7 +153,10 @@ def init_config(args):
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable
 
-    qtcreator_config_path = r"C:/Users/modorganizer/AppData/Roaming/QtProject"
+    qtcreator_config_path = config['__environment']['AppData'] + "/QtProject"
+    logging.debug("  Profile: qtcreator_config_path=%s", qtcreator_config_path)
+    
+    # qtcreator_config_path = r"C:/Users/Tannin/AppData/Roaming/QtProject"
 
     if os.path.isdir(qtcreator_config_path):
         from ConfigParser import RawConfigParser

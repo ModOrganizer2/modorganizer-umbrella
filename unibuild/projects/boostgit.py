@@ -7,7 +7,9 @@ import os
 
 boost_version = config["boost_version"]
 python_version = config["python_version"]
+python_version_minor = config["python_version_minor"]
 vc_version = config['vc_version_for_boost']
+python_path = os.path.join(config['paths']['build'], "python-{}{}".format(python_version, python_version_minor))
 
 boost_components = [
     "date_time",
@@ -64,9 +66,9 @@ Project("boostgit") \
                         .depend(patch.CreateFile("user-config.jam",
                                      lambda: config_template.format(
                                          python_version,
-                                         os.path.join(python.python['build_path'], "PCBuild",
+                                         os.path.join(python_path, "PCBuild",
                                                       "{}".format("" if config['architecture'] == 'x86' else "amd64")).replace("\\",'/'),
-                                        os.path.join(python.python['build_path']).replace("\\",'/'),
+                                         python_path,
                                          "64" if config['architecture'] == "x86_64" else "32")
                                      ))
 

@@ -30,16 +30,22 @@ from unibuild.projects import openssl, cygwin, icu
 
 qt_download_url = "http://download.qt.io/official_releases/qt"
 qt_download_ext = "tar.gz"
-qt_version = "5.8"
+qt_version = config['qt_version']
 qt_version_minor = "1"
 qt_inst_path = "{}/qt5".format(config["paths"]["build"]).replace("/", os.path.sep)
-grep_version = "2.5.4"
-# these two should be deduced from the config
-qt_bin_variant = "msvc2017"
-grep_version = "2.5.4"
 
-platform = "win32-msvc2017"
+def bitness():
+    return "64" if config['architecture'] == "x86_64" else "32"
 
+def variant():
+	return "msvc2013" if config['vc_version'] == "12.0" else "msvc2015" if config['vc_version'] == "14.0" else "msvc2017"
+
+qt_bin_variant = variant()
+
+platform = "win32-{0}".format(variant())
+
+openssl_version = config['openssl_version']
+grep_version = config['grep_version']
 
 def make_sure_path_exists(path):
     try:
@@ -114,10 +120,10 @@ else:
             os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
         ]) + ";" + result['Path']
         result['INCLUDE'] = os.path.join(config['paths']['build'], "icu", "dist", "include") + ";" + \
-                            os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2k", "include") + ";" + \
+                            os.path.join(config['paths']['build'], "Win{}OpenSSL-{}".format(bitness(), openssl_version.replace(".", "_")), "include") + ";" + \
                             result['INCLUDE']
         result['LIB'] = os.path.join(config['paths']['build'], "icu", "dist", "lib") + ";" + \
-                        os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2k", "lib", "VC") + ";" + \
+                        os.path.join(config['paths']['build'], "Win{}OpenSSL-{}".format(bitness(), openssl_version.replace(".", "_")), "lib", "VC") + ";" + \
                         result['LIB']
 
         return result
@@ -134,9 +140,9 @@ else:
             os.path.join(config['paths']['build'], "icu", "dist", "lib"),
             os.path.join(config['paths']['build'], "jom")])
         result['INCLUDE'] += os.path.join(config['paths']['build'], "icu", "dist", "include") + ";" + \
-                             os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2k", "include")
+                             os.path.join(config['paths']['build'], "Win{}OpenSSL-{}".format(bitness(), openssl_version.replace(".", "_")), "include")
         result['LIB'] += os.path.join(config['paths']['build'], "icu", "dist", "lib") + ";" + \
-                         os.path.join(config['paths']['build'], "Win64OpenSSL-1_0_2k", "lib", "VC")
+                         os.path.join(config['paths']['build'], "Win{}OpenSSL-{}".format(bitness(), openssl_version.replace(".", "_")), "lib", "VC")
         result['LIBPATH'] += os.path.join(config['paths']['build'], "icu", "dist", "lib")
         return result
 

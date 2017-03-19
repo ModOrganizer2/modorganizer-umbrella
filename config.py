@@ -65,7 +65,7 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',
-    'vc_version':   '15.0',
+    'vc_version':   '14.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': False,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
@@ -80,6 +80,14 @@ config = {
 
     'Main_Author': 'LePresidente',
 
+	'qt_version':	'5.8',					# currently evolving
+	'openssl_version': '1.0.2k',			# changes often, so better to edit here
+	'zlib_version': '1.2.11',				# changes often, so better to edit here
+	'grep_version': '2.5.4',				# moved here as commented in qt5.py
+	'boost_version': '1.63.0',				# for -DBOOST_ROOT, also, it is either to change from here
+	'vc_version_for_boost': '14.0',			# boost 1.63 does not support VS 2017 yet
+	'python_version': '2.7',				# used below and in python.py
+	'python_version_minor': '.12',			# used in python.py
 }
 
 config['paths'] = {
@@ -94,7 +102,7 @@ config['paths'] = {
     'svn':           path_or_default("svn.exe",   "SlikSvn", "bin"),
     '7z':            path_or_default("7z.exe",    "7-Zip"),
     # we need a python that matches the build architecture
-    'python':        Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\2.7\InstallPath",
+    'python':        Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
                                                              "", config['architecture'] == "x86"),
                                                "python.exe")),
     'visual_studio': os.path.realpath(

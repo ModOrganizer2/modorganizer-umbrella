@@ -41,8 +41,19 @@ def get_from_hklm(path, name, wow64=False):
     if wow64:
         flags |= KEY_WOW64_32KEY
 
-    with OpenKey(HKEY_LOCAL_MACHINE, path, 0, flags) as key:
-        return QueryValueEx(key, name)[0]
+# avoids crashing if a product is not present
+    try:
+        with OpenKey(HKEY_LOCAL_MACHINE, path, 0, flags) as key:
+            return QueryValueEx(key, name)[0]
+    except:
+        return ""
+
+# To detect the editon of VS installed as of VS 2017
+vs_editions = [
+    "enterprise",
+    "professional",
+    "community",
+]
 
 
 program_files_folders = [
@@ -65,7 +76,7 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',
-    'vc_version':   '14.0',
+    'vc_version':   '15.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': False,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
@@ -105,17 +116,19 @@ config['paths'] = {
     'python':        Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
                                                              "", config['architecture'] == "x86"),
                                                "python.exe")),
-    'visual_studio': os.path.realpath(
-        os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
-                                   "{}".format(config['vc_version']), True),
-                     "VC")
-    ),
-    'visual_studio2017': os.path.realpath(
-        os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
-                                   "{}".format(config['vc_version']), True),
-                     "VC", "Auxiliary","Build"
-                     )
-    )
+    'visual_studio': ""			# will be set in unimake.py after args are evaluated
+    # 'visual_studio': os.path.realpath(
+        # os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
+                                   # "{}".format(config['vc_version']), True),
+                     # "VC")
+    # ),
+    # I do not have any entry for 15.0 in SxS
+    # 'visual_studio2017': os.path.realpath(
+        # os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
+                                   # "{}".format(config['vc_version']), True),
+                     # "VC", "Auxiliary","Build"
+                     # )
+    # )
 }
 
 if missing_prerequisites:

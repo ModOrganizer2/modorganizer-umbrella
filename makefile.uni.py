@@ -122,6 +122,7 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
                              .depend("GTest")
                              .depend("fmtlib")
                              .depend("spdlog")
+                             .depend("boost")
              #        )_
              )
              )

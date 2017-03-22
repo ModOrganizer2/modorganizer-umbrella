@@ -99,6 +99,8 @@ config = {
 	'vc_version_for_boost': '14.0',			# boost 1.63 does not support VS 2017 yet
 	'python_version': '2.7',				# used below and in python.py
 	'python_version_minor': '.12',			# used in python.py
+	'icu_version': '58',					# used in PyQt5
+	'icu_version_minor': '2',				# for consistency
 }
 
 config['paths'] = {

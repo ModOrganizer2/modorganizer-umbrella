@@ -22,8 +22,8 @@ import subprocess
 import os
 import logging
 
-icu_version = "58"
-icu_version_minor = "2"
+icu_version = config['icu_version']
+icu_version_minor = config['icu_version_minor']
 
 # installation happens concurrently in separate process. We need to wait for all relevant files to exist,
 # and can determine failure only by timeout

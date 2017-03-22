@@ -65,7 +65,7 @@ ncc = Project("NCC") \
     .depend(build.Run(r"publish.bat"
                      .format("-debug" if config['build_type'] == "Debug" else "-release",
                               os.path.join(config['__build_base_path'], "install", "bin")),
-                      working_directory=lazy.Evaluate(lambda: ncc['build_path']))
+                      working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "NexusClientCli")))
            .depend(msbuild.MSBuild(os.path.join(config['paths']['build'],"NCC","nmm",'NexusClientCli.sln'),
                        working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")),project_platform="Any CPU")
             .depend(build.Execute(prepare_nmm, name="append NexusClientCli project to NMM"))

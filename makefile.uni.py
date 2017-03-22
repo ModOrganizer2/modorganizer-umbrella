@@ -153,6 +153,8 @@ for author,git_path, path, branch, dependencies in [
 
     build_step_ide = cmake.CMake().arguments(cmake_parameters).install()
 
+    build_step_noinstall = ""
+
     for dep in dependencies:
         build_step.depend(dep)
 
@@ -170,7 +172,11 @@ for author,git_path, path, branch, dependencies in [
                            )
 
     else:
-        project.depend(build_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
+        if git_path == "modorganizer-game_features":
+            project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
+                                                   .set_destination(path))
+        else:
+            project.depend(build_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                                                    .set_destination(path)))
 
 

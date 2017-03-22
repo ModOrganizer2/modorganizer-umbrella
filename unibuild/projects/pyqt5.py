@@ -82,7 +82,7 @@ class PyQt5Configure(build.Builder):
                               "-b", bp,
                               "-d", os.path.join(bp, "Lib", "site-packages"),
                               "-v", os.path.join(bp, "sip", "PyQt5"),
-                              "--sip-incdir", os.path.join(bp, "Include")],
+                              "--sip-incdir", os.path.join(bp, "Include"),
                              env=pyqt5_env(),
                              cwd=self._context["build_path"],
                              shell=True,

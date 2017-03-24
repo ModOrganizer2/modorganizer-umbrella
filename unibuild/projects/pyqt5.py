@@ -32,6 +32,7 @@ import qt5  # import to get at qt version information
 import sip
 import python
 
+icu_version = config['icu_version']
 
 def make_sure_path_exists(path):
     try:
@@ -82,7 +83,8 @@ class PyQt5Configure(build.Builder):
                               "-b", bp,
                               "-d", os.path.join(bp, "Lib", "site-packages"),
                               "-v", os.path.join(bp, "sip", "PyQt5"),
-                              "--sip-incdir", os.path.join(bp, "Include")],
+                              "--sip-incdir", os.path.join(bp, "Include"),
+                              "--spec=win32-msvc"],
                              env=pyqt5_env(),
                              cwd=self._context["build_path"],
                              shell=True,
@@ -100,9 +102,9 @@ Project("PyQt5") \
     .depend(build.Execute(copy_pyd)
             .depend(patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
                                 os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll"),
-                                os.path.join(config['paths']['build'], "icu" , "dist", "lib", "icudt54.dll"),
-                                os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuin54.dll"),
-                                os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuuc54.dll")],
+                                os.path.join(config['paths']['build'], "icu" , "dist", "lib", "icudt{}.dll".format(icu_version)),
+                                os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuin{}.dll".format(icu_version)),
+                                os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuuc{}.dll".format(icu_version))],
                                doclambda(lambda: python.python['build_path'], "python path"))
                     .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
                             .depend(PyQt5Configure()

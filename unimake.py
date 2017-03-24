@@ -153,7 +153,10 @@ def init_config(args):
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable
 
-    qtcreator_config_path = r"C:/Users/modorganizer/AppData/Roaming/QtProject"
+    qtcreator_config_path = config['__environment']['AppData'] + "/QtProject"
+    logging.debug("  Profile: qtcreator_config_path=%s", qtcreator_config_path)
+    
+    # qtcreator_config_path = r"C:/Users/Tannin/AppData/Roaming/QtProject"
 
     if os.path.isdir(qtcreator_config_path):
         from ConfigParser import RawConfigParser
@@ -196,6 +199,9 @@ def recursive_remove(graph, node):
 
 
 def main():
+    time_format = "%(asctime)-15s %(message)s"
+    logging.basicConfig(format=time_format, level=logging.DEBUG)
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file', default='makefile.uni.py', help='sets the build script')
     parser.add_argument('-d', '--destination', default='.', help='output directory (base for download and build)')
@@ -209,9 +215,6 @@ def main():
     for d in ["download", "build", "progress"]:
         if not os.path.exists(config["paths"][d]):
             os.makedirs(config["paths"][d])
-
-    time_format = "%(asctime)-15s %(message)s"
-    logging.basicConfig(format=time_format, level=logging.DEBUG)
 
     logging.debug("building dependency graph")
     manager = TaskManager()

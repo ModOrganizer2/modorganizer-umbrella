@@ -25,7 +25,7 @@ from glob import glob
 import errno
 
 
-python_version = "2.7.12"
+python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".12")
 python_url = "https://www.python.org/ftp/python"
 
 def make_sure_path_exists(path):
@@ -92,12 +92,8 @@ else:
                  .depend(build.Run(r"PCBuild\\build.bat -e -c Release -m -p {}".format("x64" if config['architecture'] == 'x86_64' else ""),
                                    environment=python_environment(),
                                    working_directory=lambda: os.path.join(python['build_path']))
-                         .depend(build.Run(upgrade_args, name="upgrade python project")
-                                         .depend(github.Source("LePresidente", "cpython", "2.7").set_destination("Python-2.7.12")))
-                                                 )
-                                         )
-
-
-
-
-
+                            .depend(build.Run(upgrade_args, name="upgrade python project")
+                                         .depend(github.Source("LePresidente", "cpython", config.get('python_version', "2.7"))\
+										     .set_destination("python-{}".format(python_version))))
+                        )
+                )

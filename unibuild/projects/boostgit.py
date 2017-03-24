@@ -5,7 +5,12 @@ from config import config
 import os
 
 
-boost_version = "1.63.0"
+boost_version = config["boost_version"]
+python_version = config["python_version"]
+python_version_minor = config["python_version_minor"]
+vc_version = config['vc_version_for_boost']
+python_path = os.path.join(config['paths']['build'], "python-{}{}".format(python_version, python_version_minor))
+
 boost_components = [
     "date_time",
     "coroutine",
@@ -18,11 +23,11 @@ boost_components = [
 
 
 config_template = ("using python\n"
-                   "  : 2.7\n"
-                   "  : {0}/python.exe\n"
-                   "  : {1}/Include\n"
                    "  : {0}\n"
-                   "  : <address-model>{2}\n"
+                   "  : {1}/python.exe\n"
+                   "  : {2}/Include\n"
+                   "  : {1}\n"
+                   "  : <address-model>{3}\n"
                    "  : <define>BOOST_ALL_NO_LIB=1\n"
                    "  ;")
 
@@ -37,7 +42,9 @@ Project("boostgit") \
                                                                                    "boost_git",
                                                                                    "user-config.jam")),
                                             "-j {}".format(config['num_jobs']),
-                                            "toolset=msvc-14.1",
+
+                                            "toolset=msvc-" + vc_version,
+
                                             "link=shared",
                                             "include={}".format(os.path.join(config['paths']['build'], "icu", "dist", "include", "unicode")),
                                             "-sICU_PATH={}".format(
@@ -49,7 +56,9 @@ Project("boostgit") \
                                                 "--user-config={}".format(os.path.join(config['paths']['build'],
                                                                                        "boost_git", "user-config.jam")),
                                                 "-j {}".format(config['num_jobs']),
-                                                "toolset=msvc-14.1",
+
+                                                "toolset=msvc-" + vc_version,
+
                                                 "link=static",
                                                 "runtime-link=shared",
                                                 "include={}".format(os.path.join(config['paths']['build'], "icu", "dist", "include", "unicode")),
@@ -59,9 +68,10 @@ Project("boostgit") \
                     .depend(build.Run(r"bootstrap.bat",working_directory=lambda: os.path.join(config["paths"]["build"], "boost_git")))
                         .depend(patch.CreateFile("user-config.jam",
                                      lambda: config_template.format(
-                                         os.path.join(python.python['build_path'], "PCBuild",
+                                         python_version,
+                                         os.path.join(python_path, "PCBuild",
                                                       "{}".format("" if config['architecture'] == 'x86' else "amd64")).replace("\\",'/'),
-                                        os.path.join(python.python['build_path']).replace("\\",'/'),
+                                         python_path,
                                          "64" if config['architecture'] == "x86_64" else "32")
                                      ))
                     .depend(init_repo)

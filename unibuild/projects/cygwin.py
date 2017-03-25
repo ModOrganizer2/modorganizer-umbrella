@@ -34,9 +34,9 @@ timeout = 15   # seconds
 def bitness():
     return "64" if config['architecture'] == "x86_64" else "32"
 
-filename = "setup-x86_64.exe"
+filename = "setup-{}.exe".format(config['architecture'])
 
-url = "http://www.cygwin.com/setup-x86_64.exe"
+url = "http://www.cygwin.com/{}".format(filename)
 
 Cygwin_Mirror = "http://mirrors.kernel.org/sourceware/cygwin/"
 

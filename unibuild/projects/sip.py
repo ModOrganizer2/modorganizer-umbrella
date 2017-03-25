@@ -29,11 +29,12 @@ import shutil
 
 
 sip_version = "4.19.1"
+python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".13")
 
 
 def sip_environment():
     result = config['__environment'].copy()
-    result['LIB'] += os.path.join(config['paths']['build'],"Python-2.7.12","PCbuild","amd64")
+    result['LIB'] += os.path.join(config['paths']['build'],"python-{}".format(python_version),"PCbuild","amd64")
     return result
 
 

@@ -94,6 +94,7 @@ def get_visual_studio_2017_or_more(vc_version):
         p = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version), edition, "VC", "Auxiliary", "Build")
         f = os.path.join(p, "vcvarsall.bat")
         if os.path.isfile(f):
+            config['paths']['visual_studio'] = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version), edition)
             return os.path.realpath(p)
 
 
@@ -103,6 +104,7 @@ def get_visual_studio_2015_or_less(vc_version):
         p = os.path.join(s, "Microsoft Visual Studio {}".format(vc_version), "VC")
         f = os.path.join(p, "vcvarsall.bat")
         if os.path.isfile(f):
+            config['paths']['visual_studio'] = os.path.join(s, "Microsoft Visual Studio {}".format(vc_version))
             return os.path.realpath(p)
     except:
         res = None

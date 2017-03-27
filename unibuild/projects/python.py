@@ -19,6 +19,7 @@
 from unibuild.project import Project
 from unibuild.modules import github, msbuild, build, urldownload
 from config import config
+from unimake import get_visual_studio_2017_or_more
 import os
 import shutil
 from glob import glob
@@ -44,10 +45,17 @@ def python_environment():
 
 def upgrade_args():
     env = config['__environment']
-    devenv_path = env['DevEnvDir'] if 'DevEnvDir' in env and not config['vc_version'] < "15.0" \
+    devenv_path = env['DevEnvDir'] if 'DevEnvDir' in env\
         else os.path.join(config['paths']['visual_studio_basedir'], "Common7", "IDE")
-
-    return [os.path.join(devenv_path, "devenv.exe"),
+    #MSVC2017 supports building with the MSVC2015 toolset though this will break here, Small work around to make sure devenv.exe exists
+    #If not try MSVC2017 instead
+    res = os.path.isfile(os.path.join(devenv_path, "devenv.exe"))
+    if res:
+        return [os.path.join(devenv_path, "devenv.exe"),
+            "PCBuild/pcbuild.sln",
+            "/upgrade"]
+    else:
+        return [os.path.join(get_visual_studio_2017_or_more('15.0'),"..","..","..","Common7", "IDE", "devenv.exe"),
             "PCBuild/pcbuild.sln",
             "/upgrade"]
 

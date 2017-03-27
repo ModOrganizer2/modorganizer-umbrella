@@ -118,6 +118,15 @@ def visual_studio_environment():
     proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
                      stdout=PIPE, stderr=PIPE)
     stdout, stderr = proc.communicate()
+
+    if "Error in script usage. The correct usage is" in stderr:
+        logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
+        return False
+
+    if "Error in script usage. The correct usage is" in stdout:
+        logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
+        return False
+
     if proc.returncode != 0:
         logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
         return False

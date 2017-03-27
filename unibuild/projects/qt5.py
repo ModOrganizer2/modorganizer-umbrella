@@ -96,54 +96,6 @@ else:
     jom = Project("jom") \
         .depend(urldownload.URLDownload("http://download.qt.io/official_releases/jom/jom.zip"))
 
-	# set_destination changes the name of the downloaded archive, so the process thought grepdep was already done. Do we need a set_archive_name ?
-    grepdep = Project('grepdep') \
-        .depend(sourceforge.Release("gnuwin32", "grep/{0}/grep-{0}-dep.zip".format(grep_version))
-                .set_destination("grepdep"))
-
-    grepbin = Project('grepbin') \
-        .depend(sourceforge.Release("gnuwin32", "grep/{0}/grep-{0}-dep.zip".format(grep_version))
-                .set_destination("grep"))
-
-    grep = Project('grep') \
-		.depend(patch.Copy([os.path.join(config['paths']['build'], "grepdep", "bin", "libiconv2.dll"),
-							os.path.join(config['paths']['build'], "grepdep", "bin", "libintl3.dll"),
-							os.path.join(config['paths']['build'], "grepdep", "bin", "pcre3.dll"),
-							os.path.join(config['paths']['build'], "grepdep", "bin", "regex2.dll"),],
-							os.path.join(config['paths']['build'], "grep", "bin")))\
-		.depend('grepbin').depend('grepdep')
-		
-    flex = Project('flex') \
-        .depend(sourceforge.Release("winflexbison", "win_flex_bison-latest.zip"))
-
-
-    def webkit_env():
-        result = config['__environment'].copy()
-
-        result['Path'] = ";".join([
-            os.path.join(config["paths"]["build"], "grep", "bin"),
-            flex['build_path'],
-            os.path.dirname(config['paths']['ruby']),
-            os.path.dirname(config['paths']['perl']),
-            os.path.join(config["paths"]["build"], "qt5", "bin"),
-            os.path.join(config['paths']['build'], "icu", "dist", "bin"),
-            os.path.join(config['paths']['build'], "icu", "dist", "lib"),
-            os.path.join(config["paths"]["build"], "qt5.git", "gnuwin32", "bin"),
-        ]) + ";" + result['Path']
-        result['INCLUDE'] = os.path.join(config['paths']['build'], "icu", "dist", "include") + ";" + \
-                            os.path.join(config['paths']['build'], "Win{}OpenSSL-{}".format(bitness(), openssl_version.replace(".", "_")), "include") + ";" + \
-                            result['INCLUDE']
-        result['LIB'] = os.path.join(config['paths']['build'], "icu", "dist", "lib") + ";" + \
-                        os.path.join(config['paths']['build'], "Win{}OpenSSL-{}".format(bitness(), openssl_version.replace(".", "_")), "lib", "VC") + ";" + \
-                        result['LIB']
-
-        return result
-
-
-    # TODO using openssl['Build_path'] here breaks things,
-    # Possibly use the same setup as we do for the progress
-    # tracking to log build_paths per project and read from file using function
-
     def qt5_environment():
         result = config['__environment'].copy()
         result['Path'] = result['Path'] + ";" + ";".join([
@@ -156,20 +108,6 @@ else:
                          os.path.join(config['paths']['build'], "Win{}OpenSSL-{}".format(bitness(), openssl_version.replace(".", "_")), "lib", "VC")
         result['LIBPATH'] += os.path.join(config['paths']['build'], "icu", "dist", "lib")
         return result
-
-
-    webkit_patch = patch.Replace("qtwebkit/Source/WebCore/platform/text/TextEncodingRegistry.cpp",
-                                 "#if OS(WINDOWS) && USE(WCHAR_UNICODE)",
-                                 "#if OS(WINCE) && USE(WCHAR_UNICODE)")
-
-    build_webkit = build.Run(r"perl Tools\Scripts\build-webkit --qt --release",
-                             environment=webkit_env,
-                             working_directory=lambda: os.path.join(qt5['build_path'], "qtwebkit"),
-                             name="build webkit") \
-        .depend('grep').depend('flex')
-
-    # comment to build webkit
-    # build_webkit = dummy.Success("webkit")
 
     init_repo = build.Run("perl init-repository", name="init qt repository") \
         .set_fail_behaviour(Task.FailBehaviour.CONTINUE) \
@@ -184,12 +122,6 @@ else:
                             environment=qt5_environment(),
                             name="Install Qt5",
                             working_directory=lambda: os.path.join(qt5['build_path']))
-
-    install_webkit = build.Run(r"nmake install",
-                               environment=qt5_environment(),
-                               name="Install Webkit",
-                               working_directory=lambda: os.path.join(qt5['build_path'], "qtwebkit", "WebKitBuild",
-                                                                      "Release"))
 
 
     def copy_icu_libs(context):
@@ -239,8 +171,3 @@ else:
                         )
                 )
 
-    #        .depend(install_webkit
-    #                .depend(build_webkit
-    #                               )
-    #                       )
-    #               )

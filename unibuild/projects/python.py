@@ -44,8 +44,8 @@ def python_environment():
 
 def upgrade_args():
     env = config['__environment']
-    devenv_path = env['DevEnvDir'] if 'DevEnvDir' in env\
-        else os.path.join(config['paths']['visual_studio'], "Common7", "IDE")
+    devenv_path = env['DevEnvDir'] if 'DevEnvDir' in env and not config['vc_version'] < "15.0" \
+        else os.path.join(config['paths']['visual_studio_basedir'], "Common7", "IDE")
 
     return [os.path.join(devenv_path, "devenv.exe"),
             "PCBuild/pcbuild.sln",

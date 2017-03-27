@@ -34,7 +34,6 @@ def icu_environment():
     s = ""
     MSVCFolders = ("Microsoft Visual Studio","MSBuild","Framework","Windows Kits","Microsoft SDK")
     result = config['__environment'].copy()
-    #result['Path']  = os.path.join(config['paths']['build'], "cygwin", "bin") + ";" + result['Path']
     a = result['PATH']
     for x in a.split(";"):
         if any(word in x for word in MSVCFolders):

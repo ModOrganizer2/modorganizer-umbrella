@@ -32,13 +32,13 @@ timeout = 15   # seconds
 
 def icu_environment():
     result = config['__environment'].copy()
-    result['Path'] += ";" + os.path.join(config['paths']['build'], "cygwin", "bin")
+    result['Path']  = os.path.join(config['paths']['build'], "cygwin", "bin") + ";" + result['Path']
     return result
 
 
 # Warning, build_run only works for me if cygwin is first after VS in the path (as requested in readme)
 # So I change my path before calling unimake.py
-build_icu = build.Run("make && make install",
+build_icu = build.Run("make && make install".format(os.path.join(config['paths']['build'], "cygwin", "bin")),
                       name="ICU Make",
                       environment=icu_environment(),
                       working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))

@@ -118,6 +118,7 @@ config['paths'] = {
     'python':        Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
                                                              "", config['architecture'] == "x86"),
                                                "python.exe")),
+    'visual_studio_base': "",
     'visual_studio': ""			# will be set in unimake.py after args are evaluated
     # 'visual_studio': os.path.realpath(
         # os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",

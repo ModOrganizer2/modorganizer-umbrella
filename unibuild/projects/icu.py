@@ -31,8 +31,23 @@ timeout = 15   # seconds
 
 
 def icu_environment():
+    s = ""
+    MSVCFolders = ("Microsoft Visual Studio","MSBuild","Framework","Windows Kits","Microsoft SDK")
     result = config['__environment'].copy()
-    result['Path']  = os.path.join(config['paths']['build'], "cygwin", "bin") + ";" + result['Path']
+    #result['Path']  = os.path.join(config['paths']['build'], "cygwin", "bin") + ";" + result['Path']
+    a = result['PATH']
+    for x in a.split(";"):
+        if any(word in x for word in MSVCFolders):
+            if s:
+                s += x + ";"
+            else:
+                s = x + ";"
+        else:
+            if "cygwin" not in x:
+                s +=os.path.join(config['paths']['build'], "cygwin", "bin") + ";" + x + ";"
+            else:
+                s += x + ";"
+    result['PATH'] = s
     return result
 
 

@@ -76,7 +76,7 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',
-    'vc_version':   '15.0',
+    'vc_version':   '14.0',
     'build_type': "RelWithDebInfo",
     'ide_projects': False,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
@@ -98,7 +98,7 @@ config = {
 	'boost_version': '1.63.0',				# for -DBOOST_ROOT, also, it is either to change from here
 	'vc_version_for_boost': '14.0',			# boost 1.63 does not support VS 2017 yet
 	'python_version': '2.7',				# used below and in python.py
-	'python_version_minor': '.12',			# used in python.py
+	'python_version_minor': '.13',			# used in python.py
 	'icu_version': '58',					# used in PyQt5
 	'icu_version_minor': '2',				# for consistency
 }

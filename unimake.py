@@ -98,12 +98,14 @@ def get_visual_studio_2017_or_more(vc_version):
 
 
 def get_visual_studio_2015_or_less(vc_version):
-    return os.path.realpath(
-        os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\{}".format(vc_version),
-                                   "InstallDir", True),
-                     "..", "..", "VC"
-                     )
-    )
+    try:
+        s = os.environ["ProgramFiles(x86)"]
+        p = os.path.join(s, "Microsoft Visual Studio {}".format(vc_version), "VC")
+        f = os.path.join(p, "vcvarsall.bat")
+        if os.path.isfile(f):
+            return os.path.realpath(p)
+    except:
+        res = None
 
 
 def visual_studio(vc_version):

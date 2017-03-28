@@ -58,7 +58,8 @@ class MSBuild(Builder):
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
                 args = ["msbuild", self.__solution, "/m", "/property:Configuration=Release"]
-                if self._context is None:
+
+                if self.__project_platform is None:
                     args.append("/property:Platform={}"
                         .format("x64" if config['architecture'] == 'x86_64' else "win32"))
                 else:

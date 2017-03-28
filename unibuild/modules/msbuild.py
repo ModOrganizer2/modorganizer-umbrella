@@ -26,11 +26,12 @@ import os
 
 class MSBuild(Builder):
 
-    def __init__(self, solution, project=None, working_directory=None):
+    def __init__(self, solution, project=None, working_directory=None, project_platform=None ):
         super(MSBuild, self).__init__()
         self.__solution = solution
         self.__project = project
         self.__working_directory = working_directory
+        self.__project_platform = project_platform
 
     @property
     def name(self):
@@ -56,8 +57,13 @@ class MSBuild(Builder):
 
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
-                args = ["msbuild", self.__solution, "/m", "/property:Configuration=Release", "/property:Platform={}"
-                    .format("x64" if config['architecture'] == 'x86_64' else "win32")]
+                args = ["msbuild", self.__solution, "/m", "/property:Configuration=Release"]
+                if self._context is None:
+                    args.append("/property:Platform={}"
+                        .format("x64" if config['architecture'] == 'x86_64' else "win32"))
+                else:
+                    args.append("/property:Platform={}".format(self.__project_platform))
+
                 if self.__project:
                     args.append("/target:{}".format(self.__project))
 

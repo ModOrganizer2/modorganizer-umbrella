@@ -37,7 +37,7 @@ Projects
 """
 
 
-from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5
+from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc
 from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib, lz4
 
 # TODO modorganizer-lootcli needs an overhaul as the api has changed alot
@@ -60,24 +60,6 @@ tl_repo = git.SuperRepository("modorganizer_super")
 .depend(msbuild.MSBuild("../nmm/NexusClient.sln", "NexusClientCli",
                         working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
 """
-ncc = Project("NCC") \
-    .depend(build.Run(r"publish.bat"
-                      .format("-debug" if config['build_type'] == "Debug" else "-release",
-                              os.path.join(config['__build_base_path'], "install", "bin")),
-                      working_directory=lazy.Evaluate(lambda: ncc['build_path']))
-            .depend(msbuild.MSBuild("../nmm/NexusClient.sln",
-                        working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
-            .depend(patch.Copy("NexusClient.sln", "../nmm")
-                    .depend(github.Source(config['Main_Author'], "modorganizer-NCC", "master")
-                            .set_destination(os.path.join("NCC", "NexusClientCli"))
-                            .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", "master")
-                                    .set_destination(os.path.join("NCC", "nmm"))
-                                    )
-                            )
-                    )
-            )
-           )
-
 Project("modorganizer-game_features") \
     .depend(github.Source(config['Main_Author'], "modorganizer-game_features", "master", super_repository=tl_repo)
             .set_destination("game_features"))
@@ -176,7 +158,7 @@ for author,git_path, path, branch, dependencies in [
                                                                                                                      "modorganizer-uibase", "modorganizer-archive",
                                                                                                                      "modorganizer-bsatk", "modorganizer-esptk",
                                                                                                                      "modorganizer-game_features",
-                                                                                                                     "usvfs","githubpp"]),
+                                                                                                                     "usvfs","githubpp", "NCC"]),
 ]:
     build_step = cmake.CMake().arguments(cmake_parameters).install()
 

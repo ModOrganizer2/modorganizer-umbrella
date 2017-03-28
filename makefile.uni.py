@@ -53,18 +53,6 @@ Project("LootApi") \
 
 tl_repo = git.SuperRepository("modorganizer_super")
 
-
-# install compiled mo components
-
-""" doesn't build through msbuild but builds fine in IDE??
-.depend(msbuild.MSBuild("../nmm/NexusClient.sln", "NexusClientCli",
-                        working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")))
-"""
-Project("modorganizer-game_features") \
-    .depend(github.Source(config['Main_Author'], "modorganizer-game_features", "master", super_repository=tl_repo)
-            .set_destination("game_features"))
-
-
 def gen_userfile_content(project):
     with open("CMakeLists.txt.user.template", 'r') as f:
         res = Formatter().vformat(f.read(), [], FormatDict({
@@ -111,6 +99,7 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
 
 
 for author,git_path, path, branch, dependencies in [
+    (config['Main_Author'],               "modorganizer-game_features",     "game_features",     "master",           []),
     (config['Main_Author'],               "modorganizer-archive",           "archive",           "master",          ["7zip", "Qt5"]),
     (config['Main_Author'],               "modorganizer-uibase",            "uibase",            "QT5.7",           ["Qt5", "boost"]),
     (config['Main_Author'],               "modorganizer-lootcli",           "lootcli",           "master",          ["LootApi", "boost"]),

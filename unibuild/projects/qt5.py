@@ -125,7 +125,7 @@ else:
 
 
     def copy_icu_libs(context):
-        for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "*54.dll")):
+        for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "*5*.dll")):
             shutil.copy(f, os.path.join(config["paths"]["build"], "qt5", "bin"))
         return True
 

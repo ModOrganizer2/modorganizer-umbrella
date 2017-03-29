@@ -78,7 +78,6 @@ config = {
     'architecture': 'x86_64',
     'vc_version':   '14.0',
     'build_type': "RelWithDebInfo",
-    'ide_projects': True,
     'offline': False,                       # if set, non-mandatory network requests won't be made.
                                             # This is stuff like updating source repositories. The initial
                                             # download of course can't be surpressed.

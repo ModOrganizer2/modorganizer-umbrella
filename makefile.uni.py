@@ -83,8 +83,6 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
                                      ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
              .install()
             # TODO Not sure why this is required, will look into it at a later stage once we get the rest to build
-             .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, usvfs))
-                     .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
                              .depend(github.Source(config['Main_Author'], "usvfs", "master")
                                      .set_destination("usvfs"))
                              .depend("AsmJit")
@@ -94,8 +92,8 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
                              .depend("spdlog")
                              .depend("boost")
                      )
-             )
-             )
+
+
 
 
 for author, git_path, path, branch, dependencies, Build in [
@@ -124,7 +122,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'],               "modorganizer-game_skyrim",       "game_skyrim",       "master",          ["Qt5", "modorganizer-uibase",
                                                                                                                     "modorganizer-game_gamebryo",
                                                                                                                     "modorganizer-game_features"],True),
-    ("LePresidente",                             "modorganizer-game_skyrimSE",    "game_skyrimse",     "dev",        ["Qt5", "modorganizer-uibase",
+    ("LePresidente",                      "modorganizer-game_skyrimSE",    "game_skyrimse",     "dev",        ["Qt5", "modorganizer-uibase",
                                                                                                                      "modorganizer-game_gamebryo",
                                                                                                                      "modorganizer-game_features"],True),
     (config['Main_Author'],               "modorganizer-tool_inieditor",    "tool_inieditor",    "master",          ["Qt5", "modorganizer-uibase"],True),
@@ -151,31 +149,18 @@ for author, git_path, path, branch, dependencies, Build in [
 ]:
     build_step = cmake.CMake().arguments(cmake_parameters).install()
 
-    build_step_ide = cmake.CMake().arguments(cmake_parameters).install()
-
     for dep in dependencies:
         build_step.depend(dep)
 
     project = Project(git_path)
 
     if Build:
-        if config['ide_projects']:
-            # TODO This has been disabled in config as currently the breaking the build
-            project.depend(build_step_ide
-                           .depend(patch.CreateFile("CMakeLists.txt.user", partial(gen_userfile_content, project))
-                                   .depend(cmake.CMakeEdit(cmake.CMakeEdit.Type.CodeBlocks).arguments(cmake_parameters)
-                                           .depend(github.Source(author, git_path, branch, super_repository=tl_repo)
-                                                   .set_destination(path))
-                                           )
-                                   )
-                           )
-
-        else:
-            project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
-                                                   .set_destination(path))
-    else:
         project.depend(build_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
-                                                   .set_destination(path)))
+                                             .set_destination(path)))
+    else:
+        project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
+                       .set_destination(path))
+
 
 
 def python_zip_collect(context):

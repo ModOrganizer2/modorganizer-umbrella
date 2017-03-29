@@ -1,13 +1,13 @@
 # modorganizer-umbrella
 An umbrella- (super-) project for modorganizer.
 
-##Build instructions for all required modules
+##Build instructions for all required Components
 
 X86_64 Build:
 unimake.py -d "F:\Build"
 
 X86 Build: (Edit config.py and change Architecture to x86)
-unimake.py -d "F:\Build" usvfs
+unimake.py -d "F:\Build_32" usvfs
 
 ## Purpose
 This repository contains a meta build-system that is able to download and build MO subprojects and dependencies as necessary.

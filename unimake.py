@@ -166,44 +166,6 @@ def init_config(args):
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable
 
-    qtcreator_config_path = config['__environment']['AppData'] + "/QtProject"
-    logging.debug("  Profile: qtcreator_config_path=%s", qtcreator_config_path)
-    
-    # qtcreator_config_path = r"C:/Users/Tannin/AppData/Roaming/QtProject"
-
-    if os.path.isdir(qtcreator_config_path):
-        from ConfigParser import RawConfigParser
-        parser = RawConfigParser()
-        parser.read(os.path.join(qtcreator_config_path, "qtcreator.ini"))
-        config['qt_environment_id'] = parser.get('ProjectExplorer', 'Settings\\EnvironmentId')
-        config['qt_environment_id'] = re.sub(r"@ByteArray\((.*)\)", r"\1", config['qt_environment_id'])
-
-        import xml.etree.ElementTree as ET
-        tree = ET.parse(os.path.join(qtcreator_config_path, "qtcreator", "profiles.xml"))
-        root = tree.getroot()
-
-        profiles = []
-
-        for profile in root.findall("data/valuemap"):
-            profiles.append((profile.find("value[@key='PE.Profile.Id']").text,
-                             profile.find("value[@key='PE.Profile.Name']").text))
-
-        arch = "64bit" if config["architecture"] == 'x86_64' else "32bit"
-        profiles = filter(lambda x: arch in x[1], sorted(profiles, reverse=True))[0]
-
-        config['qt_profile_id'] = profiles[0]
-        config['qt_profile_name'] = profiles[1].replace("%{Qt:Version}", "5.5.1")
-
-        """
-        kits = sorted([kit.text
-                       for kit in root.findall("./data/valuemap/value[@key='Name']")
-                       if arch in kit.text],
-                      reverse=True)[0]
-
-        print(kits)
-        """
-
-
 def recursive_remove(graph, node):
     if not isinstance(graph.node[node]["task"], Project):
         for ancestor in graph.predecessors(node):

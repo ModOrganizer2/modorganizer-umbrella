@@ -33,6 +33,8 @@ qt_download_ext = "tar.gz"
 qt_version = config['qt_version']
 qt_version_minor = "1"
 qt_inst_path = "{}/qt5".format(config["paths"]["build"]).replace("/", os.path.sep)
+icu_version = config['icu_version']
+
 
 def bitness():
     return "64" if config['architecture'] == "x86_64" else "32"
@@ -125,7 +127,7 @@ else:
 
 
     def copy_icu_libs(context):
-        for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "*5*.dll")):
+        for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "icudt{}.dll".format(icu_version))):
             shutil.copy(f, os.path.join(config["paths"]["build"], "qt5", "bin"))
         return True
 
@@ -159,7 +161,6 @@ else:
                                                                 .Replace("qtbase/configure.bat",
                                                                          "if not exist %QTSRC%.gitignore goto sconf",
                                                                          "")
-                                                                #                                                                                .depend(webkit_patch
                                                                 .depend(init_repo)
                                                                 )
                                                         .depend("icu")

@@ -83,7 +83,7 @@ usvfs.depend(cmake.CMake().arguments(cmake_parameters +
                                      ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
              .install()
             # TODO Not sure why this is required, will look into it at a later stage once we get the rest to build
-                             .depend(github.Source(config['Main_Author'], "usvfs", "master")
+                             .depend(github.Source(config['Main_Author'], "usvfs", "Dev")
                                      .set_destination("usvfs"))
                              .depend("AsmJit")
                              .depend("Udis86")

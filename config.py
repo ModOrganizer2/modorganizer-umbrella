@@ -88,7 +88,9 @@ config = {
     'repo_update_frequency': 60 * 60 * 24,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
-    'Main_Author': 'LePresidente',
+    'Main_Author': 'LePresidente',			# the current maintainer
+    'Distrib_Author': 'TanninOne',			# the current distribution (and the original Author)
+    'Work_Author': 'Hugues92',  			# yourself
 
 	'qt_version':	'5.8',					# currently evolving
 	'openssl_version': '1.0.2k',			# changes often, so better to edit here
@@ -119,18 +121,6 @@ config['paths'] = {
                                                "python.exe")),
     'visual_studio_base': "",
     'visual_studio': ""			# will be set in unimake.py after args are evaluated
-    # 'visual_studio': os.path.realpath(
-        # os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
-                                   # "{}".format(config['vc_version']), True),
-                     # "VC")
-    # ),
-    # I do not have any entry for 15.0 in SxS
-    # 'visual_studio2017': os.path.realpath(
-        # os.path.join(get_from_hklm(r"SOFTWARE\Microsoft\VisualStudio\SxS\VS7",
-                                   # "{}".format(config['vc_version']), True),
-                     # "VC", "Auxiliary","Build"
-                     # )
-    # )
 }
 
 if missing_prerequisites:

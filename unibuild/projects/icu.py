@@ -32,7 +32,7 @@ timeout = 15   # seconds
 
 def icu_environment():
     s = ""
-    MSVCFolders = ("Microsoft Visual Studio","MSBuild","Framework","Windows Kits","Microsoft SDK")
+    MSVCFolders = ("Microsoft Visual Studio","MSBuild","Framework","Windows Kits","Microsoft SDK", "HTML Help")
     result = config['__environment'].copy()
     a = result['PATH']
     for x in a.split(";"):

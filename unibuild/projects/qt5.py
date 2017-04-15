@@ -17,7 +17,7 @@
 
 
 from unibuild import Project, Task
-from unibuild.modules import build, patch, git, urldownload, sourceforge, dummy
+from unibuild.modules import build, Patch, git, urldownload, sourceforge, dummy
 from config import config
 import os
 import itertools
@@ -157,7 +157,7 @@ else:
                                                 .depend(build.Run(configure_cmd,
                                                                   name="configure qt",
                                                                   environment=qt5_environment())
-                                                        .depend(patch
+                                                        .depend(Patch
                                                                 .Replace("qtbase/configure.bat",
                                                                          "if not exist %QTSRC%.gitignore goto sconf",
                                                                          "")

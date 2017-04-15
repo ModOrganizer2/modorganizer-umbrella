@@ -17,7 +17,7 @@
 
 
 from unibuild import Project
-from unibuild.modules import github, cmake, patch, git, hg, msbuild, build
+from unibuild.modules import github, cmake, Patch, git, hg, msbuild, build
 from unibuild.utility import lazy, FormatDict
 from config import config
 from functools import partial
@@ -45,10 +45,10 @@ def bitness():
     return "x64" if config['architecture'] == "x86_64" else "Win32"
 	
 Project("LootApi") \
-    .depend(patch.Copy("loot_api.dll".format(loot_version,commit_id), os.path.join(config['__build_base_path'], "install", "bin", "loot"))
+    .depend(Patch.Copy("loot_api.dll".format(loot_version, commit_id), os.path.join(config['__build_base_path'], "install", "bin", "loot"))
             .depend(github.Release("loot", "loot", loot_version, "loot-api_{}-0-{}_dev_{}".format(loot_version, commit_id, bitness()),"7z",tree_depth=1)
                     .set_destination("lootapi"))
-           )
+            )
 
 
 tl_repo = git.SuperRepository("modorganizer_super")

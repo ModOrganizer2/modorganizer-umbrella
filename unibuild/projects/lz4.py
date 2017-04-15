@@ -17,7 +17,7 @@
 
 
 from unibuild import Project
-from unibuild.modules import github, patch
+from unibuild.modules import github, Patch
 from config import config
 import os
 
@@ -25,10 +25,10 @@ import os
 lz4_version = "v1.7.4"
 
 Project("lz4") \
-            .depend(patch.Copy(os.path.join(config['paths']['build'], "lz4", "dll", "liblz4.dll"),
-                       os.path.join(config['__build_base_path'], "install", "bin", "dlls"))
-                .depend(github.Release("lz4", "lz4", lz4_version, "lz4_{0}_win{1}".format(lz4_version.replace(".","_"),"64" if config['architecture'] == 'x86_64' else "32"),"zip")
+            .depend(Patch.Copy(os.path.join(config['paths']['build'], "lz4", "dll", "liblz4.dll"),
+                               os.path.join(config['__build_base_path'], "install", "bin", "dlls"))
+                    .depend(github.Release("lz4", "lz4", lz4_version, "lz4_{0}_win{1}".format(lz4_version.replace(".","_"),"64" if config['architecture'] == 'x86_64' else "32"),"zip")
                     .set_destination("lz4")
                 )
-            )
+                    )
 

@@ -17,7 +17,7 @@
 
 import eggs
 from unibuild import Project
-from unibuild.modules import build, msbuild, patch, github
+from unibuild.modules import build, msbuild, Patch, github
 from unibuild.utility import lazy
 from config import config
 import os

@@ -16,7 +16,7 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild.modules import sourceforge, build, patch
+from unibuild.modules import sourceforge, build, Patch
 from unibuild.utility import lazy
 from unibuild.utility.lazy import doclambda
 from unibuild import Project
@@ -100,7 +100,7 @@ class PyQt5Configure(build.Builder):
 
 Project("PyQt5") \
     .depend(build.Execute(copy_pyd)
-            .depend(patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
+            .depend(Patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
                                 os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll"),
                                 os.path.join(config['paths']['build'], "icu" , "dist", "lib", "icudt{}.dll".format(icu_version)),
                                 os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuin{}.dll".format(icu_version)),

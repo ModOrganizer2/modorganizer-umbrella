@@ -1,8 +1,9 @@
 from unibuild import Project
-from unibuild.modules import b2, sourceforge, patch
+from unibuild.modules import b2, sourceforge, Patch, build
 from unibuild.projects import python
 from config import config
 import os
+import patch
 
 
 boost_version = config["boost_version"]
@@ -28,6 +29,18 @@ config_template = ("using python\n"
                    "  : <address-model>{3}\n"
                    "  : <define>BOOST_ALL_NO_LIB=1\n"
                    "  ;")
+
+
+def patchboost(context):
+    try:
+        savedpath = os.getcwd()
+        os.chdir(os.path.join("{}/build/boost_{}".format(config["__build_base_path"], config["boost_version"].replace(".", "_"))))
+        pset = patch.fromfile(os.path.join(config["paths"]["build"], "usvfs", "patches", "type_traits_vs15_fix.patch"))
+        pset.apply()
+        os.chdir(savedpath)
+        return True
+    except:
+        return False
 
 Project("boost") \
     .depend(b2.B2(name="Shared").arguments(["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
@@ -57,18 +70,19 @@ Project("boost") \
                                                 "-sICU_PATH={}".format(os.path.join(config['paths']['build'], "icu", "dist")),
                                                 "-sHAVE_ICU=1",
                                                 ] + ["--with-{0}".format(component) for component in boost_components])
-            .depend(patch.CreateFile("user-config.jam",
+            .depend(Patch.CreateFile("user-config.jam",
                                      lambda: config_template.format(
                                          python_version,
                                          os.path.join(python.python['build_path'], "PCBuild",
                                                       "{}".format("" if config['architecture'] == 'x86' else "amd64")).replace("\\",'/'),
                                         os.path.join(python.python['build_path']).replace("\\",'/'),
                                          "64" if config['architecture'] == "x86_64" else "32")
-                                     )
+                                     ).depend(build.Execute(patchboost)
                     .depend(sourceforge.Release("boost",
                                                 "boost/{0}/boost_{1}.tar.bz2".format(boost_version,
                                                                                      boost_version.replace(".", "_")),
                                                 tree_depth=1))
                     ).depend("icu").depend("Python")
                 )
+            )
             )

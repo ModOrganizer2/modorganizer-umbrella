@@ -16,7 +16,7 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 from unibuild import Project
-from unibuild.modules import build, sourceforge, patch
+from unibuild.modules import build, sourceforge, Patch
 from config import config
 import subprocess
 import os
@@ -104,7 +104,7 @@ icu = Project('icu') \
         .depend(build_icu
                 .depend(ConfigureIcu()
                         .depend(Convert_icu
-                                .depend(patch.Replace("source/io/ufile.c",
+                                .depend(Patch.Replace("source/io/ufile.c",
                                                       "#if U_PLATFORM_USES_ONLY_WIN32_API",
                                                       "#if U_PLATFORM_USES_ONLY_WIN32_API && _MSC_VER < 1900")
                                         .depend(sourceforge.Release("icu","ICU4C/{0}.{1}/icu4c-{0}_{1}-src.tgz"

@@ -1,5 +1,5 @@
 from unibuild import Project, Task
-from unibuild.modules import b2, git, patch, build
+from unibuild.modules import b2, git, Patch, build
 from unibuild.projects import python
 from config import config
 import os
@@ -66,14 +66,14 @@ Project("boostgit") \
                                                 "-sHAVE_ICU=1",
                                                 ] + ["--with-{0}".format(component) for component in boost_components])
                     .depend(build.Run(r"bootstrap.bat",working_directory=lambda: os.path.join(config["paths"]["build"], "boost_git")))
-                        .depend(patch.CreateFile("user-config.jam",
-                                     lambda: config_template.format(
+                        .depend(Patch.CreateFile("user-config.jam",
+                                                 lambda: config_template.format(
                                          python_version,
                                          os.path.join(python_path, "PCBuild",
                                                       "{}".format("" if config['architecture'] == 'x86' else "amd64")).replace("\\",'/'),
                                          python_path,
                                          "64" if config['architecture'] == "x86_64" else "32")
-                                     ))
+                                                 ))
                     .depend(init_repo)
         #            .depend(sourceforge.Release("boost",
         #                                        "boost/{0}/boost_{1}.tar.bz2".format(boost_version,

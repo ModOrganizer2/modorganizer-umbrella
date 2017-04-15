@@ -29,7 +29,7 @@ for dep in ["https://pypi.python.org/packages/2.7/n/networkx/networkx-1.10-py2.7
     download(dep, eggpath)
     sys.path.append(eggpath)
 
-for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil"]:
+for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch"]:
     destpath = "{0}/{1}".format(path, dep)
     if not os.path.exists(destpath):
         pip.main(["install", "--target={0}".format(destpath), dep])

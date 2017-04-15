@@ -37,9 +37,11 @@ def patchboost(context):
         os.chdir(os.path.join("{}/build/boost_{}".format(config["__build_base_path"], config["boost_version"].replace(".", "_"))))
         pset = patch.fromfile(os.path.join(config["paths"]["build"], "usvfs", "patches", "type_traits_vs15_fix.patch"))
         pset.apply()
+        pset = patch.fromfile(os.path.join(config["paths"]["build"], "usvfs", "patches", "boost_vector_overflow.patch"))
+        pset.apply()
         os.chdir(savedpath)
         return True
-    except:
+    except OSError:
         return False
 
 Project("boost") \

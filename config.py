@@ -75,8 +75,9 @@ config = {
     'tools': {
         'make': "nmake",
     },
-    'architecture': 'x86_64',
+    'architecture': 'x86_64',               # Don't change this as we spawn the usvfs x86 build later on.
     'vc_version':   '14.0',
+    'vc_platformtoolset':  'v140',
     'build_type': "RelWithDebInfo",
     'offline': False,                       # if set, non-mandatory network requests won't be made.
                                             # This is stuff like updating source repositories. The initial
@@ -85,6 +86,7 @@ config = {
     'optimize': False,                      # activate link-time code generation and other optimization.
                                             # This massively increases build time but produces smaller
                                             # binaries and marginally faster code
+    'Installer': True,                     # Used to create installer at end of build, Forces everything to be built
     'repo_update_frequency': 60 * 60 * 24,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
@@ -96,18 +98,21 @@ config = {
 	'openssl_version': '1.0.2k',			# changes often, so better to edit here
 	'zlib_version': '1.2.11',				# changes often, so better to edit here
 	'grep_version': '2.5.4',				# moved here as commented in qt5.py
-	'boost_version': '1.63.0',				# for -DBOOST_ROOT, also, it is either to change from here
+	'boost_version': '1.64.0',				# for -DBOOST_ROOT, also, it is either to change from here
 	'vc_version_for_boost': '14.0',			# boost 1.63 does not support VS 2017 yet
 	'python_version': '2.7',				# used below and in python.py
 	'python_version_minor': '.13',			# used in python.py
 	'icu_version': '58',					# used in PyQt5
 	'icu_version_minor': '2',				# for consistency
+    'WixToolSet_Version_Build': '3.11.0.1528',                    # Wix Build Version
+    'WixToolSet_Version_Binary': '311',               # Wix Binary Version
 }
 
 config['paths'] = {
     'download':      "{base_dir}\\downloads",
-    'build':         "{base_dir}\\build",
-    'progress':      "{base_dir}\\progress",
+    'build':         "{base_dir}\\{build_dir}",
+    'progress':      "{base_dir}\\{progress_dir}",
+    'install':      "{base_dir}\\{install_dir}",
 #    'graphviz':      path_or_default("dot.exe",   "Graphviz2.38", "bin"),
     'cmake':         path_or_default("cmake.exe", "CMake", "bin"),
     'git':           path_or_default("git.exe",   "Git", "bin"),

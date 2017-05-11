@@ -38,9 +38,9 @@ def make_sure_path_exists(path):
 
 
 def install(context):
-    make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "libs"))
+    make_sure_path_exists(os.path.join(config["paths"]["install"], "libs"))
     for f in glob(os.path.join(context['build_path'], "*.lib")):
-        shutil.copy(f, os.path.join(config["__build_base_path"], "install", "libs"))
+        shutil.copy(f, os.path.join(config["paths"]["install"], "libs"))
     return True
 
 

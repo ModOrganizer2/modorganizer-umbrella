@@ -30,7 +30,7 @@ Project("AsmJit") \
     [
         "-DASMJIT_STATIC=TRUE",
         "-DASMJIT_DISABLE_COMPILER=TRUE",
-        "-DCMAKE_INSTALL_PREFIX:PATH={}/install".format(config['__build_base_path'].replace('\\', '/')),
+        "-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"].replace('\\', '/')),
         "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
     ]).install()
             .depend(github.Source("kobalicek", "asmjit", asmjit_tag, update=False, commit = asmjit_commit)

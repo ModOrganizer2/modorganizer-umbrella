@@ -26,12 +26,13 @@ import os
 
 class MSBuild(Builder):
 
-    def __init__(self, solution, project=None, working_directory=None, project_platform=None ):
+    def __init__(self, solution, project=None, working_directory=None, project_platform=None, project_PlatformToolset=None ):
         super(MSBuild, self).__init__()
         self.__solution = solution
         self.__project = project
         self.__working_directory = working_directory
         self.__project_platform = project_platform
+        self.__project_platformtoolset = project_PlatformToolset
 
     @property
     def name(self):
@@ -64,6 +65,10 @@ class MSBuild(Builder):
                         .format("x64" if config['architecture'] == 'x86_64' else "win32"))
                 else:
                     args.append("/property:Platform={}".format(self.__project_platform))
+
+                if self.__project_platformtoolset is not None:
+                    args.append("/property:PlatformToolset={}"
+                                .format(self.__project_platformtoolset))
 
                 if self.__project:
                     args.append("/target:{}".format(self.__project))

@@ -17,17 +17,16 @@
 
 
 from unibuild import Project
-from unibuild.modules import cmake, urldownload
+from unibuild.modules import urldownload
 from config import config
 import os
 
 
-zlib_version = config['zlib_version']
+WixToolSet_Version_Binary = config['WixToolSet_Version_Binary']
+WixToolSet_Version_Build = config['WixToolSet_Version_Build']
 
 
-Project("zlib") \
-    .depend(cmake.CMake().arguments(["-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
-                                     "-DCMAKE_INSTALL_PREFIX:PATH={}".format(
-                                         os.path.join(config["paths"]["build"], "zlib"))
-                                     ]).install()
-            .depend(urldownload.URLDownload("http://zlib.net/zlib-{}.tar.gz".format(zlib_version), 1)))
+Project("WixToolkit") \
+            .depend(urldownload.URLDownload("http://static.wixtoolset.org/releases/v{0}/wix{1}-binaries.zip"
+                                            .format(WixToolSet_Version_Build,WixToolSet_Version_Binary))
+                    .set_destination("WixToolkit"))

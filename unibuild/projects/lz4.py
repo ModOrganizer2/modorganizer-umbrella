@@ -26,7 +26,7 @@ lz4_version = "v1.7.4"
 
 Project("lz4") \
             .depend(Patch.Copy(os.path.join(config['paths']['build'], "lz4", "dll", "liblz4.dll"),
-                               os.path.join(config['__build_base_path'], "install", "bin", "dlls"))
+                               os.path.join(config["paths"]["install"], "bin", "dlls"))
                     .depend(github.Release("lz4", "lz4", lz4_version, "lz4_{0}_win{1}".format(lz4_version.replace(".","_"),"64" if config['architecture'] == 'x86_64' else "32"),"zip")
                     .set_destination("lz4")
                 )

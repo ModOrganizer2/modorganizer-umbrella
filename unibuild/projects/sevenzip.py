@@ -30,7 +30,7 @@ sevenzip_version = "16.04"
 Project("7zip") \
         .depend(Patch.Copy(os.path.join(config['paths']['build'], "7zip", "CPP", "7zip", "Bundles", "Format7zF", "{}"
                                         .format("x86" if config['architecture'] == 'x86' else "AMD64"),"7z.dll"),
-                           os.path.join(config['__build_base_path'], "install", "bin","dlls"))
+                           os.path.join(config["paths"]["install"], "bin","dlls"))
                 .depend(build.Run(r"nmake CPU={} NEW_COMPILER=1 MY_STATIC_LINK=1 NO_BUFFEROVERFLOWU=1".format("x86" if config['architecture'] == 'x86' else "AMD64"),
                       working_directory=os.path.join(config['paths']['build'], "7zip", "CPP", "7zip"))
                 .depend(urldownload.URLDownload("http://www.7-zip.org/a/7z{}-src.7z".format(sevenzip_version.replace(".", ""))).set_destination("7zip"))))

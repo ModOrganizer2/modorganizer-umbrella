@@ -3,11 +3,8 @@ An umbrella- (super-) project for modorganizer.
 
 ##Build instructions for all required Components
 
-X86_64 Build:
+Build Instructions:
 unimake.py -d "F:\Build"
-
-X86 Build: (Edit config.py and change Architecture to x86)
-unimake.py -d "F:\Build_32" usvfs
 
 ## Purpose
 This repository contains a meta build-system that is able to download and build MO subprojects and dependencies as necessary.
@@ -48,12 +45,11 @@ All the following need to be either on your PATH, or available from Program File
 
 * python 2.7 (2.7.13 x64)
   * decorator
-*  visual C++ 2013 (visual C++ 2015 broken due to https://github.com/TanninOne/usvfs/issues/1)
+*  visual Studio 2015 (Including VC Common tools)
 
 * cmake
 * 7zip - specifically, the command line version (7za)
 * svn (SlinkSVN)
-* dot (from Graphviz)
 * ruby (v2.2 x64)
 * git
 * perl (Strawberry Perl)

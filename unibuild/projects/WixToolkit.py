@@ -17,16 +17,15 @@
 
 
 from unibuild import Project
-from unibuild.modules import urldownload
+from unibuild.modules import github
 from config import config
 import os
 
 
 WixToolSet_Version_Binary = config['WixToolSet_Version_Binary']
-WixToolSet_Version_Build = config['WixToolSet_Version_Build']
 
 
 Project("WixToolkit") \
-            .depend(urldownload.URLDownload("http://static.wixtoolset.org/releases/v{0}/wix{1}-binaries.zip"
-                                            .format(WixToolSet_Version_Build,WixToolSet_Version_Binary))
+            .depend(github.Release("wixtoolset", "wix3", "wix{}rtm".format(WixToolSet_Version_Binary),
+                                   "wix{}-binaries".format(WixToolSet_Version_Binary))
                     .set_destination("WixToolkit"))

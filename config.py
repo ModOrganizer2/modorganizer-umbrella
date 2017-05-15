@@ -106,7 +106,6 @@ config = {
 	'python_version_minor': '.13',			# used in python.py
 	'icu_version': '58',					# used in PyQt5
 	'icu_version_minor': '2',				# for consistency
-    'WixToolSet_Version_Build': '3.11.0.1528',                    # Wix Build Version
     'WixToolSet_Version_Binary': '311',               # Wix Binary Version
 }
 

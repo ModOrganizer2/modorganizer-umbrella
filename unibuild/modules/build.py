@@ -270,4 +270,45 @@ class Run(Builder):
 
         return True
 
+class Run_With_Output(Builder):
+    def __init__(self, command, fail_behaviour=Task.FailBehaviour.FAIL, environment=None, working_directory=None,
+                 name=None):
+        super(Run_With_Output, self).__init__()
+        self.__command = Lazy(command)
+        self.__name = name
+        self.__fail_behaviour = fail_behaviour
+        self.__environment = Lazy(environment)
+        self.__working_directory = Lazy(working_directory)
 
+    @property
+    def name(self):
+        if self.__name:
+            return "run {}".format(self.__name)
+        else:
+            return "run {}".format(self.__command.peek().split()[0]).replace("\\", "/")
+
+    def process(self, progress):
+
+            environment = dict(self.__environment()
+                                   if self.__environment() is not None
+                                   else config["__environment"])
+            cwd = str(self.__working_directory()
+                          if self.__working_directory() is not None
+                          else self._context["build_path"])
+
+
+            proc = Popen(self.__command(),
+                             env=environment,
+                             cwd=cwd,
+                             shell=True)
+            proc.communicate()
+            if proc.returncode != 0:
+                if isinstance(proc.returncode , (str, unicode)):
+                    logging.error("failed to run %s (returncode %s), see %s and %s",
+                                  self.__command(), proc.returncode)
+                    return False
+                else:
+                    logging.error("failed to run {} (returncode {})".format(self.__command(), proc.returncode))
+                    return False
+
+            return True

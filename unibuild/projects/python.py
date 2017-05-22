@@ -27,6 +27,7 @@ import errno
 
 
 python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".12")
+python_toolset = config.get('vc_platformtoolset', "v140")
 python_url = "https://www.python.org/ftp/python"
 
 def make_sure_path_exists(path):
@@ -45,8 +46,7 @@ def python_environment():
 
 def upgrade_args():
     env = config['__environment']
-    devenv_path = env['DevEnvDir'] if 'DevEnvDir' in env\
-        else os.path.join(config['paths']['visual_studio_basedir'], "Common7", "IDE")
+    devenv_path = os.path.join(config['paths']['visual_studio_basedir'], "Common7", "IDE")
     #MSVC2017 supports building with the MSVC2015 toolset though this will break here, Small work around to make sure devenv.exe exists
     #If not try MSVC2017 instead
     res = os.path.isfile(os.path.join(devenv_path, "devenv.exe"))
@@ -84,22 +84,23 @@ if False:
                 )
 else:
     def install(context):
-        make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "libs"))
+        make_sure_path_exists(os.path.join(config["paths"]["install"], "libs"))
         path_segments = [context['build_path'], "PCbuild"]
         if config['architecture'] == "x86_64":
             path_segments.append("amd64")
         path_segments.append("*.lib")
         shutil.copy(os.path.join(python['build_path'],"PC", "pyconfig.h"),os.path.join(python['build_path'], "Include","pyconfig.h"))
         for f in glob(os.path.join(*path_segments)):
-            shutil.copy(f, os.path.join(config["__build_base_path"], "install", "libs"))
+            shutil.copy(f, os.path.join(config["paths"]["install"], "libs"))
         return True
 
     python = Project("Python") \
          .depend(build.Execute(install)
-                 #.depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python")
-                 .depend(build.Run(r"PCBuild\\build.bat -e -c Release -m -p {}".format("x64" if config['architecture'] == 'x86_64' else ""),
-                                   environment=python_environment(),
-                                   working_directory=lambda: os.path.join(python['build_path']))
+                 .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
+                                         project_PlatformToolset=python_toolset)
+#                 .depend(build.Run(r'PCBuild\\build.bat -e -c Release -m -p {} "/p:PlatformToolset={}"'.format("x64" if config['architecture'] == 'x86_64' else "x86",config['vc_platform']),
+#                                   environment=python_environment(),
+#                                   working_directory=lambda: os.path.join(python['build_path']))
                             .depend(build.Run(upgrade_args, name="upgrade python project")
                                          .depend(github.Source("LePresidente", "cpython", config.get('python_version', "2.7"))\
 										     .set_destination("python-{}".format(python_version))))

@@ -3,6 +3,7 @@ __author__ = 'Tannin'
 
 from task import Task
 from config import config
+import os
 
 
 class Retrieval(Task):

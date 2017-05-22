@@ -81,7 +81,7 @@ openssl = Project("openssl") \
                         os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
                                      .format("32" if config['architecture'] == 'x86' else "64",
                                              openssl_version.replace(".", "_")), "libeay32.dll"), ],
-                       os.path.join(config['__build_base_path'], "install", "bin","dlls"))
+                       os.path.join(config["paths"]["install"], "bin","dlls"))
             .depend(build.Execute(build_func)
             .depend(urldownload.URLDownload(url))
             ))

@@ -33,7 +33,7 @@ class SuperRepository(Task):
         self.prepare()
 
     def prepare(self):
-        self.__context_data['build_path'] = os.path.join(config['__build_base_path'], "build", self.__name)
+        self.__context_data['build_path'] = os.path.join(config["paths"]["build"], self.__name)
 
     @property
     def path(self):

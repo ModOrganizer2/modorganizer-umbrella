@@ -26,12 +26,15 @@ from config import config, vs_editions, get_from_hklm
 from subprocess import Popen, PIPE
 import imp
 import sys
+import traceback
 import logging
 import networkx as nx
 import tempfile
 import os.path
 import argparse
 import re
+
+exitcode = 0
 
 def progress_callback(job, percentage):
     if not percentage and not job:
@@ -86,6 +89,19 @@ def get_visual_studio_2017_or_more(vc_version):
             res = os.path.isfile(f)
             if res is not None:
                return os.path.realpath(p)
+            else:
+                res = None
+    except:
+        res = None
+
+    try:
+        p = os.path.join(config['vc_CustomInstallPath'], "VC", "Auxiliary", "Build")
+        f = os.path.join(p, "vcvarsall.bat")
+        res = os.path.isfile(f)
+        if res is not None:
+            return os.path.realpath(p)
+        else:
+            res = None
     except:
         res = None
 
@@ -99,6 +115,7 @@ def get_visual_studio_2017_or_more(vc_version):
 
 
 def get_visual_studio_2015_or_less(vc_version):
+    res = ""
     try:
         s = os.environ["ProgramFiles(x86)"]
         p = os.path.join(s, "Microsoft Visual Studio {}".format(vc_version), "VC")
@@ -106,32 +123,69 @@ def get_visual_studio_2015_or_less(vc_version):
         if os.path.isfile(f):
             config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio {}".format(vc_version))
             return os.path.realpath(p)
+        else:
+            res = None
     except:
         res = None
+
+    if res == None:
+        try:
+            s = os.environ["ProgramFiles(x86)"]
+            p = os.path.join(s, "Microsoft Visual Studio", "Shared", vc_version, "VC")
+            f = os.path.join(p, "vcvarsall.bat")
+
+            if os.path.isfile(f):
+                config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio", "Shared", vc_version)
+                return os.path.realpath(p)
+            else:
+                res = None
+        except:
+            res = None
+
+    # We should try the custom VC install path as well
+    if res == None:
+        try:
+            p = os.path.join(config['vc_CustomInstallPath'], "VC")
+            f = os.path.join(p, "vcvarsall.bat")
+            if os.path.isfile(f):
+                config['paths']['visual_studio_basedir'] = os.path.join(config['vc_CustomInstallPath'])
+                return os.path.realpath(p)
+            else:
+                res = None
+        except:
+            res = None
+
 
 
 def visual_studio(vc_version):
     config["paths"]["visual_studio"] = get_visual_studio_2015_or_less(vc_version) if vc_version < "15.0" else get_visual_studio_2017_or_more(vc_version)
+    if not config["paths"]["visual_studio"]:
+        logging.error("Unable to find vcvarsall.bat, please make sure you have 'Common C++ tools' Installed")
+        return False
 
 
 def visual_studio_environment():
     # when using visual studio we need to set up the environment correctly
     arch = "amd64" if config["architecture"] == 'x86_64' else "x86"
-    proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
+    if config['paths']['visual_studio']:
+        proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
                      stdout=PIPE, stderr=PIPE)
-    stdout, stderr = proc.communicate()
+        stdout, stderr = proc.communicate()
 
-    if "Error in script usage. The correct usage is" in stderr:
-        logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
-        return False
+        if "Error in script usage. The correct usage is" in stderr:
+            logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
+            return False
 
-    if "Error in script usage. The correct usage is" in stdout:
-        logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
-        return False
+        if "Error in script usage. The correct usage is" in stdout:
+            logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
+            return False
 
-    if proc.returncode != 0:
-        logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
-        return False
+        if proc.returncode != 0:
+            logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
+            return False
+    else:
+            sys.exit(1)
+
 
     vcenv = CIDict()
 
@@ -145,7 +199,11 @@ def visual_studio_environment():
 def init_config(args):
     for d in config['paths'].keys():
         if isinstance(config['paths'][d], str):
-            config['paths'][d] = config['paths'][d].format(base_dir=os.path.abspath(args.destination))
+            config['paths'][d] = config['paths'][d].format(base_dir=os.path.abspath(args.destination),
+                                                           build_dir=args.builddir,
+                                                           progress_dir=args.progressdir,
+                                                           install_dir=args.installdir)
+
 
     if args.set:
         for setting in args.set:
@@ -160,6 +218,7 @@ def init_config(args):
         raise ValueError("only architectures supported are x86 and x86_64")
 
     visual_studio(config["vc_version"]) # forced set after args are evaluated
+    config['__Default_environment'] = os.environ
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = os.path.abspath(args.destination)
 
@@ -182,18 +241,21 @@ def main():
     parser.add_argument('-d', '--destination', default='.', help='output directory (base for download and build)')
     parser.add_argument('-s', '--set', action='append', help='set configuration parameters')
     parser.add_argument('-g', '--graph', action='store_true', help='update dependency graph')
+    parser.add_argument('-b', '--builddir', default='build', help='update build directory')
+    parser.add_argument('-p', '--progressdir', default='progress', help='update progress directory')
+    parser.add_argument('-i', '--installdir', default='install', help='update progress directory')
     parser.add_argument('target', nargs='*', help='make target')
     args = parser.parse_args()
 
     init_config(args)
 
-    for d in ["download", "build", "progress"]:
+    for d in ["download", "build", "progress","install"]:
         if not os.path.exists(config["paths"][d]):
             os.makedirs(config["paths"][d])
 
     logging.debug("building dependency graph")
     manager = TaskManager()
-    imp.load_source("build", args.file)
+    imp.load_source(args.builddir, args.file)
     build_graph = manager.create_graph({})
     assert isinstance(build_graph, nx.DiGraph)
 
@@ -233,6 +295,7 @@ def main():
                     else:
                         if task.fail_behaviour == Task.FailBehaviour.FAIL:
                             logging.critical("task %s failed", node)
+                            exitcode = 1
                             return 1
                         elif task.fail_behaviour == Task.FailBehaviour.SKIP_PROJECT:
                             recursive_remove(build_graph, node)
@@ -251,4 +314,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+      exitcode = main()
+      if not exitcode == 0:
+          sys.exit(exitcode)
+    except Exception, e:
+        traceback.print_exc(file=sys.stdout)
+        sys.exit(1)
+
+

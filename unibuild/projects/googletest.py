@@ -30,7 +30,7 @@ googletest_version = "1.7.0"
 def install(context):
     for root, dirnames, filenames in os.walk(os.path.join(context['build_path'], "build")):
         for filename in fnmatch.filter(filenames, "*.lib"):
-            shutil.copy(os.path.join(root, filename), os.path.join(config['__build_base_path'], "install", "libs"))
+            shutil.copy(os.path.join(root, filename), os.path.join(config["paths"]["install"], "libs"))
 
     return True
 

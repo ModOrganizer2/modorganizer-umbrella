@@ -70,7 +70,7 @@ def extract_independent(graph):
     :return:
     """
     independent = []
-    for node in graph.nodes_iter():
+    for node in graph.nodes():
         if graph.out_degree(node) == 0:
             independent.append(node)
     return independent

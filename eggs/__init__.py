@@ -27,7 +27,7 @@ for dep in ["https://gitlab.com/LePresidente/python-build-tools/uploads/18a195f7
     download(dep, eggpath)
     sys.path.append(eggpath)
 
-for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "networkx","pydot"]:
+for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "networkx","pydot","pydotplus"]:
     destpath = "{0}/{1}".format(path, dep)
     if not os.path.exists(destpath):
         pip.main(["install", "--target={0}".format(destpath), dep])

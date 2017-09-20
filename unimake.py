@@ -98,7 +98,9 @@ def get_visual_studio_2017_or_more(vc_version):
         p = os.path.join(config['vc_CustomInstallPath'], "VC", "Auxiliary", "Build")
         f = os.path.join(p, "vcvarsall.bat")
         res = os.path.isfile(f)
-        if res is not None:
+        if res is None:
+            res = None
+        elif res:
             return os.path.realpath(p)
         else:
             res = None

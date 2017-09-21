@@ -18,6 +18,7 @@
 
 from unibuild.builder import Builder
 from subprocess import Popen
+from config import config
 import os
 import logging
 
@@ -60,7 +61,7 @@ class B2(Builder):
         with open(soutpath, "a") as sout:
             with open(serrpath, "a") as serr:
                 proc = Popen(["cmd.exe", "/C", "bootstrap.bat"], cwd=self._context["build_path"],
-                             stdout=sout, stderr=serr)
+                             stdout=sout, stderr=serr,  env=config['__environment'])
                 proc.communicate()
                 if proc.returncode != 0:
                     logging.error("failed to bootstrap (returncode %s), see %s and %s",

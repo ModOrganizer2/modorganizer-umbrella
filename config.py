@@ -76,8 +76,8 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',               # Don't change this as we spawn the usvfs x86 build later on.
-    'vc_version':   '14.0',
-    'vc_platformtoolset':  'v140',
+    'vc_version':   '15.0',
+    'vc_platformtoolset':  'v141',
     'vc_CustomInstallPath': '',             # If you installed VC to a custom location put the full path here
                                             # eg. E:\Microsoft Visual Studio 14.0
     'build_type': "RelWithDebInfo",
@@ -96,12 +96,12 @@ config = {
     'Distrib_Author': 'TanninOne',			# the current distribution (and the original Author)
     'Work_Author': 'Hugues92',  			# yourself
 
-	'qt_version':	'5.8',					# currently evolving
+	'qt_version':	'5.9',					# currently evolving
 	'openssl_version': '1.0.2L',			# changes often, so better to edit here
 	'zlib_version': '1.2.11',				# changes often, so better to edit here
 	'grep_version': '2.5.4',				# moved here as commented in qt5.py
-	'boost_version': '1.64.0',				# for -DBOOST_ROOT, also, it is either to change from here
-	'vc_version_for_boost': '14.0',			# boost 1.63 does not support VS 2017 yet
+	'boost_version': '1.65.0',				# for -DBOOST_ROOT, also, it is either to change from here
+	'vc_version_for_boost': '14.1',			# boost 1.63 does not support VS 2017 yet
 	'python_version': '2.7',				# used below and in python.py
 	'python_version_minor': '.13',			# used in python.py
 	'icu_version': '58',					# used in PyQt5

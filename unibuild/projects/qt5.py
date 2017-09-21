@@ -78,8 +78,8 @@ if False:
                     filename=filename))))
 else:
     skip_list = ["qtactiveqt", "qtandroidextras", "qtenginio",
-                 "qtserialport", "qtsvg", "qtwebkit",
-                 "qtwayland", "qtdoc", "qtconnectivity", "qtwebkit-examples"]
+                 "qtserialport", "qtsvg",
+                 "qtwayland", "qtdoc", "qtconnectivity"]
 
     nomake_list = ["tests", "examples"]
 

@@ -111,8 +111,8 @@ Project("PyQt5") \
                                     .depend("sip")
                                     .depend("Qt5")
                                     .depend(sourceforge.Release("pyqt",
-                                                                "PyQt5/PyQt-{0}.{1}/PyQt5_gpl-{0}.{1}.zip"
-                                                                .format(qt5.qt_version, qt5.qt_version_minor),
+                                                                "PyQt5/PyQt-{0}/PyQt5_gpl-{0}.zip"
+                                                                .format(qt5.qt_version),
                                                                 tree_depth=1))
                                     )
                             )

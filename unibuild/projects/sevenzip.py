@@ -16,11 +16,11 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild import Project
-from unibuild.modules import urldownload, build, Patch
-from config import config
 import os
 
+from config import config
+from unibuild import Project
+from unibuild.modules import urldownload, build, Patch
 
 # newer versions are beta as of now. They have slightly (?) different api as well
 sevenzip_version = "16.04"
@@ -28,9 +28,11 @@ sevenzip_version = "16.04"
 # TODO build sevenzip, we require the dll in install/bin/dlls.
 # sevenzip is not built here as we only use its source
 Project("7zip") \
-        .depend(Patch.Copy(os.path.join(config['paths']['build'], "7zip", "CPP", "7zip", "Bundles", "Format7zF", "{}"
-                                        .format("x86" if config['architecture'] == 'x86' else "AMD64"),"7z.dll"),
-                           os.path.join(config["paths"]["install"], "bin","dlls"))
-                .depend(build.Run(r"nmake CPU={} NEW_COMPILER=1 MY_STATIC_LINK=1 NO_BUFFEROVERFLOWU=1".format("x86" if config['architecture'] == 'x86' else "AMD64"),
-                      working_directory=os.path.join(config['paths']['build'], "7zip", "CPP", "7zip"))
-                .depend(urldownload.URLDownload("http://www.7-zip.org/a/7z{}-src.7z".format(sevenzip_version.replace(".", ""))).set_destination("7zip"))))
+    .depend(Patch.Copy(os.path.join(config['paths']['build'], "7zip", "CPP", "7zip", "Bundles", "Format7zF", "{}"
+                                    .format("x86" if config['architecture'] == 'x86' else "AMD64"), "7z.dll"),
+                       os.path.join(config["paths"]["install"], "bin", "dlls"))
+            .depend(build.Run(r"nmake CPU={} NEW_COMPILER=1 MY_STATIC_LINK=1 NO_BUFFEROVERFLOWU=1".format(
+    "x86" if config['architecture'] == 'x86' else "AMD64"),
+                              working_directory=os.path.join(config['paths']['build'], "7zip", "CPP", "7zip"))
+                    .depend(urldownload.URLDownload(
+    "http://www.7-zip.org/a/7z{}-src.7z".format(sevenzip_version.replace(".", ""))).set_destination("7zip"))))

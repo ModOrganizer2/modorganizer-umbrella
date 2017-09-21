@@ -16,23 +16,24 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import errno
+import logging
+import os
+import shutil
+from subprocess import Popen
+
+import python
+import qt5  # import to get at qt version information
+import sip
+from config import config
+from unibuild import Project
 from unibuild.modules import sourceforge, build, Patch
 from unibuild.utility import lazy
 from unibuild.utility.lazy import doclambda
-from unibuild import Project
-from config import config
-from subprocess import Popen
-from glob import glob
-import errno
-import shutil
-import os
-import logging
-
-import qt5  # import to get at qt version information
-import sip
-import python
 
 icu_version = config['icu_version']
+pyqt_version = config['pyqt_version']
+
 
 def make_sure_path_exists(path):
     try:
@@ -45,23 +46,23 @@ def make_sure_path_exists(path):
 def pyqt5_env():
     res = config['__environment'].copy()
     res['path'] = ";".join([
-        os.path.join(config['paths']['build'], "qt5", "bin"),
+        os.path.join(qt5.qt_inst_path, "bin"),
         os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),
-        ]) + ";" + res['path']
+    ]) + ";" + res['path']
     res['LIB'] = os.path.join(config["__build_base_path"], "install", "libs") + ";" + res['LIB']
     res['pythonhome'] = python.python['build_path']
     return res
 
 
 def copy_pyd(context):
-        make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
-        srcdir = os.path.join(python.python['build_path'], "Lib", "site-packages", "PyQt5")
-        dstdir = os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5")
-        shutil.copy(os.path.join(srcdir, "__init__.py"),dstdir)
-        shutil.copy(os.path.join(srcdir, "QtCore.pyd"), dstdir)
-        shutil.copy(os.path.join(srcdir, "QtGui.pyd"),dstdir)
-        shutil.copy(os.path.join(srcdir, "QtWidgets.pyd"), dstdir)
-        return True
+    make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
+    srcdir = os.path.join(python.python['build_path'], "Lib", "site-packages", "PyQt5")
+    dstdir = os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5")
+    shutil.copy(os.path.join(srcdir, "__init__.py"), dstdir)
+    shutil.copy(os.path.join(srcdir, "QtCore.pyd"), dstdir)
+    shutil.copy(os.path.join(srcdir, "QtGui.pyd"), dstdir)
+    shutil.copy(os.path.join(srcdir, "QtWidgets.pyd"), dstdir)
+    return True
 
 
 class PyQt5Configure(build.Builder):
@@ -79,16 +80,18 @@ class PyQt5Configure(build.Builder):
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
 
-                proc = Popen([os.path.join(python.python['build_path'],"PCbuild","amd64","python.exe"), "configure.py", "--confirm-license",
-                              "-b", bp,
-                              "-d", os.path.join(bp, "Lib", "site-packages"),
-                              "-v", os.path.join(bp, "sip", "PyQt5"),
-                              "--sip-incdir", os.path.join(bp, "Include"),
-                              "--spec=win32-msvc"],
-                             env=pyqt5_env(),
-                             cwd=self._context["build_path"],
-                             shell=True,
-                             stdout=sout, stderr=serr)
+                proc = Popen(
+                    [os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",
+                     "--confirm-license",
+                     "-b", bp,
+                     "-d", os.path.join(bp, "Lib", "site-packages"),
+                     "-v", os.path.join(bp, "sip", "PyQt5"),
+                     "--sip-incdir", os.path.join(bp, "Include"),
+                     "--spec=win32-msvc"],
+                    env=pyqt5_env(),
+                    cwd=self._context["build_path"],
+                    shell=True,
+                    stdout=sout, stderr=serr)
                 proc.communicate()
                 if proc.returncode != 0:
                     logging.error("failed to run pyqt configure.py (returncode %s), see %s and %s",
@@ -102,9 +105,12 @@ Project("PyQt5") \
     .depend(build.Execute(copy_pyd)
             .depend(Patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
                                 os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll"),
-                                os.path.join(config['paths']['build'], "icu" , "dist", "lib", "icudt{}.dll".format(icu_version)),
-                                os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuin{}.dll".format(icu_version)),
-                                os.path.join(config['paths']['build'], "icu", "dist", "lib", "icuuc{}.dll".format(icu_version))],
+                                os.path.join(config['paths']['build'], "icu", "dist", "lib",
+                                             "icudt{}.dll".format(icu_version)),
+                                os.path.join(config['paths']['build'], "icu", "dist", "lib",
+                                             "icuin{}.dll".format(icu_version)),
+                                os.path.join(config['paths']['build'], "icu", "dist", "lib",
+                                             "icuuc{}.dll".format(icu_version))],
                                doclambda(lambda: python.python['build_path'], "python path"))
                     .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
                             .depend(PyQt5Configure()
@@ -112,10 +118,9 @@ Project("PyQt5") \
                                     .depend("Qt5")
                                     .depend(sourceforge.Release("pyqt",
                                                                 "PyQt5/PyQt-{0}/PyQt5_gpl-{0}.zip"
-                                                                .format(qt5.qt_version),
+                                                                .format(pyqt_version),
                                                                 tree_depth=1))
                                     )
                             )
                     )
             )
-

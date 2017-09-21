@@ -16,14 +16,14 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import errno
+import os
+import shutil
+from glob import glob
+
+from config import config
 from unibuild import Project
 from unibuild.modules import build, sourceforge
-from config import config
-from glob import glob
-import shutil
-import os
-import errno
-
 
 udis_version = "1.7"
 udis_version_minor = "2"

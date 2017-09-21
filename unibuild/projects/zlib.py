@@ -16,14 +16,13 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild import Project
-from unibuild.modules import cmake, urldownload
-from config import config
 import os
 
+from config import config
+from unibuild import Project
+from unibuild.modules import cmake, urldownload
 
 zlib_version = config['zlib_version']
-
 
 Project("zlib") \
     .depend(cmake.CMake().arguments(["-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),

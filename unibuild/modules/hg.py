@@ -16,11 +16,12 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild.modules.repository import Repository
-from subprocess import Popen
-from config import config
-import os
 import logging
+import os
+from subprocess import Popen
+
+from config import config
+from unibuild.modules.repository import Repository
 
 
 class Clone(Repository):
@@ -48,7 +49,7 @@ class Clone(Repository):
 
     @staticmethod
     def _expiration():
-        return config.get('repo_update_frequency', 60 * 60 * 24)   # default: one day
+        return config.get('repo_update_frequency', 60 * 60 * 24)  # default: one day
 
     def set_destination(self, destination_name):
         self._output_file_path = os.path.join(config["paths"]["build"], destination_name)

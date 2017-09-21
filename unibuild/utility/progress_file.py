@@ -20,7 +20,6 @@ import os
 
 
 class ProgressFile(file):
-
     def __init__(self, filename, progress_cb):
         super(ProgressFile, self).__init__(filename, "rb")
 

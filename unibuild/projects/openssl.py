@@ -16,15 +16,14 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import logging
+import os
+import time
+from subprocess import Popen
+
+from config import config
 from unibuild import Project
 from unibuild.modules import urldownload, build, Patch
-from config import config
-from subprocess import Popen
-import os
-import logging
-import time
-import shutil
-
 
 # currently binary installation only
 
@@ -35,11 +34,12 @@ libeay = "libeay32MD.lib"
 ssleay = "ssleay32MD.lib"
 # installation happens concurrently in separate process. We need to wait for all relevant files to exist,
 # and can determine failure only by timeout
-timeout = 15   # seconds
+timeout = 15  # seconds
 
 
 def bitness():
     return "64" if config['architecture'] == "x86_64" else "32"
+
 
 filename = "Win{}OpenSSL-{}.exe".format(bitness(), openssl_version.replace(".", "_"))
 
@@ -67,22 +67,21 @@ def build_func(context):
     # wait a bit longer because the installer may have been in the process of writing the file
     time.sleep(1.0)
 
-    if wait_counter<=0:
+    if wait_counter <= 0:
         logging.error("Unpacking of OpenSSL timed out");
-        return False #We timed out and nothing was installed
-    
+        return False  # We timed out and nothing was installed
+
     return True
 
 
 openssl = Project("openssl") \
     .depend(Patch.Copy([os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
                                      .format("32" if config['architecture'] == 'x86' else "64",
-                                             openssl_version.replace(".","_")), "ssleay32.dll"),
+                                             openssl_version.replace(".", "_")), "ssleay32.dll"),
                         os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
                                      .format("32" if config['architecture'] == 'x86' else "64",
                                              openssl_version.replace(".", "_")), "libeay32.dll"), ],
-                       os.path.join(config["paths"]["install"], "bin","dlls"))
+                       os.path.join(config["paths"]["install"], "bin", "dlls"))
             .depend(build.Execute(build_func)
-            .depend(urldownload.URLDownload(url))
-            ))
-
+                    .depend(urldownload.URLDownload(url))
+                    ))

@@ -16,13 +16,13 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import logging
+import os
 from subprocess import Popen
+
 from config import config
 from repository import Repository
-import os
-import logging
 from unibuild import Task
-from urlparse import urlparse, urlsplit
 
 
 class SuperRepository(Task):
@@ -112,7 +112,7 @@ class Clone(Repository):
 
         if self.__commit is not None:
             proc = Popen([config['paths']['git'], "checkout", self.__commit],
-                         cwd = self._context["build_path"],
+                         cwd=self._context["build_path"],
                          env=config["__environment"])
 
             if proc is not None:
@@ -125,7 +125,7 @@ class Clone(Repository):
 
     @staticmethod
     def _expiration():
-        return config.get('repo_update_frequency', 60 * 60 * 24)   # default: one day
+        return config.get('repo_update_frequency', 60 * 60 * 24)  # default: one day
 
     def set_destination(self, destination_name):
         self.__base_name = destination_name.replace("/", os.path.sep)

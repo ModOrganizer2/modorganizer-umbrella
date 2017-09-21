@@ -16,17 +16,17 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from build import Builder
-from subprocess import Popen
-from config import config
-import shutil
 import logging
 import os
+from subprocess import Popen
+
+from build import Builder
+from config import config
 
 
 class MSBuild(Builder):
-
-    def __init__(self, solution, project=None, working_directory=None, project_platform=None, project_PlatformToolset=None ):
+    def __init__(self, solution, project=None, working_directory=None, project_platform=None,
+                 project_PlatformToolset=None):
         super(MSBuild, self).__init__()
         self.__solution = solution
         self.__project = project
@@ -62,7 +62,7 @@ class MSBuild(Builder):
 
                 if self.__project_platform is None:
                     args.append("/property:Platform={}"
-                        .format("x64" if config['architecture'] == 'x86_64' else "win32"))
+                                .format("x64" if config['architecture'] == 'x86_64' else "win32"))
                 else:
                     args.append("/property:Platform={}".format(self.__project_platform))
 

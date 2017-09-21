@@ -17,6 +17,7 @@
 
 
 import networkx as nx
+
 from utility.singleton import Singleton
 
 

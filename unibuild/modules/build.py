@@ -16,13 +16,14 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import logging
+import os.path
+from subprocess import Popen
+
+from config import config
 from unibuild import Task
 from unibuild.builder import Builder
 from unibuild.utility.lazy import Lazy
-from subprocess import Popen
-from config import config
-import os.path
-import logging
 
 STATIC_LIB = 1
 SHARED_LIB = 2
@@ -30,7 +31,6 @@ EXECUTABLE = 3
 
 
 class CPP(Builder):
-
     def __init__(self, cflags=None):
         super(CPP, self).__init__()
         self.__type = EXECUTABLE
@@ -270,6 +270,7 @@ class Run(Builder):
 
         return True
 
+
 class Run_With_Output(Builder):
     def __init__(self, command, fail_behaviour=Task.FailBehaviour.FAIL, environment=None, working_directory=None,
                  name=None):
@@ -289,26 +290,25 @@ class Run_With_Output(Builder):
 
     def process(self, progress):
 
-            environment = dict(self.__environment()
-                                   if self.__environment() is not None
-                                   else config["__environment"])
-            cwd = str(self.__working_directory()
-                          if self.__working_directory() is not None
-                          else self._context["build_path"])
+        environment = dict(self.__environment()
+                           if self.__environment() is not None
+                           else config["__environment"])
+        cwd = str(self.__working_directory()
+                  if self.__working_directory() is not None
+                  else self._context["build_path"])
 
+        proc = Popen(self.__command(),
+                     env=environment,
+                     cwd=cwd,
+                     shell=True)
+        proc.communicate()
+        if proc.returncode != 0:
+            if isinstance(proc.returncode, (str, unicode)):
+                logging.error("failed to run %s (returncode %s), see %s and %s",
+                              self.__command(), proc.returncode)
+                return False
+            else:
+                logging.error("failed to run {} (returncode {})".format(self.__command(), proc.returncode))
+                return False
 
-            proc = Popen(self.__command(),
-                             env=environment,
-                             cwd=cwd,
-                             shell=True)
-            proc.communicate()
-            if proc.returncode != 0:
-                if isinstance(proc.returncode , (str, unicode)):
-                    logging.error("failed to run %s (returncode %s), see %s and %s",
-                                  self.__command(), proc.returncode)
-                    return False
-                else:
-                    logging.error("failed to run {} (returncode {})".format(self.__command(), proc.returncode))
-                    return False
-
-            return True
+        return True

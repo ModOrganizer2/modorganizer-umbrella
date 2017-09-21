@@ -16,25 +16,25 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import errno
+import logging
+import os
+import shutil
+from glob import glob
+from subprocess import Popen
+
+import python
+from config import config
 from unibuild import Project
 from unibuild.modules import sourceforge, build
-from subprocess import Popen
-from config import config
-from glob import glob
-import os
-import logging
-import python
-import errno
-import shutil
 
-
-sip_version = "4.19.1"
+sip_version = "4.19.3"
 python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".13")
 
 
 def sip_environment():
     result = config['__environment'].copy()
-    result['LIB'] += os.path.join(config['paths']['build'],"python-{}".format(python_version),"PCbuild","amd64")
+    result['LIB'] += os.path.join(config['paths']['build'], "python-{}".format(python_version), "PCbuild", "amd64")
     return result
 
 
@@ -47,10 +47,10 @@ def make_sure_path_exists(path):
 
 
 def copy_pyd(context):
-        make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
-        for f in glob(os.path.join(python.python['build_path'], "Lib", "site-packages", "sip.pyd")):
-            shutil.copy(f, os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
-        return True
+    make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
+    for f in glob(os.path.join(python.python['build_path'], "Lib", "site-packages", "sip.pyd")):
+        shutil.copy(f, os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
+    return True
 
 
 class SipConfigure(build.Builder):
@@ -68,16 +68,17 @@ class SipConfigure(build.Builder):
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
 
-                proc = Popen([os.path.join(python.python['build_path'],"PCbuild","amd64","python.exe"), "configure.py",
-                              "-b", bp,
-                              "-d", os.path.join(bp, "Lib", "site-packages"),
-                              "-v", os.path.join(bp, "sip"),
-                              "-e", os.path.join(bp, "include")
-                              ],
-                             env=config["__environment"],
-                             cwd=self._context["build_path"],
-                             shell=True,
-                             stdout=sout, stderr=serr)
+                proc = Popen(
+                    [os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",
+                     "-b", bp,
+                     "-d", os.path.join(bp, "Lib", "site-packages"),
+                     "-v", os.path.join(bp, "sip"),
+                     "-e", os.path.join(bp, "include")
+                     ],
+                    env=config["__environment"],
+                    cwd=self._context["build_path"],
+                    shell=True,
+                    stdout=sout, stderr=serr)
                 proc.communicate()
                 if proc.returncode != 0:
                     logging.error("failed to run sip configure.py (returncode %s), see %s and %s",
@@ -92,10 +93,10 @@ Project('sip') \
             .depend(build.Make(environment=sip_environment()).install()
                     .depend(SipConfigure()
                             .depend("Python")
-                                    .depend(sourceforge.Release("pyqt",
-                                                                "sip/sip-{0}/sip-{0}.zip".format(sip_version),
-                                                                1)
-                                            )
+                            .depend(sourceforge.Release("pyqt",
+                                                        "sip/sip-{0}/sip-{0}.zip".format(sip_version),
+                                                        1)
+                                    )
                             )
                     )
             )

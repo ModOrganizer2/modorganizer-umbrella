@@ -50,19 +50,21 @@ def progress_callback(job, percentage):
 
 
 def draw_graph(graph, filename):
-    if config['paths']['graphviz']:
-        # neither pydot nor pygraphviz reliably find graphviz on windows. gotta do everything myself...
-        from subprocess import call
-        graph_file_name = os.path.join(os.getcwd(), "graph.dot")
-        write_dot(graph, graph_file_name)
-
-        call([config['paths']['graphviz'],
-              "-Tpng", "-Edir=back", "-Gsplines=ortho", "-Grankdir=BT", "-Gconcentrate=true", "-Nshape=box",
-              "-Gdpi=192",
-              graph_file_name,
-              "-o", "{}.png".format(filename)])
-    else:
-        print("graphviz path not set")
+    try:
+        if config['paths']['graphviz']:
+            # neither pydot nor pygraphviz reliably find graphviz on windows. gotta do everything myself...
+            from subprocess import call
+            graph_file_name = os.path.join(os.getcwd(), "graph.dot")
+            write_dot(graph, graph_file_name)
+            call([config['paths']['graphviz'],
+                    "-Tpng", "-Edir=back", "-Gsplines=ortho", "-Grankdir=BT", "-Gconcentrate=true", "-Nshape=box",
+                    "-Gdpi=192",
+                    graph_file_name,
+                    "-o", "{}.png".format(filename)])
+        else:
+            print("graphviz path not set")
+    except KeyError:
+        print("graphviz path not set, No graph support")
 
 
 def extract_independent(graph):

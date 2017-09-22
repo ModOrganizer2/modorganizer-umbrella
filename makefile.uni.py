@@ -106,13 +106,13 @@ else:
 
 for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_features", "game_features", "master", [], False),
-    (config['Main_Author'], "modorganizer-archive", "archive", "master", ["7zip", "Qt5"], True),
+    (config['Main_Author'], "modorganizer-archive", "archive", "master", ["7zip", "Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-uibase", "uibase", "QT5.7", ["Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-lootcli", "lootcli", "master", ["LootApi", "boost"], True),
     (config['Main_Author'], "modorganizer-esptk", "esptk", "master", ["boost"], True),
     (config['Main_Author'], "modorganizer-bsatk", "bsatk", "master", ["zlib", "boost"], True),
     (config['Main_Author'], "modorganizer-nxmhandler", "nxmhandler", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-helper", "helper", "master", ["Qt5"], True),
+    (config['Main_Author'], "modorganizer-helper", "helper", "master", ["Qt5","boost"], True),
     (config['Main_Author'], "modorganizer-game_gamebryo", "game_gamebryo", "new_vfs_library",
      ["Qt5", "modorganizer-uibase",
       "modorganizer-game_features", "lz4"], True),

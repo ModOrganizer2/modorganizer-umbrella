@@ -80,7 +80,7 @@ class PyQt5Configure(build.Builder):
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
                 if os.path.exists(os.path.join(qt5.qt_inst_path, "include","QtNfc")):
-                    logging.error("Please rename {} to {}.disable, as it breaks PyQt5 from compiling".format(os.path.join(qt5.qt_inst_path, "include","QtNfc")))
+                    logging.error("Please rename {0} to {0}.disable, as it breaks PyQt5 from compiling".format(os.path.join(qt5.qt_inst_path, "include","QtNfc")))
                     return False
                 proc = Popen(
                     [os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",

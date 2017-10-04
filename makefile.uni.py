@@ -34,7 +34,7 @@ commit_id = "g0fcf788"
 Projects
 """
 
-from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc
+from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc, openssl
 from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib, lz4, WixToolkit
 
 
@@ -170,7 +170,7 @@ for author, git_path, path, branch, dependencies, Build in [
                                                                       "modorganizer-uibase", "modorganizer-archive",
                                                                       "modorganizer-bsatk", "modorganizer-esptk",
                                                                       "modorganizer-game_features",
-                                                                      "usvfs", "githubpp", "NCC"], True),
+                                                                      "usvfs", "githubpp", "NCC", "openssl"], True),
 ]:
     build_step = cmake.CMake().arguments(cmake_parameters +
                                          ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]) \

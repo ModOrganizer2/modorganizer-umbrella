@@ -78,8 +78,8 @@ config = {
         'make': "nmake",
     },
     'architecture': 'x86_64',  # Don't change this as we spawn the usvfs x86 build later on.
-    'vc_version': '15.0',
-    'vc_platformtoolset': 'v141',
+    'vc_version': '14.0',
+    'vc_platformtoolset': 'v140',
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
     # eg. E:\Microsoft Visual Studio 14.0
     'qt_CustomInstallPath': '',  # If you installed QT to a custom location put the full path here
@@ -106,8 +106,8 @@ config = {
     'openssl_version': '1.0.2L',  # changes often, so better to edit here
     'zlib_version': '1.2.11',  # changes often, so better to edit here
     'grep_version': '2.5.4',  # moved here as commented in qt5.py
-    'boost_version': '1.65.0',  # for -DBOOST_ROOT, also, it is either to change from here
-    'vc_version_for_boost': '14.1',  # boost 1.63 does not support VS 2017 yet
+    'boost_version': '1.64.0',  # for -DBOOST_ROOT, also, it is either to change from here
+    'vc_version_for_boost': '14.0',  # boost 1.63 does not support VS 2017 yet
     'python_version': '2.7',  # used below and in python.py
     'python_version_minor': '.13',  # used in python.py
     'icu_version': '59',  # used in PyQt5
@@ -120,11 +120,11 @@ config['paths'] = {
     'build': "{base_dir}\\{build_dir}",
     'progress': "{base_dir}\\{progress_dir}",
     'install': "{base_dir}\\{install_dir}",
-    'graphviz': path_or_default("dot.exe", "Graphviz2.38", "bin"),
+#   'graphviz': path_or_default("dot.exe", "Graphviz2.38", "bin"),
     'cmake': path_or_default("cmake.exe", "CMake", "bin"),
     'git': path_or_default("git.exe", "Git", "bin"),
     'perl': path_or_default("perl.exe", "StrawberryPerl", "bin"),
-    'ruby': path_or_default("ruby.exe", "Ruby22-x64", "bin"),
+   'ruby': path_or_default("ruby.exe", "Ruby22-x64", "bin"),
     'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
     '7z': path_or_default("7z.exe", "7-Zip"),
     # we need a python that matches the build architecture

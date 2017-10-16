@@ -1,9 +1,8 @@
 import os.path
 import sys
 import urllib2
+
 import pip
-import tarfile
-from subprocess import call
 
 
 def download(url, filename):
@@ -19,15 +18,16 @@ def download(url, filename):
             outfile.write(block)
     return True
 
+
 path = os.path.abspath(os.path.join(os.path.realpath(__file__), os.pardir))
 
-
-for dep in ["https://gitlab.com/LePresidente/python-build-tools/uploads/18a195f7945ca35ad563b428739f254b/buildtools-0.0.2-py2.7.egg"]:
+for dep in [
+    "https://gitlab.com/LePresidente/python-build-tools/uploads/18a195f7945ca35ad563b428739f254b/buildtools-0.0.2-py2.7.egg"]:
     eggpath = os.path.join(path, os.path.basename(dep))
     download(dep, eggpath)
     sys.path.append(eggpath)
 
-for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "networkx","pydot"]:
+for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "networkx", "pydot", "pydotplus"]:
     destpath = "{0}/{1}".format(path, dep)
     if not os.path.exists(destpath):
         pip.main(["install", "--target={0}".format(destpath), dep])

@@ -1,6 +1,7 @@
-from unibuild.retrieval import Retrieval
-from config import config
 import os
+
+from config import config
+from unibuild.retrieval import Retrieval
 
 
 class Repository(Retrieval):
@@ -14,4 +15,3 @@ class Repository(Retrieval):
     @property
     def name(self):
         return "retrieve {0}".format(self._dir_name)
-

@@ -16,23 +16,23 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import logging
+import os
+import time
+from subprocess import Popen
+
+from config import config
 from unibuild import Project
 from unibuild.modules import urldownload, build
-from config import config
-from subprocess import Popen
-import os
-import logging
-import time
-import shutil
-
 
 # installation happens concurrently in separate process. We need to wait for all relevant files to exist,
 # and can determine failure only by timeout
-timeout = 15   # seconds
+timeout = 15  # seconds
 
 
 def bitness():
     return "64" if config['architecture'] == "x86_64" else "32"
+
 
 filename = "setup-{}.exe".format(config['architecture'])
 
@@ -43,16 +43,16 @@ Cygwin_Mirror = "http://mirrors.kernel.org/sourceware/cygwin/"
 
 def build_func(context):
     proc = Popen([os.path.join(config['paths']['download'], filename),
-                   "-q","-C", "Base", "-P", "make,dos2unix,binutils", "-n", "-d", "-O", "-B", "-R", "{}/../cygwin"
+                  "-q", "-C", "Base", "-P", "make,dos2unix,binutils", "-n", "-d", "-O", "-B", "-R", "{}/../cygwin"
                  .format(context['build_path']), "-l", "{}".format(os.path.join(config['paths']['download'])),
-                  "-s", "{}".format(Cygwin_Mirror)],env=config['__environment'])
+                  "-s", "{}".format(Cygwin_Mirror)], env=config['__environment'])
     proc.communicate()
     if proc.returncode != 0:
         logging.error("failed to run installer (returncode %s)",
                       proc.returncode)
         return False
-    dos2unix_path = os.path.join(context['build_path'],"../cygwin","bin", "dos2unix.exe")
-    make_path = os.path.join(context['build_path'],"../cygwin", "bin", "make.exe")
+    dos2unix_path = os.path.join(context['build_path'], "../cygwin", "bin", "dos2unix.exe")
+    make_path = os.path.join(context['build_path'], "../cygwin", "bin", "make.exe")
     wait_counter = timeout
     while wait_counter > 0:
         if os.path.isfile(dos2unix_path) and os.path.isfile(make_path):
@@ -63,15 +63,14 @@ def build_func(context):
     # wait a bit longer because the installer may have been in the process of writing the file
     time.sleep(5.0)
 
-    if wait_counter<=0:
+    if wait_counter <= 0:
         logging.error("Unpacking of Cygwin timed out");
-        return False #We timed out and nothing was installed
-    
+        return False  # We timed out and nothing was installed
+
     return True
 
 
-cygwin = Project("cygwin")\
+cygwin = Project("cygwin") \
     .depend(build.Execute(build_func)
             .depend(urldownload.URLDownload(url))
             )
-

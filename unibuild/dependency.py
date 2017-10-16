@@ -1,11 +1,9 @@
 __author__ = 'Tannin'
 
-
 from project import Project
 
 
 class Dependency(Project):
-
     def __init__(self, name):
         super(Dependency, self).__init__(name)
 
@@ -14,4 +12,3 @@ class Dependency(Project):
 
     def version_eq(self, version):
         return self
-

@@ -16,19 +16,20 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild.project import Project
-from unibuild.modules import github, msbuild, build, urldownload
-from config import config
-from unimake import get_visual_studio_2017_or_more
+import errno
 import os
 import shutil
 from glob import glob
-import errno
 
+from config import config
+from unibuild.modules import github, msbuild, build, urldownload
+from unibuild.project import Project
+from unimake import get_visual_studio_2017_or_more
 
 python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".12")
 python_toolset = config.get('vc_platformtoolset', "v140")
 python_url = "https://www.python.org/ftp/python"
+
 
 def make_sure_path_exists(path):
     try:
@@ -47,19 +48,20 @@ def python_environment():
 def upgrade_args():
     env = config['__environment']
     devenv_path = os.path.join(config['paths']['visual_studio_basedir'], "Common7", "IDE")
-    #MSVC2017 supports building with the MSVC2015 toolset though this will break here, Small work around to make sure devenv.exe exists
-    #If not try MSVC2017 instead
+    # MSVC2017 supports building with the MSVC2015 toolset though this will break here, Small work around to make sure devenv.exe exists
+    # If not try MSVC2017 instead
     res = os.path.isfile(os.path.join(devenv_path, "devenv.exe"))
     if res:
         return [os.path.join(devenv_path, "devenv.exe"),
-            "PCBuild/pcbuild.sln",
-            "/upgrade"]
+                "PCBuild/pcbuild.sln",
+                "/upgrade"]
     else:
-        return [os.path.join(get_visual_studio_2017_or_more('15.0'),"..","..","..","Common7", "IDE", "devenv.exe"),
-            "PCBuild/pcbuild.sln",
-            "/upgrade"]
+        return [os.path.join(get_visual_studio_2017_or_more('15.0'), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
+                "PCBuild/pcbuild.sln",
+                "/upgrade"]
 
-#if config.get('prefer_binary_dependencies', False):
+
+# if config.get('prefer_binary_dependencies', False):
 if False:
     # the python installer registers in windows and prevent further installations. This means this installation
     # would interfere with the rest of the system
@@ -89,20 +91,22 @@ else:
         if config['architecture'] == "x86_64":
             path_segments.append("amd64")
         path_segments.append("*.lib")
-        shutil.copy(os.path.join(python['build_path'],"PC", "pyconfig.h"),os.path.join(python['build_path'], "Include","pyconfig.h"))
+        shutil.copy(os.path.join(python['build_path'], "PC", "pyconfig.h"),
+                    os.path.join(python['build_path'], "Include", "pyconfig.h"))
         for f in glob(os.path.join(*path_segments)):
             shutil.copy(f, os.path.join(config["paths"]["install"], "libs"))
         return True
 
+
     python = Project("Python") \
-         .depend(build.Execute(install)
-                 .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
-                                         project_PlatformToolset=python_toolset)
-#                 .depend(build.Run(r'PCBuild\\build.bat -e -c Release -m -p {} "/p:PlatformToolset={}"'.format("x64" if config['architecture'] == 'x86_64' else "x86",config['vc_platform']),
-#                                   environment=python_environment(),
-#                                   working_directory=lambda: os.path.join(python['build_path']))
-                            .depend(build.Run(upgrade_args, name="upgrade python project")
-                                         .depend(github.Source("LePresidente", "cpython", config.get('python_version', "2.7"))\
-										     .set_destination("python-{}".format(python_version))))
+        .depend(build.Execute(install)
+                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
+                                        project_PlatformToolset=python_toolset)
+                        #                 .depend(build.Run(r'PCBuild\\build.bat -e -c Release -m -p {} "/p:PlatformToolset={}"'.format("x64" if config['architecture'] == 'x86_64' else "x86",config['vc_platform']),
+                        #                                   environment=python_environment(),
+                        #                                   working_directory=lambda: os.path.join(python['build_path']))
+                        .depend(build.Run(upgrade_args, name="upgrade python project")
+                                .depend(github.Source("LePresidente", "cpython", config.get('python_version', "2.7")) \
+                                        .set_destination("python-{}".format(python_version))))
                         )
                 )

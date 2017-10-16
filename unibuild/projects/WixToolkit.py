@@ -16,16 +16,13 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from config import config
 from unibuild import Project
 from unibuild.modules import github
-from config import config
-import os
-
 
 WixToolSet_Version_Binary = config['WixToolSet_Version_Binary']
 
-
 Project("WixToolkit") \
-            .depend(github.Release("wixtoolset", "wix3", "wix{}rtm".format(WixToolSet_Version_Binary),
-                                   "wix{}-binaries".format(WixToolSet_Version_Binary))
-                    .set_destination("WixToolkit"))
+    .depend(github.Release("wixtoolset", "wix3", "wix{}rtm".format(WixToolSet_Version_Binary),
+                           "wix{}-binaries".format(WixToolSet_Version_Binary))
+            .set_destination("WixToolkit"))

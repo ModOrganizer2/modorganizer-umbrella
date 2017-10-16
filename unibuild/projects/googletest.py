@@ -16,13 +16,13 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild import Project
-from unibuild.modules import cmake, github, build
-from config import config
+import fnmatch
 import os
 import shutil
-import fnmatch
 
+from config import config
+from unibuild import Project
+from unibuild.modules import cmake, github, build
 
 googletest_version = "1.8.0"
 
@@ -42,4 +42,3 @@ Project("GTest") \
                                              ])
                     .depend(github.Source("google", "googletest", "release-{}".format(googletest_version))))
             )
-

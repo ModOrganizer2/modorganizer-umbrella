@@ -1,13 +1,12 @@
 __author__ = 'Tannin'
 
-
-from task import Task
-from config import config
 import os
+
+from config import config
+from task import Task
 
 
 class Retrieval(Task):
-
     def __init__(self):
         super(Retrieval, self).__init__()
         try:

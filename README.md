@@ -45,7 +45,8 @@ All the following need to be either on your PATH, or available from Program File
 
 * python 2.7 (2.7.13 x64)
   * decorator
-*  visual Studio 2015 (Including VC Common tools)
+* visual Studio 2015 (Including VC Common tools)
+* Windows 10 SDK (10.0.15063.468)
 
 * cmake
 * 7zip - specifically, the command line version (7za)

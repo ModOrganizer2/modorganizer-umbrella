@@ -16,10 +16,11 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from manager import TaskManager
 import os.path
 import time
+
 from config import config
+from manager import TaskManager
 
 
 class Task(object):

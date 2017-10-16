@@ -20,7 +20,6 @@ from task import Task
 
 
 class Builder(Task):
-
     def __init__(self):
         super(Builder, self).__init__()
 

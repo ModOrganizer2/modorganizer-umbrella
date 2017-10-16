@@ -16,12 +16,11 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from task import Task
 from manager import TaskManager, register_project
+from task import Task
 
 
 class Project(Task):
-
     def __init__(self, name):
         super(Project, self).__init__()
         self.__name = name

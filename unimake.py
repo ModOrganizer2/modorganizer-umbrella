@@ -15,14 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import eggs
 from unibuild.manager import TaskManager
 from unibuild.progress import Progress
 from unibuild.project import Project
 from unibuild import Task
 from unibuild.utility import CIDict
-from config import config, vs_editions, get_from_hklm
+from config import config, vs_editions, program_files_folders
 from subprocess import Popen, PIPE
 import imp
 import sys
@@ -33,8 +32,10 @@ import tempfile
 import os.path
 import argparse
 import re
+from networkx.drawing.nx_pydot import write_dot
 
 exitcode = 0
+
 
 def progress_callback(job, percentage):
     if not percentage and not job:
@@ -42,25 +43,28 @@ def progress_callback(job, percentage):
     else:
         pb_length = 50
         filled = int((pb_length * percentage) / 100)  # cast to int may be necessary in python 3
-        #sys.stdout.write("\r%d%%" % percentage)
+        # sys.stdout.write("\r%d%%" % percentage)
         sys.stdout.write("\r%s [%s%s] %d%%" % (job, "=" * filled, " " * (pb_length - filled), percentage))
 
     sys.stdout.flush()
 
 
 def draw_graph(graph, filename):
-    if config['paths']['graphviz']:
-        # neither pydot nor pygraphviz reliably find graphviz on windows. gotta do everything myself...
-        from subprocess import call
-        graph_file_name = os.path.join(os.getcwd(), "graph.dot")
-        nx.write_dot(graph, graph_file_name)
-
-        call([config['paths']['graphviz'],
-              "-Tpng", "-Edir=back", "-Gsplines=ortho", "-Grankdir=BT", "-Gconcentrate=true", "-Nshape=box", "-Gdpi=192",
-              graph_file_name,
-              "-o", "{}.png".format(filename)])
-    else:
-        print("graphviz path not set")
+    try:
+        if config['paths']['graphviz']:
+            # neither pydot nor pygraphviz reliably find graphviz on windows. gotta do everything myself...
+            from subprocess import call
+            graph_file_name = os.path.join(os.getcwd(), "graph.dot")
+            write_dot(graph, graph_file_name)
+            call([config['paths']['graphviz'],
+                    "-Tpng", "-Edir=back", "-Gsplines=ortho", "-Grankdir=BT", "-Gconcentrate=true", "-Nshape=box",
+                    "-Gdpi=192",
+                    graph_file_name,
+                    "-o", "{}.png".format(filename)])
+        else:
+            print("graphviz path not set")
+    except KeyError:
+        print("graphviz path not set, No graph support")
 
 
 def extract_independent(graph):
@@ -70,17 +74,23 @@ def extract_independent(graph):
     :return:
     """
     independent = []
-    for node in graph.nodes_iter():
+    for node in graph.nodes():
         if graph.out_degree(node) == 0:
             independent.append(node)
     return independent
 
 
 def vc_year(vc_version):
-    return "2017" if vc_version == "15.0" else ""
+    if vc_version == "15.0":
+        return "2017"
+    elif vc_version == "14.0":
+        return "2015"
+    else:
+        ""
+
+        # No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir
 
 
-# No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir
 def get_visual_studio_2017_or_more(vc_version):
     try:
         if os.environ["VisualStudioVersion"] == vc_version:
@@ -88,7 +98,7 @@ def get_visual_studio_2017_or_more(vc_version):
             f = os.path.join(p, "vcvarsall.bat")
             res = os.path.isfile(f)
             if res is not None:
-               return os.path.realpath(p)
+                return os.path.realpath(p)
             else:
                 res = None
     except:
@@ -98,7 +108,9 @@ def get_visual_studio_2017_or_more(vc_version):
         p = os.path.join(config['vc_CustomInstallPath'], "VC", "Auxiliary", "Build")
         f = os.path.join(p, "vcvarsall.bat")
         res = os.path.isfile(f)
-        if res is not None:
+        if res is None:
+            res = None
+        elif res:
             return os.path.realpath(p)
         else:
             res = None
@@ -110,7 +122,8 @@ def get_visual_studio_2017_or_more(vc_version):
         p = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version), edition, "VC", "Auxiliary", "Build")
         f = os.path.join(p, "vcvarsall.bat")
         if os.path.isfile(f):
-            config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version), edition)
+            config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version),
+                                                                    edition)
             return os.path.realpath(p)
 
 
@@ -135,7 +148,8 @@ def get_visual_studio_2015_or_less(vc_version):
             f = os.path.join(p, "vcvarsall.bat")
 
             if os.path.isfile(f):
-                config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio", "Shared", vc_version)
+                config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio", "Shared",
+                                                                        vc_version)
                 return os.path.realpath(p)
             else:
                 res = None
@@ -156,17 +170,18 @@ def get_visual_studio_2015_or_less(vc_version):
             res = None
 
 
-
 def visual_studio(vc_version):
-    config["paths"]["visual_studio"] = get_visual_studio_2015_or_less(vc_version) if vc_version < "15.0" else get_visual_studio_2017_or_more(vc_version)
+    config["paths"]["visual_studio"] = get_visual_studio_2015_or_less(vc_version) if vc_version < "15.0" \
+        else get_visual_studio_2017_or_more(vc_version)
     if not config["paths"]["visual_studio"]:
         logging.error("Unable to find vcvarsall.bat, please make sure you have 'Common C++ tools' Installed")
-        return False
+        sys.exit(1)
 
 
 def visual_studio_environment():
     # when using visual studio we need to set up the environment correctly
     arch = "amd64" if config["architecture"] == 'x86_64' else "x86"
+    test = config['paths']['visual_studio']
     if config['paths']['visual_studio']:
         proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
                      stdout=PIPE, stderr=PIPE)
@@ -184,8 +199,7 @@ def visual_studio_environment():
             logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
             return False
     else:
-            sys.exit(1)
-
+        sys.exit(1)
 
     vcenv = CIDict()
 
@@ -196,6 +210,44 @@ def visual_studio_environment():
     return vcenv
 
 
+def get_qt_install(qt_version, qt_minor_version, vc_version):
+    res = ""
+    # We only use the 64bit version of QT in MO2 so this should be fine.
+
+    try:
+        for baselocation in program_files_folders:
+            p = os.path.join(baselocation, "Qt", "{}".format(qt_version + "." + qt_minor_version
+                                                             if qt_minor_version != '' else qt_version),
+                             "msvc{0}_64".format(vc_year(vc_version)))
+            f = os.path.join(p, "bin", "qmake.exe")
+            if os.path.isfile(f):
+                return os.path.realpath(p)
+    except:
+        res = None
+
+    # We should try the custom VC install path as well
+    if res is None:
+        try:
+            p = os.path.join(config['qt_CustomInstallPath'], "{}".format(qt_version + "." + qt_minor_version
+                                                                         if qt_minor_version != '' else qt_version),
+                             "msvc{0}_64".format(vc_year(vc_version)))
+            f = os.path.join(p, "bin", "qmake.exe")
+            if os.path.isfile(f):
+                return os.path.realpath(p)
+        except:
+            res = None
+
+
+def qt_install(qt_version, qt_minor_version, vc_version):
+    config["paths"]["qt_binary_install"] = get_qt_install(qt_version, qt_minor_version, vc_version)
+    if not config["paths"]["qt_binary_install"]:
+        logging.error("Unable to find qmake.exe, please make sure you have QT {} installed, If you would prefer "
+                      "to use the old way of compiling QT from source. Change 'prefer_binary_dependencies'"
+                      " to False in config.py"
+                      .format(qt_version + "." + qt_minor_version if qt_minor_version != '' else qt_version))
+        sys.exit(1)
+
+
 def init_config(args):
     for d in config['paths'].keys():
         if isinstance(config['paths'][d], str):
@@ -203,7 +255,6 @@ def init_config(args):
                                                            build_dir=args.builddir,
                                                            progress_dir=args.progressdir,
                                                            install_dir=args.installdir)
-
 
     if args.set:
         for setting in args.set:
@@ -217,13 +268,18 @@ def init_config(args):
     if config['architecture'] not in ['x86_64', 'x86']:
         raise ValueError("only architectures supported are x86 and x86_64")
 
-    visual_studio(config["vc_version"]) # forced set after args are evaluated
+    visual_studio(config["vc_version"])  # forced set after args are evaluated
+    if config['prefer_binary_dependencies']:
+        qt_install(config["qt_version"], config["qt_minor_version"], config["vc_version"])
     config['__Default_environment'] = os.environ
     config['__environment'] = visual_studio_environment()
+    test = config['__environment']
     config['__build_base_path'] = os.path.abspath(args.destination)
+    config['__Umbrella_path'] = os.getcwd()
 
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable
+
 
 def recursive_remove(graph, node):
     if not isinstance(graph.node[node]["task"], Project):
@@ -249,7 +305,7 @@ def main():
 
     init_config(args)
 
-    for d in ["download", "build", "progress","install"]:
+    for d in ["download", "build", "progress", "install"]:
         if not os.path.exists(config["paths"][d]):
             os.makedirs(config["paths"][d])
 
@@ -315,11 +371,9 @@ def main():
 
 if __name__ == "__main__":
     try:
-      exitcode = main()
-      if not exitcode == 0:
-          sys.exit(exitcode)
+        exitcode = main()
+        if not exitcode == 0:
+            sys.exit(exitcode)
     except Exception, e:
         traceback.print_exc(file=sys.stdout)
         sys.exit(1)
-
-

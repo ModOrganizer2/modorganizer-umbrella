@@ -21,6 +21,6 @@ class FormatDict(dict):
     a dictionary that doesn't throw an exception on access to an unknown key,
     intended to be used for format parameters.
     """
+
     def __missing__(self, key):
         return "{" + key + "}"
-

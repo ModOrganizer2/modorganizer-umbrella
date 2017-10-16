@@ -2,7 +2,6 @@ __author__ = 'Tannin'
 
 
 class Progress(object):
-
     def __init__(self):
         self.__minimum = 0
         self.__maximum = 100

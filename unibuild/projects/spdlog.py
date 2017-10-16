@@ -17,9 +17,9 @@
 
 # TODO This is really old, should by updated to 0.13
 
+from config import config
 from unibuild import Project
 from unibuild.modules import cmake, github
-from config import config
 
 Project("spdlog") \
     .depend(cmake.CMake().arguments(
@@ -27,6 +27,6 @@ Project("spdlog") \
         "-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"].replace('\\', '/')),
         "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
     ]).install()
-                    .depend(github.Source("TanninOne", "spdlog", "master").set_destination("spdlog")
+            .depend(github.Source("TanninOne", "spdlog", "master").set_destination("spdlog")
                     )
             )

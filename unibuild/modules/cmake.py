@@ -16,19 +16,19 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild.builder import Builder
-from unibuild.utility.enum import enum
-from unibuild.utility.context_objects import on_exit
-from subprocess import Popen, PIPE
-from config import config
-import os.path
 import logging
-import shutil
+import os.path
 import re
+import shutil
+from subprocess import Popen, PIPE
+
+from config import config
+from unibuild.builder import Builder
+from unibuild.utility.context_objects import on_exit
+from unibuild.utility.enum import enum
 
 
 class CMake(Builder):
-
     def __init__(self):
         super(CMake, self).__init__()
         self.__arguments = []
@@ -63,7 +63,7 @@ class CMake(Builder):
 
         # prepare for out-of-source build
         build_path = os.path.join(self._context["build_path"], "build")
-        #if os.path.exists(build_path):
+        # if os.path.exists(build_path):
         #    shutil.rmtree(build_path)
         try:
             os.mkdir(build_path)
@@ -127,7 +127,6 @@ class CMake(Builder):
 
 
 class CMakeEdit(Builder):
-
     Type = enum(VC=1, CodeBlocks=2)
 
     def __init__(self, ide_type):
@@ -160,7 +159,7 @@ class CMakeEdit(Builder):
 
     def __generator_name(self):
         if self.__type == CMakeEdit.Type.VC:
-            return "Visual Studio {} {}"\
+            return "Visual Studio {} {}" \
                 .format(config['vc_version'].split('.')[0], self.__vc_year(config['vc_version']))
         elif self.__type == CMakeEdit.Type.CodeBlocks:
             return "CodeBlocks - NMake Makefiles"

@@ -17,6 +17,7 @@
 
 
 import networkx as nx
+
 from utility.singleton import Singleton
 
 
@@ -53,12 +54,12 @@ class TaskManager(object):
         :param node:
         :return:
         """
-        for suc in graph.successors_iter(node):
+        for suc in graph.neighbors(node):
             self.enable(graph, suc)
         graph.node[node]["enable"] = True
 
     def enable_all(self, graph):
-        for node in graph.nodes_iter():
+        for node in graph.nodes():
             if graph.in_degree(node) == 0:
                 self.enable(graph, node)
 

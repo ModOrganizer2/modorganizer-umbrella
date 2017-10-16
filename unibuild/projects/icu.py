@@ -80,7 +80,7 @@ class ConfigureIcu(build.Builder):
             with open(soutpath, "w") as sout:
                 with open(serrpath, "w") as serr:
                     res = find_executable("bash", os.path.join(config['paths']['build'], "cygwin", "bin"))
-                    proc = subprocess.Popen([res, "runConfigureICU", "Cygwin/MSVC","--enable-static", "--enable-shared", "--prefix"
+                    proc = subprocess.Popen([res, "runConfigureICU", "Cygwin/MSVC", "--prefix"
                                             , "{}".format(current_dir_cygwin)],
                              env=icu_environment(),
                              cwd=os.path.join(self._context["build_path"], "source"),
@@ -95,8 +95,7 @@ class ConfigureIcu(build.Builder):
             return True
 
 
-Convert_icu = build.Run(r"dos2unix -f configure".format(os.path.join(config['paths']['build'], "cygwin", "bin")),
-                        name="dos2unix",
+Convert_icu = build.Run(r"dos2unix -f configure",
                         environment=icu_environment(),
                         working_directory=lambda: os.path.join(config["paths"]["build"], "icu", "source"))
 
@@ -104,7 +103,7 @@ icu = Project('icu') \
         .depend(build_icu
                 .depend(ConfigureIcu()
                         .depend(Convert_icu
-                                .depend(Patch.Replace("source/io/ufile.c",
+                                .depend(Patch.Replace("source/io/ufile.cpp",
                                                       "#if U_PLATFORM_USES_ONLY_WIN32_API",
                                                       "#if U_PLATFORM_USES_ONLY_WIN32_API && _MSC_VER < 1900")
                                         .depend(sourceforge.Release("icu","ICU4C/{0}.{1}/icu4c-{0}_{1}-src.tgz"
@@ -115,8 +114,4 @@ icu = Project('icu') \
                                 )
                         )
                 )\
-.depend("cygwin")
-
-
-
-
+        .depend("cygwin")

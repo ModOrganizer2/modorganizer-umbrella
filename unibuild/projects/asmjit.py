@@ -16,10 +16,9 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from config import config
 from unibuild import Project
 from unibuild.modules import cmake, github
-from config import config
-
 
 # asmjit doesn't currently have any tags/branches but not every commit is usable
 asmjit_tag = "master"
@@ -33,7 +32,6 @@ Project("AsmJit") \
         "-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"].replace('\\', '/')),
         "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
     ]).install()
-            .depend(github.Source("kobalicek", "asmjit", asmjit_tag, update=False, commit = asmjit_commit)
+            .depend(github.Source("kobalicek", "asmjit", asmjit_tag, update=False, commit=asmjit_commit)
                     .set_destination("asmjit"))
             )
-

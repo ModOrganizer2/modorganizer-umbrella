@@ -22,6 +22,7 @@ class CIDict(dict):
     based on this Stack Overflow post:
      http://stackoverflow.com/questions/2082152/case-insensitive-dictionary/32888599
     """
+
     def __init__(self, *args, **kwargs):
         super(CIDict, self).__init__(*args, **kwargs)
         self.__convert_keys()

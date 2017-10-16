@@ -16,16 +16,16 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from config import config
 from unibuild import Project
 from unibuild.modules import cmake, github
-from config import config
 
 Project("fmtlib") \
     .depend(cmake.CMake().arguments(
-        [
-            "-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"].replace('\\', '/')),
-            "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
-        ]).install()
-                    .depend(github.Source("fmtlib", "fmt", "3.0.0").set_destination("fmt")
+    [
+        "-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"].replace('\\', '/')),
+        "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
+    ]).install()
+            .depend(github.Source("fmtlib", "fmt", "3.0.0").set_destination("fmt")
                     )
             )

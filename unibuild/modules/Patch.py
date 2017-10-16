@@ -1,11 +1,11 @@
-from unibuild.task import Task
-from unibuild.utility.lazy import Lazy
 import os.path
 import shutil
 
+from unibuild.task import Task
+from unibuild.utility.lazy import Lazy
+
 
 class Replace(Task):
-
     def __init__(self, filename, search, substitute):
         super(Replace, self).__init__()
         self.__file = filename
@@ -29,7 +29,6 @@ class Replace(Task):
 
 
 class Copy(Task):
-
     def __init__(self, source, destination):
         super(Copy, self).__init__()
         if isinstance(source, str):
@@ -55,7 +54,11 @@ class Copy(Task):
                 source = os.path.join(self._context["build_path"], source)
             if not os.path.exists(full_destination):
                 os.makedirs(full_destination)
-            shutil.copy(source, full_destination)
+            if os.path.isfile(source):
+                shutil.copy(source, full_destination)
+            else:
+                print "{} doesn't exist, Can't copy".format(source)
+
         return True
 
 

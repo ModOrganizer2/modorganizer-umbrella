@@ -13,6 +13,7 @@ def on_failure(func):
         func()
         raise
 
+
 @contextmanager
 def on_exit(func):
     """

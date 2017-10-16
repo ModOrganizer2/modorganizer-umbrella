@@ -15,22 +15,23 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
-import eggs
-from unibuild import Project
-from unibuild.modules import build, msbuild, Patch, github
-from unibuild.utility import lazy
-from config import config
 import os
+
 from buildtools import log
 from buildtools.buildsystem.visualstudio import (ProjectType,
                                                  VisualStudio2015Solution,
                                                  VS2015Project)
 
+from config import config
+from unibuild import Project
+from unibuild.modules import build, msbuild, github
+from unibuild.utility import lazy
+
 
 def prepare_nmm(context):
     sln = VisualStudio2015Solution()
-    sln.LoadFromFile(os.path.join(context['build_path'],'NexusClient.sln'))
-    ncc_csproj = os.path.join(context['build_path'],"..",'NexusClientCLI', 'NexusClientCLI', 'NexusClientCLI.csproj')
+    sln.LoadFromFile(os.path.join(context['build_path'], 'NexusClient.sln'))
+    ncc_csproj = os.path.join(context['build_path'], "..", 'NexusClientCLI', 'NexusClientCLI', 'NexusClientCLI.csproj')
     if not os.path.isfile(ncc_csproj):
         log.critical('NOT FOUND: %s', ncc_csproj)
     else:
@@ -53,27 +54,26 @@ def prepare_nmm(context):
             changed = True
     if changed:
         log.info('Writing NexusClientCli.sln')
-        sln.SaveToFile(os.path.relpath(os.path.join(ncc['build_path'],"..","nmm",'NexusClientCli.sln'))) # So we don't get conflicts when pulling.
+        sln.SaveToFile(os.path.relpath(os.path.join(ncc['build_path'], "..", "nmm",
+                                                    'NexusClientCli.sln')))  # So we don't get conflicts when pulling.
         return True
 
 
 init_repos = github.Source("Nexus-Mods", "Nexus-Mod-Manager", "master") \
-                                    .set_destination(os.path.join("NCC", "nmm"))
-
+    .set_destination(os.path.join("NCC", "nmm"))
 
 ncc = Project("NCC") \
     .depend(build.Run(r"publish.bat"
-                     .format("-debug" if config['build_type'] == "Debug" else "-release",
+                      .format("-debug" if config['build_type'] == "Debug" else "-release",
                               os.path.join(config["paths"]["install"], "bin")),
                       working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "NexusClientCli")))
-           .depend(msbuild.MSBuild(os.path.join(config['paths']['build'],"NCC","nmm",'NexusClientCli.sln'),
-                       working_directory=lazy.Evaluate(lambda: os.path.join(ncc['build_path'], "..", "nmm")),project_platform="Any CPU")
-            .depend(build.Execute(prepare_nmm, name="append NexusClientCli project to NMM")
+            .depend(msbuild.MSBuild(os.path.join(config['paths']['build'], "NCC", "nmm", 'NexusClientCli.sln'),
+                                    working_directory=lazy.Evaluate(
+                                        lambda: os.path.join(ncc['build_path'], "..", "nmm")),
+                                    project_platform="Any CPU")
+                    .depend(build.Execute(prepare_nmm, name="append NexusClientCli project to NMM")
 
-                .depend(init_repos).depend(github.Source(config['Main_Author'], "modorganizer-NCC", "master") \
-                                    .set_destination(os.path.join("NCC", "NexusClientCli"))
-                                    ))))
-
-
-
-
+                            .depend(init_repos).depend(
+    github.Source(config['Main_Author'], "modorganizer-NCC", "master") \
+    .set_destination(os.path.join("NCC", "NexusClientCli"))
+    ))))

@@ -16,23 +16,23 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from unibuild.retrieval import Retrieval
-from config import config
-import os
-import sys
 import logging
-from urlparse import urlparse
-import urllib2
-import tarfile
-import zipfile
-import subprocess
+import os
 import shutil
+import subprocess
+import sys
+import tarfile
+import urllib2
+import zipfile
+from urlparse import urlparse
+
+from config import config
+from unibuild.retrieval import Retrieval
 from unibuild.utility import ProgressFile
 from unibuild.utility.context_objects import on_failure
 
 
 class URLDownload(Retrieval):
-
     BLOCK_SIZE = 8192
 
     def __init__(self, url, tree_depth=0):
@@ -141,7 +141,8 @@ class URLDownload(Retrieval):
                     arch.extractall(output_file_path)
                 archive_file.close()
             elif extension == ".7z":
-                proc = subprocess.Popen([config['paths']['7z'], "x", archive_file_path, "-o{}".format(output_file_path)])
+                proc = subprocess.Popen(
+                    [config['paths']['7z'], "x", archive_file_path, "-o{}".format(output_file_path)])
                 if proc.wait() != 0:
                     return False
             elif extension in [".exe", ".msi"]:
@@ -155,7 +156,7 @@ class URLDownload(Retrieval):
                 sub_dirs = os.listdir(output_file_path)
                 if len(sub_dirs) != 1:
                     raise ValueError("unexpected archive structure,"
-                                    " expected exactly one directory in {}".format(output_file_path))
+                                     " expected exactly one directory in {}".format(output_file_path))
                 source_dir = os.path.join(output_file_path, sub_dirs[0])
 
                 for src in os.listdir(source_dir):

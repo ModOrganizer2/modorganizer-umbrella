@@ -78,7 +78,7 @@ if config.get('optimize', False):
 
 usvfs = Project("usvfs")
 
-usvfs.depend(cmake.CMake().arguments(cmake_parameters +
+usvfs.depend(cmake.CMakeVS().arguments(cmake_parameters +
                                      ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])] +
                                      ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
              .install()
@@ -173,7 +173,7 @@ for author, git_path, path, branch, dependencies, Build in [
                                                                       "usvfs", "githubpp", "NCC", "openssl"], True),
 ]:
     build_step = cmake.CMake().arguments(cmake_parameters +
-                                         ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]) \
+                                          ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]) \
         .install()
 
     for dep in dependencies:
@@ -182,7 +182,9 @@ for author, git_path, path, branch, dependencies, Build in [
     project = Project(git_path)
 
     if Build:
-        project.depend(build_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
+        vs_step = cmake.CMakeVS().arguments(cmake_parameters +
+                                             ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])])
+        project.depend(vs_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                                          .set_destination(path)))
     else:
         project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)

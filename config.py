@@ -87,7 +87,7 @@ config = {
     'build_type': "RelWithDebInfo",
     'offline': False,  # if set, non-mandatory network requests won't be made.
     # This is stuff like updating source repositories. The initial
-    # download of course can't be surpressed.
+    # download of course can't be supressed.
     'prefer_binary_dependencies': True,  # Work in progress
     'optimize': False,  # activate link-time code generation and other optimization.
     # This massively increases build time but produces smaller
@@ -113,6 +113,10 @@ config = {
     'icu_version': '59',  # used in PyQt5
     'icu_version_minor': '1',  # for consistency
     'WixToolSet_Version_Binary': '311',  # Wix Binary Version
+
+    'show_only': False,
+    'retrieve_only': False,                 # download everything as a reference (to keep track of local edits). Do modorganizer_super first :)
+    'tools_only': False,                    # Build dependencies except modorganizer targets
 }
 
 config['paths'] = {
@@ -124,7 +128,7 @@ config['paths'] = {
     'cmake': path_or_default("cmake.exe", "CMake", "bin"),
     'git': path_or_default("git.exe", "Git", "bin"),
     'perl': path_or_default("perl.exe", "StrawberryPerl", "bin"),
-   'ruby': path_or_default("ruby.exe", "Ruby22-x64", "bin"),
+    'ruby': path_or_default("ruby.exe", "Ruby22-x64", "bin"),
     'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
     '7z': path_or_default("7z.exe", "7-Zip"),
     # we need a python that matches the build architecture

@@ -183,7 +183,8 @@ for author, git_path, path, branch, dependencies, Build in [
 
     if Build:
         vs_step = cmake.CMakeVS().arguments(cmake_parameters +
-                                             ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])])
+                                             ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]) \
+            .install()
         project.depend(vs_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                                          .set_destination(path)))
     else:

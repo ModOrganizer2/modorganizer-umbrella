@@ -135,7 +135,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_skyrim", "game_skyrim", "master", ["Qt5", "modorganizer-uibase",
                                                                                   "modorganizer-game_gamebryo",
                                                                                   "modorganizer-game_features"], True),
-    ("Work_Author", "modorganizer-game_skyrimSE", "game_skyrimse", "dev", ["Qt5", "modorganizer-uibase",
+    (config['Work_Author'], "modorganizer-game_skyrimSE", "game_skyrimse", "dev", ["Qt5", "modorganizer-uibase",
                                                                             "modorganizer-game_gamebryo",
                                                                             "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-tool_inieditor", "tool_inieditor", "master", ["Qt5", "modorganizer-uibase"],
@@ -185,6 +185,10 @@ for author, git_path, path, branch, dependencies, Build in [
         vs_step = cmake.CMakeVS().arguments(cmake_parameters +
                                              ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]) \
             .install()
+
+        for dep in dependencies:
+            vs_step.depend(dep)
+
         project.depend(vs_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                                          .set_destination(path)))
     else:

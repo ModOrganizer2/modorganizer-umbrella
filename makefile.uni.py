@@ -16,7 +16,7 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 from unibuild import Project
-from unibuild.modules import github, cmake, Patch, git, hg, msbuild, build, dummy
+from unibuild.modules import github, cmake, Patch, git, hg, msbuild, build, dummy, urldownload
 from unibuild.utility import lazy, FormatDict
 from config import config
 from functools import partial
@@ -42,14 +42,21 @@ from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib, lz4, W
 def bitness():
     return "x64" if config['architecture'] == "x86_64" else "Win32"
 
+def bitnessLoot():
+    return "64" if config['architecture'] == "x86_64" else "32"
+
+lootapi_version = "0.11.1-18-g65a8509_dev-win{}".format(bitnessLoot())
+
+lootapi_filename = "loot_api-{}.7z".format(lootapi_version)
+
+lootapi_url = "https://bintray.com/wrinklyninja/loot/download_file?file_path={}".format(lootapi_filename)
 
 Project("LootApi") \
     .depend(
-    Patch.Copy("loot_api.dll".format(loot_version, commit_id), os.path.join(config["paths"]["install"], "bin", "loot"))
-    .depend(github.Release("loot", "loot", loot_version,
-                           "loot-api_{}-0-{}_dev_{}".format(loot_version, commit_id, bitness()), "7z", tree_depth=1)
-            .set_destination("lootapi"))
-    )
+    Patch.Copy(os.path.join("loot_api-{}".format(lootapi_version), "loot_api.dll"), os.path.join(config["paths"]["install"], "bin", "loot"))
+        .depend(urldownload.URLDownload(lootapi_url)
+            .set_destination("lootapi.7z"))
+        )
 
 tl_repo = git.SuperRepository("modorganizer_super")
 

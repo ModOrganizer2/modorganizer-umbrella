@@ -45,7 +45,7 @@ def bitness():
 def bitnessLoot():
     return "64" if config['architecture'] == "x86_64" else "32"
 
-lootapi_version = "0.11.1-18-g65a8509_dev-win{}".format(bitnessLoot())
+lootapi_version = "0.11.1-22-g6599329_dev-win{}".format(bitnessLoot())
 
 lootapi_filename = "loot_api-{}.7z".format(lootapi_version)
 
@@ -53,8 +53,8 @@ lootapi_url = "https://bintray.com/wrinklyninja/loot/download_file?file_path={}"
 
 Project("LootApi") \
     .depend(
-    Patch.Copy(os.path.join("loot_api-{}".format(lootapi_version), "loot_api.dll"), os.path.join(config["paths"]["install"], "bin", "loot"))
-        .depend(urldownload.URLDownload(lootapi_url)
+    Patch.Copy("loot_api.dll", os.path.join(config["paths"]["install"], "bin", "loot"))
+        .depend(urldownload.URLDownload(lootapi_url,tree_depth=1)
             .set_destination("lootapi.7z"))
         )
 

@@ -85,7 +85,7 @@ if config.get('optimize', False):
 
 usvfs = Project("usvfs")
 
-usvfs.depend(cmake.CMake().arguments(cmake_parameters +
+usvfs.depend(cmake.CMakeVS().arguments(cmake_parameters +
                                      ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])] +
                                      ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
              .install()
@@ -120,7 +120,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-bsatk", "bsatk", "master", ["zlib", "boost"], True),
     (config['Main_Author'], "modorganizer-nxmhandler", "nxmhandler", "master", ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-helper", "helper", "master", ["Qt5","boost"], True),
-    (config['Main_Author'], "modorganizer-game_gamebryo", "game_gamebryo", "new_vfs_library",
+    (config['Work_Author'], "modorganizer-game_gamebryo", "game_gamebryo", "new_vfs_library",
      ["Qt5", "modorganizer-uibase",
       "modorganizer-game_features", "lz4"], True),
     (config['Main_Author'], "modorganizer-game_oblivion", "game_oblivion", "master", ["Qt5", "modorganizer-uibase",
@@ -131,7 +131,7 @@ for author, git_path, path, branch, dependencies, Build in [
                                                                                       "modorganizer-game_gamebryo",
                                                                                       "modorganizer-game_features"],
      True),
-    (config['Main_Author'], "modorganizer-game_fallout4", "game_fallout4", "master", ["Qt5", "modorganizer-uibase",
+    (config['Work_Author'], "modorganizer-game_fallout4", "game_fallout4", "master", ["Qt5", "modorganizer-uibase",
                                                                                       "modorganizer-game_gamebryo",
                                                                                       "modorganizer-game_features"],
      True),
@@ -142,7 +142,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_skyrim", "game_skyrim", "master", ["Qt5", "modorganizer-uibase",
                                                                                   "modorganizer-game_gamebryo",
                                                                                   "modorganizer-game_features"], True),
-    ("LePresidente", "modorganizer-game_skyrimSE", "game_skyrimse", "dev", ["Qt5", "modorganizer-uibase",
+    (config['Work_Author'], "modorganizer-game_skyrimSE", "game_skyrimse", "dev", ["Qt5", "modorganizer-uibase",
                                                                             "modorganizer-game_gamebryo",
                                                                             "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-tool_inieditor", "tool_inieditor", "master", ["Qt5", "modorganizer-uibase"],
@@ -151,7 +151,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", "QT5.7", ["PyQt5"], True),
     (
     config['Main_Author'], "modorganizer-preview_base", "preview_base", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", "master", ["Qt5", "modorganizer-uibase"],
+    (config['Work_Author'], "modorganizer-diagnose_basic", "diagnose_basic", "master", ["Qt5", "modorganizer-uibase"],
      True),
     (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", "master", ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", "QT5.7", ["Qt5", "modorganizer-uibase"],
@@ -173,14 +173,14 @@ for author, git_path, path, branch, dependencies, Build in [
      ["Qt5", "boost", "Python", "modorganizer-uibase",
       "sip"], True),
     (config['Main_Author'], "githubpp", "githubpp", "master", ["Qt5"], True),
-    (config['Main_Author'], "modorganizer", "modorganizer", "QT5.7", ["Qt5", "boost", "usvfs_32",
+    (config['Work_Author'], "modorganizer", "modorganizer", "QT5.7", ["Qt5", "boost", "usvfs_32",
                                                                       "modorganizer-uibase", "modorganizer-archive",
                                                                       "modorganizer-bsatk", "modorganizer-esptk",
                                                                       "modorganizer-game_features",
                                                                       "usvfs", "githubpp", "NCC", "openssl"], True),
 ]:
     build_step = cmake.CMake().arguments(cmake_parameters +
-                                         ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]) \
+                                          ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]) \
         .install()
 
     for dep in dependencies:
@@ -189,7 +189,14 @@ for author, git_path, path, branch, dependencies, Build in [
     project = Project(git_path)
 
     if Build:
-        project.depend(build_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
+        vs_step = cmake.CMakeVS().arguments(cmake_parameters +
+                                             ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]) \
+            .install()
+
+        for dep in dependencies:
+            vs_step.depend(dep)
+
+        project.depend(vs_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                                          .set_destination(path)))
     else:
         project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)

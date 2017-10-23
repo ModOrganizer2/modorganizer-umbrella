@@ -194,3 +194,137 @@ class CMakeEdit(Builder):
                     return False
 
         return True
+
+class CMakeVS(Builder):
+    def __init__(self):
+        super(CMakeVS, self).__init__()
+        self.__arguments = []
+        self.__install = False
+
+    @property
+    def name(self):
+        if self._context is None:
+            return "cmake"
+        else:
+            return "cmake {0}".format(self._context.name)
+
+    def applies(self, parameters):
+        return True
+
+    def fulfilled(self):
+        return False
+
+    def arguments(self, arguments):
+        self.__arguments = arguments
+        return self
+
+    def install(self):
+        self.__install = True
+        return self
+
+    def process(self, progress):
+        if "build_path" not in self._context:
+            logging.error("source path not known for {},"
+                          " are you missing a matching retrieval script?".format(self._context.name))
+            return False
+
+        # prepare for out-of-source build
+        build_path = os.path.join(self._context["build_path"], "build")
+        # if os.path.exists(build_path):
+        #    shutil.rmtree(build_path)
+        try:
+            os.mkdir(build_path)
+        except:
+            pass
+
+        soutpath = os.path.join(self._context["build_path"], "stdout.log")
+        serrpath = os.path.join(self._context["build_path"], "stderr.log")
+
+        try:
+            with on_exit(lambda: progress.finish()):
+                with open(soutpath, "w") as sout:
+                    with open(serrpath, "w") as serr:
+                        proc = Popen(
+                            [config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments,
+                            cwd=build_path,
+                            env=config["__environment"],
+                            stdout=sout, stderr=serr)
+                        proc.communicate()
+                        if proc.returncode != 0:
+                            raise Exception("failed to generate makefile (returncode %s), see %s and %s" %
+                                            (proc.returncode, soutpath, serrpath))
+
+                        proc = Popen([config['tools']['make'], "verbose=1"],
+                                     shell=True,
+                                     env=config["__environment"],
+                                     cwd=build_path,
+                                     stdout=PIPE, stderr=serr)
+                        progress.job = "Compiling"
+                        progress.maximum = 100
+                        while proc.poll() is None:
+                            while True:
+                                line = proc.stdout.readline()
+                                if line != '':
+                                    match = re.search("^\\[([0-9 ][0-9 ][0-9])%\\]", line)
+                                    if match is not None:
+                                        progress.value = int(match.group(1))
+                                    sout.write(line)
+                                else:
+                                    break
+
+                        if proc.returncode != 0:
+                            raise Exception("failed to build (returncode %s), see %s and %s" %
+                                            (proc.returncode, soutpath, serrpath))
+
+                        if self.__install:
+                            proc = Popen([config['tools']['make'], "install"],
+                                         shell=True,
+                                         env=config["__environment"],
+                                         cwd=build_path,
+                                         stdout=sout, stderr=serr)
+                            proc.communicate()
+                            if proc.returncode != 0:
+                                raise Exception("failed to install (returncode %s), see %s and %s" %
+                                                (proc.returncode, soutpath, serrpath))
+                                return False
+        except Exception, e:
+            logging.error(e.message)
+            return False
+
+
+        # prepare for out-of-source vs build
+        build_path = os.path.join(self._context["build_path"], "vsbuild")
+        # if os.path.exists(build_path):
+        #    shutil.rmtree(build_path)
+        try:
+            os.mkdir(build_path)
+        except:
+            pass
+
+        soutpath = os.path.join(self._context["build_path"], "vs_stdout.log")
+        serrpath = os.path.join(self._context["build_path"], "vs_stderr.log")
+
+        vs_generator = "Visual Studio 14 2015"
+        if config["architecture"] == "x86_64":
+            vs_generator += " Win64"
+
+        try:
+            with on_exit(lambda: progress.finish()):
+                with open(soutpath, "w") as sout:
+                    with open(serrpath, "w") as serr:
+                        proc = Popen(
+                            [config["paths"]["cmake"], "-G", vs_generator, ".."] + self.__arguments,
+                            cwd=build_path,
+                            env=config["__environment"],
+                            stdout=sout, stderr=serr)
+                        proc.communicate()
+                        if proc.returncode != 0:
+                            raise Exception("failed to generate vs project (returncode %s), see %s and %s" %
+                                            (proc.returncode, soutpath, serrpath))
+
+        except Exception, e:
+            logging.error(e.message)
+            return False
+
+        return True
+

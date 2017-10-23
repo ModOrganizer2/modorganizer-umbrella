@@ -249,6 +249,9 @@ def qt_install(qt_version, qt_minor_version, vc_version):
 
 
 def init_config(args):
+    # some tools gets confused onto what constitutes . (OpenSSL and maybe CMake)
+    args.destination = os.path.realpath(args.destination)
+    
     for d in config['paths'].keys():
         if isinstance(config['paths'][d], str):
             config['paths'][d] = config['paths'][d].format(base_dir=os.path.abspath(args.destination),
@@ -280,6 +283,33 @@ def init_config(args):
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable
 
+def dump_config():
+    # logging.debug("config['__environment']=%s", config['__environment'])
+    logging.debug("  Config: config['__build_base_path']=%s", config['__build_base_path'])
+    # logging.debug("  Config: config['paths']['graphviz']=%s", config['paths']['graphviz'])
+    logging.debug("  Config: config['paths']['cmake']=%s", config['paths']['cmake'])
+    logging.debug("  Config: config['paths']['git']=%s", config['paths']['git'])
+    logging.debug("  Config: config['paths']['perl']=%s", config['paths']['perl'])
+    logging.debug("  Config: config['paths']['ruby']=%s", config['paths']['ruby'])
+    logging.debug("  Config: config['paths']['svn']=%s", config['paths']['svn'])
+    logging.debug("  Config: config['paths']['7z']=%s", config['paths']['7z'])
+    logging.debug("  Config: config['paths']['python']=%s", config['paths']['python'])
+    logging.debug("  Config: config['paths']['visual_studio']=%s", config['paths']['visual_studio'])
+    logging.debug("  Config: config['vc_version']=%s", config['vc_version'])
+
+def check_config():
+    if not config['__environment']: return False
+    if not config['__build_base_path']: return False
+    # if not config['paths']['graphviz']: return False
+    if not config['paths']['cmake']: return False
+    if not config['paths']['git']: return False
+    if not config['paths']['perl']: return False
+    if not config['paths']['ruby']: return False
+    if not config['paths']['svn']: return False
+    if not config['paths']['7z']: return False
+    if not config['paths']['python']: return False
+    if not config['paths']['visual_studio']: return False
+    return True
 
 def recursive_remove(graph, node):
     if not isinstance(graph.node[node]["task"], Project):
@@ -291,7 +321,8 @@ def recursive_remove(graph, node):
 def main():
     time_format = "%(asctime)-15s %(message)s"
     logging.basicConfig(format=time_format, level=logging.DEBUG)
-
+    logging.debug("  ==== Unimake.py started ===  ")
+    
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file', default='makefile.uni.py', help='sets the build script')
     parser.add_argument('-d', '--destination', default='.', help='output directory (base for download and build)')
@@ -300,7 +331,7 @@ def main():
     parser.add_argument('-b', '--builddir', default='build', help='update build directory')
     parser.add_argument('-p', '--progressdir', default='progress', help='update progress directory')
     parser.add_argument('-i', '--installdir', default='install', help='update progress directory')
-    parser.add_argument('target', nargs='*', help='make target')
+    parser.add_argument('target', nargs='*', help='make target (if Check, check pre requisites)')
     args = parser.parse_args()
 
     init_config(args)
@@ -309,6 +340,18 @@ def main():
         if not os.path.exists(config["paths"][d]):
             os.makedirs(config["paths"][d])
 
+    dump_config()
+    if not check_config():
+        logging.error("Missing pre requisite")
+        return False
+
+    logging.debug("  Build: args.target=%s", args.target)
+    logging.debug("  Build: args.destination=%s", args.destination)
+
+    for target in args.target:
+        if target == "Check":
+            return True
+    
     logging.debug("building dependency graph")
     manager = TaskManager()
     imp.load_source(args.builddir, args.file)
@@ -325,6 +368,10 @@ def main():
             logging.info(", ".join(cycle))
         return 1
 
+    ShowOnly = config['show_only']
+    RetrieveOnly = config['retrieve_only']
+    ToolsOnly = config['tools_only']
+    
     if args.target:
         for target in args.target:
             manager.enable(build_graph, target)
@@ -346,20 +393,27 @@ def main():
                         logging.debug("finished project \"{}\"".format(node))
                     else:
                         logging.debug("run task \"{}\"".format(node))
-                    if task.process(progress):
-                        task.mark_success()
-                    else:
-                        if task.fail_behaviour == Task.FailBehaviour.FAIL:
-                            logging.critical("task %s failed", node)
-                            exitcode = 1
-                            return 1
-                        elif task.fail_behaviour == Task.FailBehaviour.SKIP_PROJECT:
-                            recursive_remove(build_graph, node)
-                            break
-                        elif task.fail_behaviour == Task.FailBehaviour.CONTINUE:
-                            # nothing to do
-                            pass
-                    sys.stdout.write("\n")
+                    if not ShowOnly:
+                        Retrieve = (-1 != node.find("retrieve")) or (-1 != node.find("download")) or (-1 != node.find("repository"))
+                        Tool = (-1 == node.find("modorganizer")) and (-1 == node.find("githubpp"))
+                        DoProcess = (Retrieve or not RetrieveOnly) and (Tool or not ToolsOnly)
+                        if DoProcess:
+                            if task.process(progress):
+                                task.mark_success()
+                            else:
+                                if task.fail_behaviour == Task.FailBehaviour.FAIL:
+                                    logging.critical("task %s failed", node)
+                                    exitcode = 1
+                                    return 1
+                                elif task.fail_behaviour == Task.FailBehaviour.SKIP_PROJECT:
+                                    recursive_remove(build_graph, node)
+                                    break
+                                elif task.fail_behaviour == Task.FailBehaviour.CONTINUE:
+                                    # nothing to do
+                                    pass
+                        else:
+                            logging.critical("task %s skipped", node)
+                        sys.stdout.write("\n")
             except Exception, e:
                 logging.error("Task {} failed: {}".format(task.name, e))
                 raise

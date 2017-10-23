@@ -289,26 +289,27 @@ def dump_config():
     # logging.debug("  Config: config['paths']['graphviz']=%s", config['paths']['graphviz'])
     logging.debug("  Config: config['paths']['cmake']=%s", config['paths']['cmake'])
     logging.debug("  Config: config['paths']['git']=%s", config['paths']['git'])
-    logging.debug("  Config: config['paths']['perl']=%s", config['paths']['perl'])
-    logging.debug("  Config: config['paths']['ruby']=%s", config['paths']['ruby'])
-    logging.debug("  Config: config['paths']['svn']=%s", config['paths']['svn'])
+ #   logging.debug("  Config: config['paths']['perl']=%s", config['paths']['perl'])
+ #   logging.debug("  Config: config['paths']['ruby']=%s", config['paths']['ruby'])
+ #   logging.debug("  Config: config['paths']['svn']=%s", config['paths']['svn'])
     logging.debug("  Config: config['paths']['7z']=%s", config['paths']['7z'])
     logging.debug("  Config: config['paths']['python']=%s", config['paths']['python'])
     logging.debug("  Config: config['paths']['visual_studio']=%s", config['paths']['visual_studio'])
     logging.debug("  Config: config['vc_version']=%s", config['vc_version'])
 
 def check_config():
-    if not config['__environment']: return False
-    if not config['__build_base_path']: return False
-    # if not config['paths']['graphviz']: return False
-    if not config['paths']['cmake']: return False
-    if not config['paths']['git']: return False
-    if not config['paths']['perl']: return False
-    if not config['paths']['ruby']: return False
-    if not config['paths']['svn']: return False
-    if not config['paths']['7z']: return False
-    if not config['paths']['python']: return False
-    if not config['paths']['visual_studio']: return False
+    if config['prefer_binary_dependencies']:
+        if not config['__environment']: return False
+        if not config['__build_base_path']: return False
+        # if not config['paths']['graphviz']: return False
+        if not config['paths']['cmake']: return False
+        if not config['paths']['git']: return False
+        #if not config['paths']['perl']: return False
+        #if not config['paths']['ruby']: return False
+        #if not config['paths']['svn']: return False
+        if not config['paths']['7z']: return False
+        if not config['paths']['python']: return False
+        if not config['paths']['visual_studio']: return False
     return True
 
 def recursive_remove(graph, node):

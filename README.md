@@ -41,19 +41,21 @@ While conceptually this isn't particularly complicated, the actual build process
 
 Windows 7 and up (64bit)
 
-All the following need to be either on your PATH, or available from Program Files, Program Files (x86), C:\ or D:\. Note that apart from ruby, these things install themselves in Program Files or Program Files (x86) by default so ruby is the only one you might need to be careful about.
+All the following need to be either on your PATH, or available from Program Files, Program Files (x86), C:\ or D:\. 
 
 * python 2.7 (2.7.13 x64)
   * decorator
 * visual Studio 2015 (Including VC Common tools)
-* Windows 10 SDK (10.0.15063.468)
-
 * cmake
 * 7zip - specifically, the command line version (7za)
-* svn (SlinkSVN)
-* ruby (v2.2 x64)
 * git
+* QT 5.9.x (msvc2015_64) installed to C:/Qt 
+
+## The Following dependencies are only required if you are building QT from source (Currently untested)
+* Windows 10 SDK (10.0.15063.468)
+* ruby (v2.2 x64)
 * perl (Strawberry Perl)
+* svn (SlinkSVN)
 
 ## Usage
 

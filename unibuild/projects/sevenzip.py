@@ -23,7 +23,7 @@ from unibuild import Project
 from unibuild.modules import urldownload, build, Patch
 
 # newer versions are beta as of now. They have slightly (?) different api as well
-sevenzip_version = "16.04"
+sevenzip_version = "9.20"
 
 # TODO build sevenzip, we require the dll in install/bin/dlls.
 # sevenzip is not built here as we only use its source

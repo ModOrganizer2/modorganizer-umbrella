@@ -113,7 +113,7 @@ else:
 
 for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_features", "game_features", "master", [], False),
-    (config['Main_Author'], "modorganizer-archive", "archive", "API_9.20", ["7zip", "Qt5", "boost"], True),
+    (config['Main_Author'], "modorganizer-archive", "archive", "master", ["7zip", "Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-uibase", "uibase", "QT5.7", ["Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-lootcli", "lootcli", "master", ["LootApi", "boost"], True),
     (config['Main_Author'], "modorganizer-esptk", "esptk", "master", ["boost"], True),

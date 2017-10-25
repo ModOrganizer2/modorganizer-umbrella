@@ -113,7 +113,7 @@ else:
 
 for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_features", "game_features", "master", [], False),
-    (config['Main_Author'], "modorganizer-archive", "archive", "master", ["7zip", "Qt5", "boost"], True),
+    (config['Main_Author'], "modorganizer-archive", "archive", "API_9.20", ["7zip", "Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-uibase", "uibase", "QT5.7", ["Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-lootcli", "lootcli", "master", ["LootApi", "boost"], True),
     (config['Main_Author'], "modorganizer-esptk", "esptk", "master", ["boost"], True),
@@ -151,7 +151,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", "QT5.7", ["PyQt5"], True),
     (
     config['Main_Author'], "modorganizer-preview_base", "preview_base", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Work_Author'], "modorganizer-diagnose_basic", "diagnose_basic", "master", ["Qt5", "modorganizer-uibase"],
+    (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", "master", ["Qt5", "modorganizer-uibase"],
      True),
     (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", "master", ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", "QT5.7", ["Qt5", "modorganizer-uibase"],

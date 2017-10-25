@@ -23,16 +23,37 @@ from unibuild import Project
 from unibuild.modules import urldownload, build, Patch
 
 # newer versions are beta as of now. They have slightly (?) different api as well
-sevenzip_version = "16.04"
+#sevenzip_version = "16.04"
 
-# TODO build sevenzip, we require the dll in install/bin/dlls.
-# sevenzip is not built here as we only use its source
+#Need to revert till Modorganizer-Archive is either redone or fixed
+sevenzip_version = "9.20"
+
 Project("7zip") \
-    .depend(Patch.Copy(os.path.join(config['paths']['build'], "7zip", "CPP", "7zip", "Bundles", "Format7zF", "{}"
+   .depend(Patch.Copy(os.path.join(config['paths']['build'], "7zip", "CPP", "7zip", "Bundles", "Format7zF", "{}"
                                     .format("x86" if config['architecture'] == 'x86' else "AMD64"), "7z.dll"),
-                       os.path.join(config["paths"]["install"], "bin", "dlls"))
-            .depend(build.Run(r"nmake CPU={} NEW_COMPILER=1 MY_STATIC_LINK=1 NO_BUFFEROVERFLOWU=1".format(
+                      os.path.join(config["paths"]["install"], "bin", "dlls"))
+           .depend(build.Run(r"nmake CPU={} NEW_COMPILER=1 MY_STATIC_LINK=1 NO_BUFFEROVERFLOWU=1".format(
     "x86" if config['architecture'] == 'x86' else "AMD64"),
-                              working_directory=os.path.join(config['paths']['build'], "7zip", "CPP", "7zip"))
-                    .depend(urldownload.URLDownload(
-    "http://www.7-zip.org/a/7z{}-src.7z".format(sevenzip_version.replace(".", ""))).set_destination("7zip"))))
+                              working_directory=os.path.join(config['paths']['build'], "7zip", "CPP", "7zip","Bundles",
+                                                             "Format7zF"))
+                    .depend(Patch.Replace("CPP/Build.mak",
+                                 "-WX",
+                                 "")
+                            .depend(Patch.Replace("CPP/7zip/Bundles/Format7zF/Format7z.dsp",
+                                                  "-WX",
+                                                  "")
+                                .depend(urldownload.URLDownload(
+                                    "http://www.7-zip.org/a/7z{}.tar.bz2".format(sevenzip_version.replace(".", "")))
+                                        .set_destination("7zip"))))))
+
+#7zip Code for 16.04
+# sevenzip is not built here as we only use its source
+#Project("7zip") \
+#    .depend(Patch.Copy(os.path.join(config['paths']['build'], "7zip", "CPP", "7zip", "Bundles", "Format7zF", "{}"
+#                                    .format("x86" if config['architecture'] == 'x86' else "AMD64"), "7z.dll"),
+#                       os.path.join(config["paths"]["install"], "bin", "dlls"))
+#            .depend(build.Run(r"nmake CPU={} NEW_COMPILER=1 MY_STATIC_LINK=1 NO_BUFFEROVERFLOWU=1".format(
+#    "x86" if config['architecture'] == 'x86' else "AMD64"),
+#                              working_directory=os.path.join(config['paths']['build'], "7zip", "CPP", "7zip"))
+#                    .depend(urldownload.URLDownload(
+#    "http://www.7-zip.org/a/7z{}-src.7z".format(sevenzip_version.replace(".", ""))).set_destination("7zip"))))

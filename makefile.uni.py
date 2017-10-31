@@ -45,7 +45,7 @@ def bitness():
 def bitnessLoot():
     return "64" if config['architecture'] == "x86_64" else "32"
 
-lootapi_version = "0.11.1-22-g6599329_dev-win{}".format(bitnessLoot())
+lootapi_version = "0.11.1-28-gaf05aaf_crash-fix-win{}".format(bitnessLoot())
 
 lootapi_filename = "loot_api-{}.7z".format(lootapi_version)
 

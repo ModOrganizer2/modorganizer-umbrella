@@ -5,6 +5,15 @@ progress
 Thumbs.db
 eggs/*.egg
 eggs/decorator
+eggs/PyYAML
+eggs/jinja2
+eggs/lxml/
+eggs/networkx/
+eggs/patch/
+eggs/psutil/
+eggs/pydot/
+eggs/pydotplus/
+eggs/six/
 graph.png
 .idea
 7za.exe

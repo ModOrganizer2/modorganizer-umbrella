@@ -169,7 +169,7 @@ for author, git_path, path, branch, dependencies, Build in [
      ["Qt5", "modorganizer-uibase", "NCC"], True),
     (config['Main_Author'], "modorganizer-bsa_extractor", "bsa_extractor", "master", ["Qt5", "modorganizer-uibase"],
      True),
-    (config['Main_Author'], "modorganizer-plugin_python", "plugin_python", "master",
+    (config['Main_Author'], "modorganizer-plugin_python", "plugin_python", "MSVC2017",
      ["Qt5", "boost", "Python", "modorganizer-uibase",
       "sip"], True),
     (config['Main_Author'], "githubpp", "githubpp", "master", ["Qt5"], True),

@@ -211,7 +211,7 @@ def visual_studio_environment():
 
 
 def get_qt_install(qt_version, qt_minor_version, vc_version):
-    res = ""
+    res = None
     # We only use the 64bit version of QT in MO2 so this should be fine.
 
     try:

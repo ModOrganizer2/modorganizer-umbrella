@@ -26,6 +26,7 @@ from config import config
 from unibuild.builder import Builder
 from unibuild.utility.context_objects import on_exit
 from unibuild.utility.enum import enum
+from unimake import vc_year
 
 
 class CMake(Builder):
@@ -304,7 +305,7 @@ class CMakeVS(Builder):
         soutpath = os.path.join(self._context["build_path"], "vs_stdout.log")
         serrpath = os.path.join(self._context["build_path"], "vs_stderr.log")
 
-        vs_generator = "Visual Studio 14 2015"
+        vs_generator = "Visual Studio {0} {1}".format(config['vc_version'].split(".", 1)[0],vc_year(config['vc_version']))
         if config["architecture"] == "x86_64":
             vs_generator += " Win64"
 

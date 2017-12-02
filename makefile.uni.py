@@ -27,8 +27,8 @@ import os, sys
 Settings
 """
 
-loot_version = "0.10.3"
-commit_id = "g0fcf788"
+loot_version = "0.12.1"
+commit_id = "g47cb6b5"
 
 """
 Projects
@@ -45,21 +45,16 @@ def bitness():
 def bitnessLoot():
     return "64" if config['architecture'] == "x86_64" else "32"
 
-lootapi_version = "0.11.1-28-gaf05aaf_dev-win{}".format(bitnessLoot())
-
-lootapi_filename = "loot_api-{}.7z".format(lootapi_version)
-
-lootapi_url = "https://bintray.com/wrinklyninja/loot/download_file?file_path={}".format(lootapi_filename)
-
 Project("LootApi") \
     .depend(
     Patch.Copy("loot_api.dll", os.path.join(config["paths"]["install"], "bin", "loot"))
-        .depend(urldownload.URLDownload(lootapi_url,tree_depth=1)
-            .set_destination("lootapi.7z"))
-        )
+        .depend(github.Release("loot", "loot-api", loot_version,
+                               "loot_api-{}-0-{}_dev-win{}".format(loot_version, commit_id, bitnessLoot()), "7z", tree_depth=1)
+                .set_destination("lootapi"))
+
+)
 
 tl_repo = git.SuperRepository("modorganizer_super")
-
 
 def gen_userfile_content(project):
     with open("CMakeLists.txt.user.template", 'r') as f:

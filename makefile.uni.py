@@ -168,7 +168,7 @@ for author, git_path, path, branch, dependencies, Build in [
      ["Qt5", "boost", "Python", "modorganizer-uibase",
       "sip"], True),
     (config['Main_Author'], "githubpp", "githubpp", "master", ["Qt5"], True),
-    (config['Main_Author'], "modorganizer", "modorganizer", "QT5.7", ["Qt5", "boost", "usvfs_32",
+    (config['Main_Author'], "modorganizer", "modorganizer", "new_vfs_library", ["Qt5", "boost", "usvfs_32",
                                                                       "modorganizer-uibase", "modorganizer-archive",
                                                                       "modorganizer-bsatk", "modorganizer-esptk",
                                                                       "modorganizer-game_features",

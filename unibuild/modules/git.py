@@ -18,12 +18,21 @@
 
 import logging
 import os
-from subprocess import Popen
+import subprocess
 
 from config import config
 from repository import Repository
 from unibuild import Task
 
+def Popen(cmd, **kwargs):
+    pc = ''
+    if kwargs.has_key('cwd'):
+        pc += os.path.relpath(kwargs['cwd'],os.path.abspath('..'))
+    pc += '>'
+    for arg in cmd:
+        pc += ' ' + arg
+    print pc;
+    return subprocess.Popen(cmd,**kwargs)
 
 class SuperRepository(Task):
     def __init__(self, name):

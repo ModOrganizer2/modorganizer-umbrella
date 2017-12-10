@@ -40,5 +40,6 @@ Project("GTest") \
             .depend(cmake.CMake().arguments(["-Dgtest_force_shared_crt=ON",
                                              "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"])
                                              ])
-                    .depend(github.Source("google", "googletest", "release-{}".format(googletest_version))))
+                    .depend(github.Source("google", "googletest", "master")))
+                    #.depend(github.Source("google", "googletest", "release-{}".format(googletest_version))))
             )

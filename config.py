@@ -104,7 +104,7 @@ config = {
     'qt_version': '5.9',  # currently evolving
     'qt_minor_version': '2',  # place the qt minor version here if only it is not zero, otherwise leave blank
     'pyqt_version': '5.9',  # pyqt version doesn't always match qt. So it is now a seperate config
-    'openssl_version': '1.0.2m',  # changes often, so better to edit here
+    'openssl_version': '1.0.2n',  # changes often, so better to edit here
     'zlib_version': '1.2.11',  # changes often, so better to edit here
     'grep_version': '2.5.4',  # moved here as commented in qt5.py
     'boost_version': '1.65.1',  # for -DBOOST_ROOT, also, it is either to change from here

@@ -37,6 +37,7 @@ class Task(object):
         self.__dependencies = []
         self._context = None
         self.__fail_behaviour = Task.FailBehaviour.FAIL
+        self.__dummy = False
 
     @property
     def name(self):
@@ -87,8 +88,13 @@ class Task(object):
             return True
 
     def mark_success(self):
-        with open(self.__success_path(), "w"):
+        if not self.__dummy:
+          with open(self.__success_path(), "w"):
             pass
+
+    def dummy(self):
+        self.__dummy = True
+        return self
 
     def depend(self, task):
         """

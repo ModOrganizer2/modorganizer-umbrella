@@ -85,6 +85,7 @@ config = {
     'qt_CustomInstallPath': '',  # If you installed QT to a custom location put the full path here
     # eg. Z:\Dev\QT
     'build_type': "RelWithDebInfo",
+    'rebuild': True,   # if set, does a clean build of the VS projects (for now only usvfs)
     'offline': False,  # if set, non-mandatory network requests won't be made.
     # This is stuff like updating source repositories. The initial
     # download of course can't be supressed.

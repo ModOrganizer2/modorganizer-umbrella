@@ -37,10 +37,15 @@ class CMake(Builder):
 
     @property
     def name(self):
-        if self._context is None:
-            return "cmake"
+        if config['architecture'] == 'x86_64':
+          suffix = ""
         else:
-            return "cmake {0}".format(self._context.name)
+          suffix = "_32"
+
+        if self._context is None:
+            return "cmake"+suffix
+        else:
+            return "cmake{} {}".format(suffix, self._context.name)
 
     def applies(self, parameters):
         return True
@@ -62,8 +67,13 @@ class CMake(Builder):
                           " are you missing a matching retrieval script?".format(self._context.name))
             return False
 
+        if config['architecture'] == 'x86_64':
+          suffix = ""
+        else:
+          suffix = "_32"
+
         # prepare for out-of-source build
-        build_path = os.path.join(self._context["build_path"], "build")
+        build_path = os.path.join(self._context["build_path"], "build"+suffix)
         # if os.path.exists(build_path):
         #    shutil.rmtree(build_path)
         try:
@@ -71,15 +81,17 @@ class CMake(Builder):
         except:
             pass
 
-        soutpath = os.path.join(self._context["build_path"], "stdout.log")
-        serrpath = os.path.join(self._context["build_path"], "stderr.log")
+        soutpath = os.path.join(self._context["build_path"], "stdout" + suffix + ".log")
+        serrpath = os.path.join(self._context["build_path"], "stderr" + suffix + ".log")
 
         try:
             with on_exit(lambda: progress.finish()):
                 with open(soutpath, "w") as sout:
                     with open(serrpath, "w") as serr:
+                        cmdline = [config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments
+                        print "{}> {}".format(build_path, ' '.join(cmdline))
                         proc = Popen(
-                            [config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments,
+                            cmdline,
                             cwd=build_path,
                             env=config["__environment"],
                             stdout=sout, stderr=serr)
@@ -88,7 +100,9 @@ class CMake(Builder):
                             raise Exception("failed to generate makefile (returncode %s), see %s and %s" %
                                             (proc.returncode, soutpath, serrpath))
 
-                        proc = Popen([config['tools']['make'], "verbose=1"],
+                        cmdline = [config['tools']['make'], "verbose=1"]
+                        print "{}> {}".format(build_path, ' '.join(cmdline))
+                        proc = Popen(cmdline,
                                      shell=True,
                                      env=config["__environment"],
                                      cwd=build_path,
@@ -111,7 +125,9 @@ class CMake(Builder):
                                             (proc.returncode, soutpath, serrpath))
 
                         if self.__install:
-                            proc = Popen([config['tools']['make'], "install"],
+                            cmdline = [config['tools']['make'], "install"]
+                            print "{}> {}".format(build_path, ' '.join(cmdline))
+                            proc = Popen(cmdline,
                                          shell=True,
                                          env=config["__environment"],
                                          cwd=build_path,

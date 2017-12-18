@@ -101,8 +101,8 @@ config = {
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': 'Hugues92',  # yourself
 
-    'qt_version': '5.9',  # currently evolving
-    'qt_minor_version': '2',  # place the qt minor version here if only it is not zero, otherwise leave blank
+    'qt_version': '5.10',  # currently evolving
+    'qt_minor_version': '0',
     'pyqt_version': '5.9.2',  # pyqt version doesn't always match qt. So it is now a seperate config
     'openssl_version': '1.0.2n',  # changes often, so better to edit here
     'zlib_version': '1.2.11',  # changes often, so better to edit here

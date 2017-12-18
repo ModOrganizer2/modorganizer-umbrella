@@ -110,7 +110,7 @@ config = {
     'boost_version': '1.65.1',  # for -DBOOST_ROOT, also, it is either to change from here
     'vc_version_for_boost': '14.1',  # boost 1.63 does not support VS 2017 yet
     'python_version': '2.7',  # used below and in python.py
-    'python_version_minor': '.13',  # used in python.py
+    'python_version_minor': '.14',  # used in python.py
     'icu_version': '59',  # used in PyQt5
     'icu_version_minor': '1',  # for consistency
     'WixToolSet_Version_Binary': '311',  # Wix Binary Version

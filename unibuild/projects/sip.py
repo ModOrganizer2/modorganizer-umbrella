@@ -28,7 +28,7 @@ from config import config
 from unibuild import Project
 from unibuild.modules import sourceforge, build
 
-sip_version = "4.19.3"
+sip_version = "4.19.6"
 python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".13")
 
 

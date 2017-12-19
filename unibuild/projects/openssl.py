@@ -18,6 +18,7 @@
 
 import logging
 import os
+import shutil
 import time
 from subprocess import Popen
 
@@ -73,15 +74,21 @@ def build_func(context):
 
     return True
 
+def opensll_stage(context):
+    srcdir = os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
+                                     .format("32" if config['architecture'] == 'x86' else "64",
+                                             openssl_version.replace(".", "_")))
+    dest1 = os.path.join(config["paths"]["install"], "bin")
+    dest2 = os.path.join(config["paths"]["install"], "bin", "dlls")
+    if not os.path.exists(dest2):
+      os.makedirs(dest2)
+    for fn in ["ssleay32.dll", "libeay32.dll"]:
+      shutil.copy(os.path.join(srcdir, fn), dest1)
+      shutil.copy(os.path.join(srcdir, fn), dest2)
+    return True
 
 openssl = Project("openssl") \
-    .depend(Patch.Copy([os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
-                                     .format("32" if config['architecture'] == 'x86' else "64",
-                                             openssl_version.replace(".", "_")), "ssleay32.dll"),
-                        os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
-                                     .format("32" if config['architecture'] == 'x86' else "64",
-                                             openssl_version.replace(".", "_")), "libeay32.dll"), ],
-                       os.path.join(config["paths"]["install"], "bin", "dlls"))
+    .depend(build.Execute(opensll_stage) \
             .depend(build.Execute(build_func)
                     .depend(urldownload.URLDownload(url))
                     ))

@@ -16,10 +16,6 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import fnmatch
-import os
-import shutil
-
 from config import config
 from unibuild import Project
 from unibuild.modules import cmake, github, build
@@ -27,19 +23,7 @@ from unibuild.modules import cmake, github, build
 googletest_version = "1.8.0"
 
 
-def install(context):
-    for root, dirnames, filenames in os.walk(os.path.join(context['build_path'], "build")):
-        for filename in fnmatch.filter(filenames, "*.lib"):
-            shutil.copy(os.path.join(root, filename), os.path.join(config["paths"]["install"], "libs"))
-
-    return True
-
-
 Project("GTest") \
-    .depend(build.Execute(install)
-            .depend(cmake.CMake().arguments(["-Dgtest_force_shared_crt=ON",
-                                             "-DCMAKE_BUILD_TYPE={0}".format(config["build_type"])
-                                             ])
-                    .depend(github.Source("google", "googletest", "master")))
-                    #.depend(github.Source("google", "googletest", "release-{}".format(googletest_version))))
-            )
+  .depend(cmake.CMake().arguments(["-DCMAKE_BUILD_TYPE={0}".format(config["build_type"])])
+    .depend(github.Source("google", "googletest", "master")))
+      #.depend(github.Source("google", "googletest", "release-{}".format(googletest_version))))

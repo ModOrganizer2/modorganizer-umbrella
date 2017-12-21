@@ -1,6 +1,11 @@
 # modorganizer-umbrella
 An umbrella- (super-) project for modorganizer.
 
+## How to build ModOrganizer 2
+
+Relatively up-to-date instructions on how to build:
+http://forum.step-project.com/topic/12538-wip-how-to-build-modorganizer-using-modorganizer-umbrella/
+
 ##Build instructions for all required Components
 
 Build Instructions:

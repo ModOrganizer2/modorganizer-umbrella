@@ -85,6 +85,7 @@ config = {
     'qt_CustomInstallPath': '',  # If you installed QT to a custom location put the full path here
     # eg. Z:\Dev\QT
     'build_type': "RelWithDebInfo",
+    'rebuild': True,   # if set, does a clean build of the VS projects (for now only usvfs)
     'offline': False,  # if set, non-mandatory network requests won't be made.
     # This is stuff like updating source repositories. The initial
     # download of course can't be supressed.
@@ -100,16 +101,16 @@ config = {
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': 'Hugues92',  # yourself
 
-    'qt_version': '5.9',  # currently evolving
-    'qt_minor_version': '2',  # place the qt minor version here if only it is not zero, otherwise leave blank
-    'pyqt_version': '5.9',  # pyqt version doesn't always match qt. So it is now a seperate config
-    'openssl_version': '1.0.2m',  # changes often, so better to edit here
+    'qt_version': '5.10',  # currently evolving
+    'qt_minor_version': '0',
+    'pyqt_version': '5.9.2',  # pyqt version doesn't always match qt. So it is now a seperate config
+    'openssl_version': '1.0.2n',  # changes often, so better to edit here
     'zlib_version': '1.2.11',  # changes often, so better to edit here
     'grep_version': '2.5.4',  # moved here as commented in qt5.py
-    'boost_version': '1.65.1',  # for -DBOOST_ROOT, also, it is either to change from here
+    'boost_version': '1.66.0',  # for -DBOOST_ROOT, also, it is either to change from here
     'vc_version_for_boost': '14.1',  # boost 1.63 does not support VS 2017 yet
     'python_version': '2.7',  # used below and in python.py
-    'python_version_minor': '.13',  # used in python.py
+    'python_version_minor': '.14',  # used in python.py
     'icu_version': '59',  # used in PyQt5
     'icu_version_minor': '1',  # for consistency
     'WixToolSet_Version_Binary': '311',  # Wix Binary Version

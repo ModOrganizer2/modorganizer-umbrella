@@ -39,9 +39,10 @@ class Copy(Task):
     @property
     def name(self):
         if self.__source.type() == list:
-            return "Copy {}...".format(self.__source()[0])
+            src = self.__source()[0]
         else:
-            return "Copy {}".format(self.__source.peek())
+            src = self.__source.peek()
+        return "Copy_{}_".format(os.path.basename(src))
 
     def process(self, progress):
         if os.path.isabs(self.__destination()):

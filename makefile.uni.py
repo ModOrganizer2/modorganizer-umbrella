@@ -35,7 +35,7 @@ Projects
 """
 
 from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc, openssl
-from unibuild.projects import asmjit, udis86, googletest, spdlog, fmtlib, lz4, WixToolkit
+from unibuild.projects import googletest, lz4, WixToolkit
 
 
 # TODO modorganizer-lootcli needs an overhaul as the api has changed alot
@@ -80,31 +80,38 @@ if config.get('optimize', False):
 
 usvfs = Project("usvfs")
 
-usvfs.depend(cmake.CMakeVS().arguments(cmake_parameters +
-                                     ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])] +
-                                     ["-DPROJ_ARCH={}".format("x86" if config['architecture'] == 'x86' else "x64")])
-             .install()
-             # TODO Not sure why this is required, will look into it at a later stage once we get the rest to build
-             .depend(github.Source(config['Main_Author'], "usvfs", "master")
-                     .set_destination("usvfs"))
-             .depend("AsmJit")
-             .depend("Udis86")
-             .depend("GTest")
-             .depend("fmtlib")
-             .depend("spdlog")
-             .depend("boost")
-             )
+suffix_32 = "" if config['architecture'] == 'x86_64' else "_32"
+for (project32, dependencies) in [
+      ("boost", ["boost_prepare"]),
+      ("GTest", []),
+      ("usvfs", [])
+    ]:
+  if config['architecture'] == 'x86_64':
+    unimake32 = \
+      build.Run_With_Output(
+        r'"{0}" unimake.py -d "{1}" --set architecture="x86" -b "build" -p "progress" -i "install" {2}'.format(
+          sys.executable, config['__build_base_path'], project32),
+        name="unimake_x86_{}".format(project32),
+        environment=config['__Default_environment'],
+        working_directory=os.path.join(os.getcwd()))
+    for dep in dependencies:
+        unimake32.depend(dep)
+    Project(project32+"_32").depend(unimake32)
+  else:
+    Project(project32+"_32").dummy().depend(project32)
 
-if config['architecture'] == 'x86_64':
-    usvfs_32 = Project("usvfs_32")
-    usvfs_32.depend(build.Run_With_Output(
-        r'"{0}" unimake.py -d "{1}" --set architecture="x86" -b "build_32" -p "progress_32" -i "install_32" usvfs'.format(
-            sys.executable, config['__build_base_path']),
-        name="Building usvfs 32bit Dll", environment=config['__Default_environment'],
-        working_directory=os.path.join(os.getcwd())))
-else:
-    usvfs_32 = Project("usvfs_32")
-    usvfs_32.depend(dummy.Success("usvfs_32"))
+# usvfs build:
+vs_target = "Clean;Build" if config['rebuild'] else "Build"
+usvfs_build = \
+    msbuild.MSBuild("usvfs.sln", vs_target,
+                    os.path.join(config["paths"]["build"], "usvfs", "vsbuild"),
+                    "x64" if config['architecture'] == 'x86_64' else "x86")
+usvfs_build.depend(
+  github.Source(config['Main_Author'], "usvfs", "master")
+    .set_destination("usvfs"))
+usvfs_build.depend("boost"+suffix_32)
+usvfs_build.depend("GTest"+suffix_32)
+usvfs.depend(usvfs_build)
 
 for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_features", "game_features", "master", [], False),

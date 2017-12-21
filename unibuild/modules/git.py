@@ -18,12 +18,21 @@
 
 import logging
 import os
-from subprocess import Popen
+import subprocess
 
 from config import config
 from repository import Repository
 from unibuild import Task
 
+def Popen(cmd, **kwargs):
+    pc = ''
+    if kwargs.has_key('cwd'):
+        pc += os.path.relpath(kwargs['cwd'],os.path.abspath('..'))
+    pc += '>'
+    for arg in cmd:
+        pc += ' ' + arg
+    print pc;
+    return subprocess.Popen(cmd,**kwargs)
 
 class SuperRepository(Task):
     def __init__(self, name):
@@ -88,7 +97,7 @@ class Clone(Repository):
         proc = None
         if os.path.exists(os.path.join(self._output_file_path, ".git")):
             if self.__update and not config.get('offline', False):
-                proc = Popen([config['paths']['git'], "pull", self._url, self._branch],
+                proc = Popen([config['paths']['git'], "pull", "--recurse-submodules", self._url, self._branch],
                              cwd=self._output_file_path,
                              env=config["__environment"])
         else:
@@ -100,8 +109,8 @@ class Clone(Repository):
                              cwd=self.__super_repository.path,
                              env=config['__environment'])
             else:
-                proc = Popen([config['paths']['git'], "clone", "-b", self._branch,
-                              self._url, self._context["build_path"]],
+                proc = Popen([config['paths']['git'], "clone", "--recurse-submodules",
+                              "-b", self._branch, self._url, self._context["build_path"]],
                              env=config["__environment"])
 
         if proc is not None:

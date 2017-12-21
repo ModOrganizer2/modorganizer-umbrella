@@ -106,13 +106,7 @@ class PyQt5Configure(build.Builder):
 Project("PyQt5") \
     .depend(build.Execute(copy_pyd)
             .depend(Patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
-                                os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll"),
-                                os.path.join(config['paths']['build'], "icu", "dist", "lib",
-                                             "icudt{}.dll".format(icu_version)),
-                                os.path.join(config['paths']['build'], "icu", "dist", "lib",
-                                             "icuin{}.dll".format(icu_version)),
-                                os.path.join(config['paths']['build'], "icu", "dist", "lib",
-                                             "icuuc{}.dll".format(icu_version))],
+                                os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll")],
                                doclambda(lambda: python.python['build_path'], "python path"))
                     .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
                             .depend(PyQt5Configure()

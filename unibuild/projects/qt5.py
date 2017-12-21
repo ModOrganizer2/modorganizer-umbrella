@@ -64,23 +64,8 @@ def make_sure_path_exists(path):
 
 # if config.get('prefer_binary_dependencies', False):
 
-def copy_imageformats(context):
-    make_sure_path_exists(os.path.join(config['paths']['install'], "bin", "dlls", "imageformats"))
-    for f in glob(os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "plugins", "imageformats", "*.dll")):
-        shutil.copy(f, os.path.join(config['paths']['install'], "bin", "dlls", "imageformats"))
-    return True
-
-
-def copy_platform(context):
-    make_sure_path_exists(os.path.join(config['paths']['install'], "bin", "platforms"))
-    for f in glob(
-            os.path.join(config["paths"]["build"], "qt5.git", "qtbase", "plugins", "platforms", "qwindows.dll")):
-        shutil.copy(f, os.path.join(config['paths']['install'], "bin", "platforms"))
-    return True
-
-
 if config.get('prefer_binary_dependencies', True):
-    qt5 = Project("Qt5").depend(build.Execute(copy_imageformats).depend(build.Execute(copy_platform)))
+    qt5 = Project("Qt5")
 else:
     skip_list = ["qtactiveqt", "qtandroidextras", "qtenginio",
                  "qtserialport", "qtsvg",

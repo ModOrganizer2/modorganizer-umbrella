@@ -241,9 +241,8 @@ def get_qt_install(qt_version, qt_minor_version, vc_version):
 def qt_install(qt_version, qt_minor_version, vc_version):
     config["paths"]["qt_binary_install"] = get_qt_install(qt_version, qt_minor_version, vc_version)
     if not config["paths"]["qt_binary_install"]:
-        logging.error("Unable to find qmake.exe, please make sure you have QT {} installed, If you would prefer "
-                      "to use the old way of compiling QT from source. Change 'prefer_binary_dependencies'"
-                      " to False in config.py"
+        logging.error("Unable to find qmake.exe, please make sure you have QT {} installed. If it is installed "
+                      "please point the 'qt_CustomInstallPath' in the config.py to your Qt installation."
                       .format(qt_version + "." + qt_minor_version if qt_minor_version != '' else qt_version))
         sys.exit(1)
 
@@ -251,7 +250,7 @@ def qt_install(qt_version, qt_minor_version, vc_version):
 def init_config(args):
     # some tools gets confused onto what constitutes . (OpenSSL and maybe CMake)
     args.destination = os.path.realpath(args.destination)
-    
+
     for d in config['paths'].keys():
         if isinstance(config['paths'][d], str):
             config['paths'][d] = config['paths'][d].format(base_dir=os.path.abspath(args.destination),
@@ -323,7 +322,7 @@ def main():
     time_format = "%(asctime)-15s %(message)s"
     logging.basicConfig(format=time_format, level=logging.DEBUG)
     logging.debug("  ==== Unimake.py started ===  ")
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file', default='makefile.uni.py', help='sets the build script')
     parser.add_argument('-d', '--destination', default='.', help='output directory (base for download and build)')
@@ -352,7 +351,7 @@ def main():
     for target in args.target:
         if target == "Check":
             return True
-    
+
     logging.debug("building dependency graph")
     manager = TaskManager()
     imp.load_source(args.builddir, args.file)
@@ -372,7 +371,7 @@ def main():
     ShowOnly = config['show_only']
     RetrieveOnly = config['retrieve_only']
     ToolsOnly = config['tools_only']
-    
+
     if args.target:
         for target in args.target:
             manager.enable(build_graph, target)

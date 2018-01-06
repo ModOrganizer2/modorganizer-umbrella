@@ -78,13 +78,11 @@ def opensll_stage(context):
     srcdir = os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
                                      .format("32" if config['architecture'] == 'x86' else "64",
                                              openssl_version.replace(".", "_")))
-    dest1 = os.path.join(config["paths"]["install"], "bin")
-    dest2 = os.path.join(config["paths"]["install"], "bin", "dlls")
-    if not os.path.exists(dest2):
-      os.makedirs(dest2)
+    dest = os.path.join(config["paths"]["install"], "bin")
+    if not os.path.exists(dest):
+      os.makedirs(dest)
     for fn in ["ssleay32.dll", "libeay32.dll"]:
-      shutil.copy(os.path.join(srcdir, fn), dest1)
-      shutil.copy(os.path.join(srcdir, fn), dest2)
+      shutil.copy(os.path.join(srcdir, fn), dest)
     return True
 
 openssl = Project("openssl") \

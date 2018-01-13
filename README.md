@@ -4,12 +4,8 @@ An umbrella- (super-) project for modorganizer.
 ## How to build ModOrganizer 2
 
 Relatively up-to-date instructions on how to build:
+
 http://forum.step-project.com/topic/12538-wip-how-to-build-modorganizer-using-modorganizer-umbrella/
-
-##Build instructions for all required Components
-
-Build Instructions:
-unimake.py -d "F:\Build"
 
 ## Purpose
 This repository contains a meta build-system that is able to download and build MO subprojects and dependencies as necessary.
@@ -34,33 +30,6 @@ Some more details:
 - Successfully completed tasks are memorized (in the "progress" directory) and will not be run again
 - Names for tasks are generated so they may not be very user-friendly
 - Technically, independent tasks could be executed in parallel but that is not (yet) implemented
-
-## Open Problems
-
-While conceptually this isn't particularly complicated, the actual build process for some tools are massively complex. Some issues I have not been able to work around yet:
-- I can't seem to "make install" the qt webkit subproject properly. After building I have to manually move around files to impossible locations (#include "../../../../Source/and/so/on"-the f???)
-- The windows variant of grep depends on dlls and the way the qt build system calls it they apparently can't be found even if they reside in the same directory as the exe.
-- If openssl fails to install. Make sure you either click yes to the UAC message, or disable UAC in windows
-
-## Dependencies
-
-Windows 7 and up (64bit)
-
-All the following need to be either on your PATH, or available from Program Files, Program Files (x86), C:\ or D:\. 
-
-* python 2.7 (2.7.13 x64)
-  * decorator
-* visual Studio 2015 (Including VC Common tools)
-* cmake
-* 7zip - specifically, the command line version (7za)
-* git
-* QT 5.9.x (msvc2015_64) installed to C:/Qt 
-
-## The Following dependencies are only required if you are building QT from source (Currently untested)
-* Windows 10 SDK (10.0.15063.468)
-* ruby (v2.2 x64)
-* perl (Strawberry Perl)
-* svn (SlinkSVN)
 
 ## Usage
 

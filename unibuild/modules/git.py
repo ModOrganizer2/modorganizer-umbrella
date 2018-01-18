@@ -62,7 +62,6 @@ class SuperRepository(Task):
         return self.__context_data.__contains__(keys)
 
     def process(self, progress):
-        print self.path
         if not os.path.isdir(self.path):
             os.makedirs(self.path)
         is_initialised_process = Popen([config['paths']['git'], "rev-parse", "--is-inside-work-tree"], cwd=self.path, env=config['__environment'], stdout=subprocess.PIPE)

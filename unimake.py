@@ -218,8 +218,10 @@ def get_qt_install(qt_version, qt_minor_version, vc_version):
 
     try:
         for baselocation in program_files_folders:
-            p = os.path.join(baselocation, "Qt", "{}".format(qt_version + "." + qt_minor_version
-                                                             if qt_minor_version != '' else qt_version),
+            p = os.path.join(baselocation, "Qt", "Qt{}".format(qt_version + "." + qt_minor_version
+                                                               if qt_minor_version != '' else qt_version),
+                             "{}".format(qt_version + "." + qt_minor_version
+                                         if qt_minor_version != '' else qt_version),
                              "msvc{0}_64".format(vc_year(vc_version)))
             f = os.path.join(p, "bin", "qmake.exe")
             if os.path.isfile(f):

@@ -62,8 +62,12 @@ class SuperRepository(Task):
         return self.__context_data.__contains__(keys)
 
     def process(self, progress):
+        print self.path
         if not os.path.isdir(self.path):
             os.makedirs(self.path)
+        is_initialised_process = Popen([config['paths']['git'], "rev-parse", "--is-inside-work-tree"], cwd=self.path, env=config['__environment'], stdout=subprocess.PIPE)
+        (is_initialised_stdout, is_initialised_stderr) = is_initialised_process.communicate()
+        if is_initialised_stdout.strip() != "true":
             proc = Popen([config['paths']['git'], "init"],
                          cwd=self.path,
                          env=config['__environment'])
@@ -71,7 +75,6 @@ class SuperRepository(Task):
             if proc.returncode != 0:
                 logging.error("failed to init superproject %s (returncode %s)", self._name, proc.returncode)
                 return False
-
         return True
 
 

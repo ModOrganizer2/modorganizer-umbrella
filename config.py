@@ -103,8 +103,8 @@ config = {
 
     'qt_version': '5.10',  # currently evolving
     'qt_minor_version': '0',
-    'pyqt_version': '5.9.2',  # pyqt version doesn't always match qt. So it is now a seperate config
-    'openssl_version': '1.0.2n',  # changes often, so better to edit here
+    'pyqt_version': '5.10',  # pyqt version doesn't always match qt. So it is now a seperate config
+    'openssl_version': '1.1.0g',  # changes often, so better to edit here
     'zlib_version': '1.2.11',  # changes often, so better to edit here
     'grep_version': '2.5.4',  # moved here as commented in qt5.py
     'boost_version': '1.66.0',  # for -DBOOST_ROOT, also, it is either to change from here
@@ -114,6 +114,7 @@ config = {
     'icu_version': '59',  # used in PyQt5
     'icu_version_minor': '1',  # for consistency
     'WixToolSet_Version_Binary': '311',  # Wix Binary Version
+    'NASM_Version': '2.13.03',  # Wix Binary Version
 
     'show_only': False,
     'retrieve_only': False,                 # download everything as a reference (to keep track of local edits). Do modorganizer_super first :)
@@ -128,7 +129,7 @@ config['paths'] = {
 #   'graphviz': path_or_default("dot.exe", "Graphviz2.38", "bin"),
     'cmake': path_or_default("cmake.exe", "CMake", "bin"),
     'git': path_or_default("git.exe", "Git", "bin"),
-    #'perl': path_or_default("perl.exe", "StrawberryPerl", "bin"),
+    'perl': path_or_default("perl.exe", "StrawberryPerl","perl", "bin"),
     #'ruby': path_or_default("ruby.exe", "Ruby22-x64", "bin"),
     #'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
     '7z': path_or_default("7z.exe", "7-Zip"),

@@ -131,8 +131,6 @@ else:
 
 
     qt5 = Project("Qt5") \
-        .depend(build.Execute(copy_imageformats)
-                .depend(build.Execute(copy_platform)
                         .depend(build.Execute(copy_icu_libs)
                                 .depend(install_qt5
                                         .depend(build_qt5
@@ -148,5 +146,3 @@ else:
                                                 )
                                         )
                                 )
-                        )
-                )

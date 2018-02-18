@@ -21,18 +21,15 @@ import os
 import shutil
 import time
 from subprocess import Popen
+from glob import glob
 
 from config import config
 from unibuild import Project
 from unibuild.modules import urldownload, build, Patch
 
 # currently binary installation only
-
-
 openssl_version = config['openssl_version']
 
-libeay = "libeay32MD.lib"
-ssleay = "ssleay32MD.lib"
 # installation happens concurrently in separate process. We need to wait for all relevant files to exist,
 # and can determine failure only by timeout
 timeout = 15  # seconds
@@ -42,51 +39,49 @@ def bitness():
     return "64" if config['architecture'] == "x86_64" else "32"
 
 
-filename = "Win{}OpenSSL-{}.exe".format(bitness(), openssl_version.replace(".", "_"))
+filename = "openssl-{}.tar.gz".format(openssl_version)
+url = "https://www.openssl.org/source/{}".format(filename)
 
-url = "https://slproweb.com/download/{}".format(filename)
+
+def openssl_environment():
+    result = config['__environment'].copy()
+    result['Path'] += ";".join([
+        os.path.join(config['paths']['build'], "NASM")])
+    return result
 
 
-def build_func(context):
-    proc = Popen([os.path.join(config['paths']['download'], filename),
-                  "/VERYSILENT", "/DIR={}".format(context['build_path'])],
-                 env=config['__environment'])
-    proc.communicate()
-    if proc.returncode != 0:
-        logging.error("failed to run installer (returncode %s)",
-                      proc.returncode)
-        return False
-    libeay_path = os.path.join(context['build_path'], "lib", "VC", "static", libeay)
-    ssleay_path = os.path.join(context['build_path'], "lib", "VC", "static", ssleay)
-    wait_counter = timeout
-    while wait_counter > 0:
-        if os.path.isfile(libeay_path) and os.path.isfile(ssleay_path):
-            break
-        else:
-            time.sleep(1.0)
-            wait_counter -= 1
-    # wait a bit longer because the installer may have been in the process of writing the file
-    time.sleep(1.0)
+def openssl_stage(context):
+        dest = os.path.join(config["paths"]["install"], "bin")
+        if not os.path.exists(dest):
+            os.makedirs(dest)
+        for f in glob(os.path.join(config['paths']['build'], "openssl-{}"
+                              .format(openssl_version), "libssl-*.dll")):
+            shutil.copy(f, os.path.join(dest,"libssl.dll"))
+        for f in glob(os.path.join(config['paths']['build'], "openssl-{}"
+                              .format(openssl_version), "libcrypto-*.dll")):
+            shutil.copy(f, os.path.join(dest, "libcrypto.dll"))
+        return True
 
-    if wait_counter <= 0:
-        logging.error("Unpacking of OpenSSL timed out");
-        return False  # We timed out and nothing was installed
 
-    return True
+OpenSSL_Test = build.Run(r"nmake test",
+                      environment=openssl_environment(),
+                      name="Test OpenSSL",
+                      working_directory=lambda: os.path.join(openssl['build_path']))
 
-def opensll_stage(context):
-    srcdir = os.path.join(config['paths']['build'], "Win{0}OpenSSL-{1}"
-                                     .format("32" if config['architecture'] == 'x86' else "64",
-                                             openssl_version.replace(".", "_")))
-    dest = os.path.join(config["paths"]["install"], "bin")
-    if not os.path.exists(dest):
-      os.makedirs(dest)
-    for fn in ["ssleay32.dll", "libeay32.dll"]:
-      shutil.copy(os.path.join(srcdir, fn), dest)
-    return True
+OpenSSL_Build = build.Run(r"nmake",
+                      environment=openssl_environment(),
+                      name="Building OpenSSL",
+                      working_directory=lambda: os.path.join(openssl['build_path']))
+
+
+Configure_openssl = build.Run(r"{} Configure --prefix={} VC-WIN{}A".format(config['paths']['perl'],os.path.join(config['paths']['build'], "openssl-release"),bitness()),
+                      environment=openssl_environment(),
+                      name="Configure OpenSSL",
+                      working_directory=lambda: os.path.join(openssl['build_path']))
 
 openssl = Project("openssl") \
-    .depend(build.Execute(opensll_stage) \
-            .depend(build.Execute(build_func)
-                    .depend(urldownload.URLDownload(url))
-                    ))
+    .depend(build.Execute(openssl_stage)
+             .depend(OpenSSL_Test
+                .depend(OpenSSL_Build
+                    .depend(Configure_openssl
+                        .depend(urldownload.URLDownload(url,tree_depth=1)))))).depend("nasm")

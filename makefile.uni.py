@@ -34,7 +34,7 @@ commit_id = "g47cb6b5"
 Projects
 """
 
-from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc, openssl
+from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc, nasm, openssl
 from unibuild.projects import googletest, lz4, WixToolkit
 
 
@@ -107,7 +107,7 @@ usvfs_build = \
                     os.path.join(config["paths"]["build"], "usvfs", "vsbuild"),
                     "x64" if config['architecture'] == 'x86_64' else "x86")
 usvfs_build.depend(
-  github.Source(config['Main_Author'], "usvfs", "master")
+  github.Source(config['Main_Author'], "usvfs", "0.3.1.0-Beta")
     .set_destination("usvfs"))
 usvfs_build.depend("boost"+suffix_32)
 usvfs_build.depend("GTest"+suffix_32)
@@ -134,6 +134,10 @@ for author, git_path, path, branch, dependencies, Build in [
                                                                                       "modorganizer-game_features"],
      True),
     (config['Main_Author'], "modorganizer-game_fallout4", "game_fallout4", "master", ["Qt5", "modorganizer-uibase",
+                                                                                      "modorganizer-game_gamebryo",
+                                                                                      "modorganizer-game_features"],
+     True),
+    (config['Main_Author'], "modorganizer-game_fallout4vr", "game_fallout4vr", "master", ["Qt5", "modorganizer-uibase",
                                                                                       "modorganizer-game_gamebryo",
                                                                                       "modorganizer-game_features"],
      True),

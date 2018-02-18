@@ -84,4 +84,4 @@ openssl = Project("openssl") \
              .depend(OpenSSL_Test
                 .depend(OpenSSL_Build
                     .depend(Configure_openssl
-                        .depend(urldownload.URLDownload(url,tree_depth=1)))))).depend("nasm")
+                        .depend(urldownload.URLDownload(url,tree_depth=1).set_destination("openssl")))))).depend("nasm")

@@ -27,7 +27,7 @@ import os, sys
 Settings
 """
 
-loot_version = "0.12.1"
+loot_version = "0.12.4"
 commit_id = "g47cb6b5"
 
 """

@@ -28,7 +28,7 @@ Settings
 """
 
 loot_version = "0.12.4"
-commit_id = "g47cb6b5"
+commit_id = "gec946b5"
 
 """
 Projects
@@ -49,7 +49,7 @@ Project("LootApi") \
     .depend(
     Patch.Copy("loot_api.dll", os.path.join(config["paths"]["install"], "bin", "loot"))
         .depend(github.Release("loot", "loot-api", loot_version,
-                               "loot_api-{}-0-{}_dev-win{}".format(loot_version, commit_id, bitnessLoot()), "7z", tree_depth=1)
+                               "loot_api-{}-0-{}_update-deps-win{}".format(loot_version, commit_id, bitnessLoot()), "7z", tree_depth=1)
                 .set_destination("lootapi"))
 
 )

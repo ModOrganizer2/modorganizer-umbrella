@@ -59,40 +59,41 @@ def openssl_stage(context):
             os.makedirs(dest_lib)
         if not os.path.exists(dest_pdb):
              os.makedirs(dest_pdb)
-        for f in glob(os.path.join(config['paths']['build'], "openssl-release","bin"
-                              , "libssl-*.dll")):
-            shutil.copy(f, os.path.join(dest_bin,"libssl.dll"))
-        for f in glob(os.path.join(config['paths']['build'], "openssl-release","bin"
-                              , "libcrypto-*.dll")):
-            shutil.copy(f, os.path.join(dest_bin, "libcrypto.dll"))
-        for f in glob(os.path.join(config['paths']['build'], "openssl-release","bin"
-                              , "libssl-*.pdb")):
+        for f in glob(os.path.join(config['paths']['build'], "openssl-release", "bin", "ssleay32.dll")):
+             shutil.copy(f, os.path.join(dest_bin))
+             shutil.copy(f, os.path.join(dest_bin, "dlls"))
+        for f in glob(os.path.join(config['paths']['build'], "openssl-release", "bin"
+                               , "libeay32.dll")):
+             shutil.copy(f, os.path.join(dest_bin))
+             shutil.copy(f, os.path.join(dest_bin, "dlls"))
+        for f in glob(os.path.join(config['paths']['build'], "openssl-{}".format(openssl_version),"out32dll"
+                              , "ssleay32.pdb")):
             shutil.copy(f, os.path.join(dest_pdb))
-        for f in glob(os.path.join(config['paths']['build'], "openssl-release","bin"
-                              , "libcrypto-*.pdb")):
+        for f in glob(os.path.join(config['paths']['build'], "openssl-{}".format(openssl_version),"out32dll"
+                              , "libeay32.pdb")):
             shutil.copy(f, os.path.join(dest_pdb))
         for f in glob(os.path.join(config['paths']['build'], "openssl-release", "lib"
-                              , "libssl.lib")):
-            shutil.copy(f, os.path.join(dest_lib, "libssl.lib"))
+                              , "ssleay32.lib")):
+            shutil.copy(f, os.path.join(dest_lib, "ssleay32.lib"))
         for f in glob(os.path.join(config['paths']['build'], "openssl-release", "lib"
-                              ,"libcrypto.lib")):
-            shutil.copy(f, os.path.join(dest_lib, "libcrypto.lib"))
+                              ,"libeay32.lib")):
+            shutil.copy(f, os.path.join(dest_lib, "libeay32.lib"))
         return True
 
 
-OpenSSL_Install = build.Run(r"nmake install",
+OpenSSL_Install = build.Run(r"nmake -f ms\ntdll.mak install",
                       environment=openssl_environment(),
                       name="Install OpenSSL",
                       working_directory=lambda: os.path.join(openssl['build_path']))
 
-OpenSSL_Test = build.Run(r"nmake test",
-                      environment=openssl_environment(),
-                      name="Test OpenSSL",
-                      working_directory=lambda: os.path.join(openssl['build_path']))
-
-OpenSSL_Build = build.Run(r"nmake",
+OpenSSL_Build = build.Run(r"nmake -f ms\ntdll.mak",
                       environment=openssl_environment(),
                       name="Building OpenSSL",
+                      working_directory=lambda: os.path.join(openssl['build_path']))
+
+OpenSSL_Prep = build.Run(r"ms\do_win64a",
+                      environment=openssl_environment(),
+                      name="Prepping OpenSSL",
                       working_directory=lambda: os.path.join(openssl['build_path']))
 
 
@@ -107,7 +108,7 @@ Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} VC-WIN{
 openssl = Project("openssl") \
     .depend(build.Execute(openssl_stage)
             .depend(OpenSSL_Install
-             .depend(OpenSSL_Test
-                .depend(OpenSSL_Build
+             .depend(OpenSSL_Build
+                .depend(OpenSSL_Prep
                     .depend(Configure_openssl
                         .depend(urldownload.URLDownload(url,tree_depth=1))))))).depend("nasm")

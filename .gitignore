@@ -13,11 +13,14 @@ eggs/pydotplus/
 eggs/PyYAML
 eggs/six/
 eggs/*.egg
+install
 progress
 
+*.sln
+*.pyc
+*.pyproj
+.gitmodules
 7za.exe
 complete.uni.py
 graph.png
 Thumbs.db
-
-*.pyc

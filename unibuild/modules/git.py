@@ -78,13 +78,14 @@ class SuperRepository(Task):
 
 
 class Clone(Repository):
-    def __init__(self, url, branch, super_repository=None, update=True, commit=None):
+    def __init__(self, url, branch, super_repository=None, update=True, commit=None,shallowclone=False):
         super(Clone, self).__init__(url, branch)
 
         self.__super_repository = super_repository
         self.__base_name = os.path.basename(self._url)
         self.__update = update
         self.__commit = commit
+        self.__shallowclone = shallowclone
         if self.__super_repository is not None:
             self._output_file_path = os.path.join(self.__super_repository.path, self.__determine_name())
             self.depend(super_repository)
@@ -99,21 +100,39 @@ class Clone(Repository):
         proc = None
         if os.path.exists(os.path.join(self._output_file_path, ".git")):
             if self.__update and not config.get('offline', False):
-                proc = Popen([config['paths']['git'], "pull", "--recurse-submodules", self._url, self._branch],
+                if self.__shallowclone:
+                    proc = Popen([config['paths']['git'], "pull", "--recurse-submodules", self._url, self._branch],
+                             cwd=self._output_file_path,
+                             env=config["__environment"])
+                else:
+                    proc = Popen([config['paths']['git'], "pull", "--recurse-submodules", self._url, self._branch],
                              cwd=self._output_file_path,
                              env=config["__environment"])
         else:
             if self.__super_repository is not None:
-                proc = Popen([config['paths']['git'], "submodule", "add", "-b", self._branch,
+                if self.__shallowclone:
+                    proc = Popen([config['paths']['git'], "submodule", "add", "--depth", "1", "-b", self._branch,
                               "--force", "--name", self.__base_name,
                               self._url, self.__base_name
                               ],
                              cwd=self.__super_repository.path,
                              env=config['__environment'])
+                else:
+                    proc = Popen([config['paths']['git'], "submodule", "add", "-b", self._branch,
+                                  "--force", "--name", self.__base_name,
+                                  self._url, self.__base_name
+                                  ],
+                            cwd=self.__super_repository.path,
+                            env=config['__environment'])
             else:
-                proc = Popen([config['paths']['git'], "clone", "--recurse-submodules",
-                              "-b", self._branch, self._url, self._context["build_path"]],
-                             env=config["__environment"])
+                if self.__shallowclone:
+                    proc = Popen([config['paths']['git'], "clone", "--recurse-submodules","--depth", "1",
+                                  "-b", self._branch, self._url, self._context["build_path"]],
+                                env=config["__environment"])
+                else:
+                    proc = Popen([config['paths']['git'], "clone", "--recurse-submodules",
+                                  "-b", self._branch, self._url, self._context["build_path"]],
+                                  env=config["__environment"])
 
         if proc is not None:
             proc.communicate()
@@ -122,7 +141,12 @@ class Clone(Repository):
                 return False
 
         if self.__commit is not None:
-            proc = Popen([config['paths']['git'], "checkout", self.__commit],
+            if self.__shallowclone:
+                proc = Popen([config['paths']['git'], "checkout","--depth", "1", self.__commit],
+                         cwd=self._context["build_path"],
+                         env=config["__environment"])
+            else:
+                proc = Popen([config['paths']['git'], "checkout", self.__commit],
                          cwd=self._context["build_path"],
                          env=config["__environment"])
 

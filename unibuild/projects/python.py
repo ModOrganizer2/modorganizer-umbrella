@@ -106,7 +106,8 @@ else:
                         #                                   environment=python_environment(),
                         #                                   working_directory=lambda: os.path.join(python['build_path']))
                         .depend(build.Run(upgrade_args, name="upgrade python project")
-                                .depend(github.Source("LePresidente", "cpython-1", config.get('python_version', "2.7")) \
+                                .depend(github.Source("LePresidente", "cpython-1", config.get('python_version', "2.7"),
+                                                      shallowclone=True) \
                                         .set_destination("python-{}".format(python_version))))
                         )
                 )

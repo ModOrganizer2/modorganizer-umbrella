@@ -1,4 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
+# Copyright (C) 2016 - 2018 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -23,6 +24,9 @@ from functools import partial
 from string import Formatter
 import os
 import sys
+
+loot_version = "0.12.4"
+commit_id = "gec946b5"
 
 # TODO modorganizer-lootcli needs an overhaul as the api has changed alot
 def bitness():

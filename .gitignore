@@ -1,11 +1,8 @@
+.idea
+.vs
 build
 downloads
-*.pyc
-progress
-Thumbs.db
-eggs/*.egg
 eggs/decorator
-eggs/PyYAML
 eggs/jinja2
 eggs/lxml/
 eggs/networkx/
@@ -13,13 +10,25 @@ eggs/patch/
 eggs/psutil/
 eggs/pydot/
 eggs/pydotplus/
+eggs/PyYAML
 eggs/six/
-graph.png
-.idea
+eggs/*.egg
+install
+progress
+
+*.sln
+*.pyc
+*.pyproj
+.gitmodules
 7za.exe
 complete.uni.py
+<<<<<<< HEAD
 .vs
 .gitmodules
 install
 *.sln
 *.pyproj
+=======
+graph.png
+Thumbs.db
+>>>>>>> upstream/master

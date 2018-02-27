@@ -1,4 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
+# Copyright (C) 2016 - 2018 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -276,7 +277,7 @@ def init_config(args):
             for ele in path[:-1]:
                 cur = cur.setdefault(ele, {})
             cur[path[-1]] = value
-			
+
     if config['architecture'] not in ['x86_64', 'x86']:
         raise ValueError("only architectures supported are x86 and x86_64")
 

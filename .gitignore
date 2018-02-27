@@ -1,6 +1,7 @@
 .idea
 .vs
 build
+build/modorganizer_super/modorganizer
 downloads
 eggs/decorator
 eggs/jinja2
@@ -22,5 +23,10 @@ progress
 .gitmodules
 7za.exe
 complete.uni.py
+.vs
+.gitmodules
+install
+*.sln
+*.pyproj
 graph.png
 Thumbs.db

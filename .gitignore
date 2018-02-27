@@ -18,3 +18,8 @@ graph.png
 .idea
 7za.exe
 complete.uni.py
+.vs
+.gitmodules
+install
+*.sln
+*.pyproj

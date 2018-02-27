@@ -15,7 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
 import eggs
 from unibuild.manager import TaskManager
 from unibuild.progress import Progress
@@ -53,7 +52,7 @@ def progress_callback(job, percentage):
 def draw_graph(graph, filename):
     try:
         if config['paths']['graphviz']:
-            # neither pydot nor pygraphviz reliably find graphviz on windows. gotta do everything myself...
+            # neither pydot nor pygraphviz reliably find graphviz on windows.  gotta do everything myself...
             from subprocess import call
             graph_file_name = os.path.join(os.getcwd(), "graph.dot")
             write_dot(graph, graph_file_name)
@@ -89,9 +88,7 @@ def vc_year(vc_version):
     else:
         ""
 
-        # No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir
-
-
+# No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir
 def get_visual_studio_2017_or_more(vc_version):
     try:
         if os.environ["VisualStudioVersion"] == vc_version:
@@ -261,7 +258,7 @@ def qt_install(qt_version, qt_minor_version, vc_version):
 
 
 def init_config(args):
-    # some tools gets confused onto what constitutes . (OpenSSL and maybe CMake)
+    # some tools gets confused onto what constitutes .  (OpenSSL and maybe CMake)
     args.destination = os.path.realpath(args.destination)
 
     for d in config['paths'].keys():
@@ -271,6 +268,7 @@ def init_config(args):
                                                            progress_dir=args.progressdir,
                                                            install_dir=args.installdir)
 
+    # parse -s argument.  Example -s paths.build=bin would set config[paths][build] to bin
     if args.set:
         for setting in args.set:
             key, value = setting.split('=', 2)
@@ -296,14 +294,14 @@ def init_config(args):
         config['__environment']['PYTHON'] = sys.executable
 
 def dump_config():
-    # logging.debug("config['__environment']=%s", config['__environment'])
+    logging.debug("config['__environment']=%s", config['__environment'])
     logging.debug("  Config: config['__build_base_path']=%s", config['__build_base_path'])
-    # logging.debug("  Config: config['paths']['graphviz']=%s", config['paths']['graphviz'])
+    #logging.debug(" Config: config['paths']['graphviz']=%s", config['paths']['graphviz'])
     logging.debug("  Config: config['paths']['cmake']=%s", config['paths']['cmake'])
     logging.debug("  Config: config['paths']['git']=%s", config['paths']['git'])
- #   logging.debug("  Config: config['paths']['perl']=%s", config['paths']['perl'])
- #   logging.debug("  Config: config['paths']['ruby']=%s", config['paths']['ruby'])
- #   logging.debug("  Config: config['paths']['svn']=%s", config['paths']['svn'])
+    logging.debug("  Config: config['paths']['perl']=%s", config['paths']['perl'])
+    #logging.debug(" Config: config['paths']['ruby']=%s", config['paths']['ruby'])
+    #logging.debug(" Config: config['paths']['svn']=%s", config['paths']['svn'])
     logging.debug("  Config: config['paths']['7z']=%s", config['paths']['7z'])
     logging.debug("  Config: config['paths']['python']=%s", config['paths']['python'])
     logging.debug("  Config: config['paths']['visual_studio']=%s", config['paths']['visual_studio'])
@@ -313,10 +311,10 @@ def check_config():
     if config['prefer_binary_dependencies']:
         if not config['__environment']: return False
         if not config['__build_base_path']: return False
-        # if not config['paths']['graphviz']: return False
+        #if not config['paths']['graphviz']: return False
         if not config['paths']['cmake']: return False
         if not config['paths']['git']: return False
-        #if not config['paths']['perl']: return False
+        if not config['paths']['perl']: return False
         #if not config['paths']['ruby']: return False
         #if not config['paths']['svn']: return False
         if not config['paths']['7z']: return False
@@ -337,14 +335,14 @@ def main():
     logging.debug("  ==== Unimake.py started ===  ")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--file', default='makefile.uni.py', help='sets the build script')
-    parser.add_argument('-d', '--destination', default='.', help='output directory (base for download and build)')
-    parser.add_argument('-s', '--set', action='append', help='set configuration parameters')
+    parser.add_argument('-f', '--file', metavar='file', default='makefile.uni.py', help='sets the build script file. eg: -f makefile.uni.py')
+    parser.add_argument('-d', '--destination', metavar='path', default='.', help='output directory for all generated folder and files .eg: -d E:/MO2')
+    parser.add_argument('-s', '--set', metavar='option=value', action='append', help='set configuration parameters. most of them are in config.py. eg: -s paths.build=build')
     parser.add_argument('-g', '--graph', action='store_true', help='update dependency graph')
-    parser.add_argument('-b', '--builddir', default='build', help='update build directory')
-    parser.add_argument('-p', '--progressdir', default='progress', help='update progress directory')
-    parser.add_argument('-i', '--installdir', default='install', help='update progress directory')
-    parser.add_argument('target', nargs='*', help='make target (if Check, check pre requisites)')
+    parser.add_argument('-b', '--builddir', metavar='directory', default='build', help='sets build directory. eg: -b build')
+    parser.add_argument('-p', '--progressdir', metavar='directory', default='progress', help='sets progress directory. eg: -p progress')
+    parser.add_argument('-i', '--installdir', metavar='directory', default='install', help='set install directory. eg: .i directory')
+    parser.add_argument('target', nargs='*', help='make this target. eg: modorganizer-archive modorganizer-uibase (you need to delete the progress file. will be fixed eventually)')
     args = parser.parse_args()
 
     init_config(args)

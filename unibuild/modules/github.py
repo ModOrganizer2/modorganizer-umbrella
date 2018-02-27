@@ -15,11 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 from git import Clone
 from urldownload import URLDownload
-
 
 class Release(URLDownload):
     def __init__(self, author, project, version, filename, extension="zip", tree_depth=0):

@@ -15,8 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import multiprocessing
 import os
 from _winreg import *
@@ -52,19 +50,15 @@ def get_from_hklm(path, name, wow64=False):
 
 
 # To detect the editon of VS installed as of VS 2017
-vs_editions = [
-    "enterprise",
+vs_editions = ["enterprise",
     "professional",
-    "community",
-]
+    "community",]
 
-program_files_folders = [
-    os.environ['ProgramFiles(x86)'],
+program_files_folders = [os.environ['ProgramFiles(x86)'],
     os.environ['ProgramFiles'],
     os.environ['ProgramW6432'],
     "C:\\",
-    "D:\\"
-]
+    "D:\\"]
 
 
 def gen_search_folders(*subpath):
@@ -82,18 +76,18 @@ config = {
     'vc_version': '15.0',
     'vc_platformtoolset': 'v141',
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
-    # eg. E:\Microsoft Visual Studio 14.0
+    # eg.  E:\Microsoft Visual Studio 14.0
     'qt_CustomInstallPath': '',  # If you installed QT to a custom location put the full path here
-    # eg. Z:\Dev\QT
+    # eg.  Z:\Dev\QT
     'build_type': "RelWithDebInfo",
     'rebuild': True,   # if set, does a clean build of the VS projects (for now only usvfs)
     'offline': False,  # if set, non-mandatory network requests won't be made.
-    # This is stuff like updating source repositories. The initial
-    # download of course can't be supressed.
+    # This is stuff like updating source repositories.  The initial
+                        # download of course can't be supressed.
     'prefer_binary_dependencies': True,  # Work in progress
     'optimize': True,  # activate link-time code generation and other optimization.
     # This massively increases build time but produces smaller
-    # binaries and marginally faster code
+                         # binaries and marginally faster code
     'Installer': True,  # Used to create installer at end of build, Forces everything to be built
     'repo_update_frequency': 60 * 60 * 24,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
@@ -102,9 +96,11 @@ config = {
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': 'Hugues92',  # yourself
 
+    'loot_version': '0.12.4', # loot version
+    'loot_commit': 'gec946b', # loot commit
     'qt_version': '5.10',  # currently evolving
     'qt_minor_version': '0',
-    'pyqt_version': '5.10',  # pyqt version doesn't always match qt. So it is now a seperate config
+    'pyqt_version': '5.10',  # pyqt version doesn't always match qt.  So it is now a seperate config
     'openssl_version': '1.0.2n',  # changes often, so better to edit here
     'zlib_version': '1.2.11',  # changes often, so better to edit here
     'grep_version': '2.5.4',  # moved here as commented in qt5.py
@@ -118,10 +114,9 @@ config = {
     'NASM_Version': '2.13.03',  # Wix Binary Version
 
     'show_only': False,
-    'retrieve_only': False,                 # download everything as a reference (to keep track of local edits). Do modorganizer_super first :)
+    'retrieve_only': False,                 # download everything as a reference (to keep track of local edits).  Do modorganizer_super first :)
     'tools_only': False,                    # Build dependencies except modorganizer targets
 }
-
 config['paths'] = {
     'download': "{base_dir}\\downloads",
     'build': "{base_dir}\\{build_dir}",
@@ -130,20 +125,17 @@ config['paths'] = {
 #   'graphviz': path_or_default("dot.exe", "Graphviz2.38", "bin"),
     'cmake': path_or_default("cmake.exe", "CMake", "bin"),
     'git': path_or_default("git.exe", "Git", "bin"),
-    'perl': path_or_default("perl.exe", "StrawberryPerl","perl", "bin"),
+    'perl': path_or_default("perl.exe", "StrawberryPerl", "perl", "bin"),
     #'ruby': path_or_default("ruby.exe", "Ruby22-x64", "bin"),
     #'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
     '7z': path_or_default("7z.exe", "7-Zip"),
     # we need a python that matches the build architecture
-    'python': Lazy(lambda: os.path.join(
-        get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
-                      "", config['architecture'] == "x86"),
-        "python.exe")),
+    'python': Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
+                      "", config['architecture'] == "x86"), "python.exe")),
     'visual_studio_base': "",
     'qt_binary_install': "",
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
-
 if missing_prerequisites:
     print '\nMissing prerequisites listed above - cannot continue'
     exit(1)

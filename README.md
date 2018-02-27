@@ -1,11 +1,9 @@
 # modorganizer-umbrella
-An umbrella- (super-) project for modorganizer.
+An umbrella- (super-) project for [modorganizer](https://github.com/LePresidente/modorganizer).
 
 ## How to build ModOrganizer 2
 
-Relatively up-to-date instructions on how to build:
-
-http://forum.step-project.com/topic/12538-wip-how-to-build-modorganizer-using-modorganizer-umbrella/
+If you have questions or you need help visit us in our [Discord](https://discord.gg/cYwdcxj) or write in the [STEP forum thread](http://forum.step-project.com/topic/12538-wip-how-to-build-modorganizer-using-modorganizer-umbrella/).:
 
 ## Purpose
 This repository contains a meta build-system that is able to download and build MO subprojects and dependencies as necessary.
@@ -32,19 +30,32 @@ Some more details:
 - Technically, independent tasks could be executed in parallel but that is not (yet) implemented
 
 ## Usage
-
 ```
-usage: unimake.py [-h] [-f FILE] [-d DESTINATION] [target [target ...]]
+usage: unimake.py [-h] [-f file] [-d path] [-s option=value] [-g]
+                  [-b directory] [-p directory] [-i directory]
+                  [target [target ...]]
 
 positional arguments:
-  target                make target
+  target                make this target. eg: modorganizer-archive
+                        modorganizer-uibase (you need to delete the progress
+                        file. will be fixed eventually)
 
 optional arguments:
   -h, --help            show this help message and exit
-  -f FILE, --file FILE  sets the build script
-  -d DESTINATION, --destination DESTINATION
-                        output directory (base for download and build)
-  -s config_option_name=value, --set config_option_name=value change a config option
-
+  -f file, --file file  sets the build script file. eg: -f makefile.uni.py
+  -d path, --destination path
+                        output directory for all generated folder and files
+                        .eg: -d E:/MO2
+  -s option=value, --set option=value
+                        set configuration parameters. most of them are in
+                        config.py. eg: -s paths.build=build
+  -g, --graph           update dependency graph
+  -b directory, --builddir directory
+                        sets build directory. eg: -b build
+  -p directory, --progressdir directory
+                        sets progress directory. eg: -p progress
+  -i directory, --installdir directory
+                        set install directory. eg: .i directory
+```
 I'd suggest to use a destination folder that isn't too deep, some dependencies don't handle long paths well.
 If the make target is left empty, everything is built.

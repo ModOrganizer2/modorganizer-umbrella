@@ -60,7 +60,8 @@ def prepare_nmm(context):
         return True
 
 
-init_repos = github.Source("Nexus-Mods", "Nexus-Mod-Manager", "master") \
+			# https://github.com/Nexus-Mods/Nexus-Mod-Manager/commit/03448e0eb02e08f37d7b66507d0537ab67841321 broke fomod installer. Someone needs to update our modules
+init_repos = github.Source("Nexus-Mods", "Nexus-Mod-Manager", "master", None, False, "dc2d069c93a2a077ff8e7f2192965d98ff44d5e5") \
     .set_destination(os.path.join("NCC", "nmm"))
 
 ncc = Project("NCC") \

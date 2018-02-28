@@ -17,7 +17,7 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 from unibuild import Project
 from unibuild.modules import github, cmake, Patch, git, hg, msbuild, build, dummy, urldownload
-from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc, nasm, openssl, googletest, lz4, WixToolkit
+from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc, nasm, openssl, googletest, lz4, WixToolkit,  transaltions
 from unibuild.utility import lazy, FormatDict
 from config import config
 from functools import partial

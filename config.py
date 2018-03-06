@@ -17,8 +17,8 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import multiprocessing
 import os
-from _winreg import *
 
+from unibuild.utility.config_utility import program_files_folders
 from unibuild.utility.lazy import Lazy
 
 global missing_prerequisites
@@ -34,31 +34,6 @@ def path_or_default(filename, *default):
         global missing_prerequisites
         missing_prerequisites = True
     return res
-
-
-def get_from_hklm(path, name, wow64=False):
-    flags = KEY_READ
-    if wow64:
-        flags |= KEY_WOW64_32KEY
-
-    # avoids crashing if a product is not present
-    try:
-        with OpenKey(HKEY_LOCAL_MACHINE, path, 0, flags) as key:
-            return QueryValueEx(key, name)[0]
-    except:
-        return ""
-
-
-# To detect the editon of VS installed as of VS 2017
-vs_editions = ["enterprise",
-    "professional",
-    "community",]
-
-program_files_folders = [os.environ['ProgramFiles(x86)'],
-    os.environ['ProgramFiles'],
-    os.environ['ProgramW6432'],
-    "C:\\",
-    "D:\\"]
 
 
 def gen_search_folders(*subpath):

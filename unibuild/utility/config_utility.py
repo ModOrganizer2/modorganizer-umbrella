@@ -25,3 +25,17 @@ program_files_folders = [os.environ['ProgramFiles(x86)'],
     os.environ['ProgramW6432'],
     "C:\\",
     "D:\\"]
+
+
+def get_from_hklm(path, name, wow64=False):
+    import _winreg
+    flags = KEY_READ
+    if wow64:
+        flags |= KEY_WOW64_32KEY
+
+    # avoids crashing if a product is not present
+    try:
+        with OpenKey(HKEY_LOCAL_MACHINE, path, 0, flags) as key:
+            return QueryValueEx(key, name)[0]
+    except Exception:
+        return None

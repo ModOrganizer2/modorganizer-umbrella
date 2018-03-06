@@ -44,60 +44,76 @@ def gen_search_folders(*subpath):
 
 
 config = {
-    'tools': {
-        'make': "nmake",
-    },
-    'architecture': 'x86_64',  # Don't change this as we spawn the usvfs x86 build later on.
-    'vc_version': '15.0',
-    'vc_platformtoolset': 'v141',
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
-    # eg.  E:\Microsoft Visual Studio 14.0
+                                 # eg.  'E:\Microsoft Visual Studio 14.0'
     'qt_CustomInstallPath': '',  # If you installed QT to a custom location put the full path here
-    # eg.  Z:\Dev\QT
-    'build_type': "RelWithDebInfo",
-    'rebuild': True,   # if set, does a clean build of the VS projects (for now only usvfs)
-    'offline': False,  # if set, non-mandatory network requests won't be made.
-    # This is stuff like updating source repositories.  The initial
-                        # download of course can't be supressed.
-    'prefer_binary_dependencies': True,  # Work in progress
-    'optimize': True,  # activate link-time code generation and other optimization.
-    # This massively increases build time but produces smaller
-                         # binaries and marginally faster code
-    'Installer': False,  # Used to create installer at end of build, Forces everything to be built
-    'repo_update_frequency': 60 * 60 * 24,  # in seconds
+                                 # eg.  'Z:\Dev\QT'
+    'build_type': "RelWithDebInfo", # build type.  other possible types could be Debug.  not tested
+    'rebuild': True,  # if set, does a clean build of the VS projects (for now only usvfs)
+    'offline': False,  # if set, non-mandatory network requests won't be made eg: updating source repositories.
+                      # The initial download of course can't be supressed.
+    'use_sf_mirror': True, # because sourceforge hates us.  Hosted on modorganizer-deps
+
+    'prefer_binary_dependencies': True,  # Try to use official binary package/SDKs.  Won't work for all stuff
+    # works for: 7z, CMake, Git, Perl, Python, Visual Studio
+    'binary_qt': True, # use binary Qt5 from the offical website
+    'prefer_precompiled_dependencies': True,  # Use our precompiled dependencies.
+    'use_dependencies_repo': True,  # Use this Repository for download: https://github.com/supersandro2000/modorganizer-deps
+                                    # Otherwise GitHub Releases Packages from SuperSandro2000 will be used.
+    'dependencies_releases_author': 'SuperSandro2000', # releases can't be merged trough pull requests.
+            # This option is mainly for Testing new versions without doing a PR.  The packages should be the same.
+    'dependencies_clone_source': False, # clones dependency repos.  False will download tag archives or from a other official location
+    'dependencies_clone_tag': True, # clones at the version tag instead of using the latest master branch
+                                    # set both dependencies_clone_* to True to clone latest master branch
+    'shallowclone': True, # reduces size of repos drastically
+    'repo_update_frequency': 60 * 60 * 6,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
-    'Main_Author': 'LePresidente',  # the current maintainer
-    'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
-    'Work_Author': 'Hugues92',  # yourself
+    'Main_Author': 'LePresidente',  # the current maintainer ( I am to lazy to change all references for pure testing)
+    'Work_Author': 'Max Musterman',  # yourself
 
-    'loot_version': '0.12.4', # loot version
-    'loot_commit': 'gec946b5', # loot commit
-    'qt_version': '5.10',  # currently evolving
-    'qt_minor_version': '0',
-    'pyqt_version': '5.10',  # pyqt version doesn't always match qt.  So it is now a seperate config
-    'openssl_version': '1.0.2n',  # changes often, so better to edit here
-    'zlib_version': '1.2.11',  # changes often, so better to edit here
-    'grep_version': '2.5.4',  # moved here as commented in qt5.py
-    'boost_version': '1.66.0',  # for -DBOOST_ROOT, also, it is either to change from here
-    'vc_version_for_boost': '14.1',  # boost 1.63 does not support VS 2017 yet
-    'python_version': '2.7',  # used below and in python.py
-    'python_version_minor': '.14',  # used in python.py
-    'icu_version': '59',  # used in PyQt5
-    'icu_version_minor': '1',  # for consistency
-    'WixToolSet_Version_Binary': '311',  # Wix Binary Version
-    'NASM_Version': '2.13.03',  # Wix Binary Version
+    # manualy set all versions
+    '7zip_version': '9.20',
+    'boost_version': '1.66.0',
+    'boost_commit': 'b143a5b',
+    'googletest_version': '1.8.0',
+    'grep_version': '2.5.4',
+    'icu_version': '59',
+    'icu_version_minor': '1',
+    'loot_version': '0.12.4',
+    'loot_commit': 'gec946b5',
+    'lz4_version': 'v1.7.4',
+    'nasm_Version': '2.13.03',
+    'openssl_version': '1.0.2n',
+    'openssl_commit': '441bcaf',
+    'pyqt_version': '5.10',
+    'python_version': '2.7',
+    'python_version_minor': '.14',
+    'python_commit': 'd111bef',
+    'sip_version': '4.19.6',
+    'qt_version': '5.10',
+    'qt_version_minor': '0',
+    'vc_platformtoolset': 'v141',
+    'vc_version': '15.0',
+    'vc_version_for_boost': '14.1',
+    'WixToolset_version': '311',
+    'zlib_version': '1.2.11',
 
+    'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
+                       # produces smaller binaries and marginally faster code
+    'Installer': True, # Used to create installer at end of build, Forces everything to be built
     'show_only': False,
     'retrieve_only': False,                 # download everything as a reference (to keep track of local edits).  Do modorganizer_super first :)
     'tools_only': False,                    # Build dependencies except modorganizer targets
+    'tools': {'make': "nmake"},
+    'architecture': 'x86_64'  # Don't change this as we spawn the usvfs x86 build later on.
 }
 config['paths'] = {
     'download': "{base_dir}\\downloads",
     'build': "{base_dir}\\{build_dir}",
     'progress': "{base_dir}\\{progress_dir}",
     'install': "{base_dir}\\{install_dir}",
-#   'graphviz': path_or_default("dot.exe", "Graphviz2.38", "bin"),
+    # 'graphviz': path_or_default("dot.exe", "Graphviz2.38", "bin"),
     'cmake': path_or_default("cmake.exe", "CMake", "bin"),
     'git': path_or_default("git.exe", "Git", "bin"),
     'perl': path_or_default("perl.exe", "StrawberryPerl", "perl", "bin"),

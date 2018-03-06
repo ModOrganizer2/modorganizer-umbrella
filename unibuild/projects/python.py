@@ -15,21 +15,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import errno
 import os
 import shutil
 from glob import glob
 
 from config import config
-from unibuild.modules import github, msbuild, build, urldownload
+from unibuild.modules import build, github, msbuild, precompiled
 from unibuild.project import Project
-from unimake import get_visual_studio_2017_or_more
+from unibuild.utility.visualstudio import get_visual_studio_2017_or_more
 
-python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".12")
-python_toolset = config.get('vc_platformtoolset', "v140")
-python_url = "https://www.python.org/ftp/python"
+path_install = config["paths"]["install"]
+python_version = config['python_version']
+python_version_minor = config['python_version_minor']
 
 
 def make_sure_path_exists(path):
@@ -56,59 +54,37 @@ def upgrade_args():
         return [os.path.join(devenv_path, "devenv.exe"),
                 "PCBuild/pcbuild.sln",
                 "/upgrade"]
-    else:
-        return [os.path.join(get_visual_studio_2017_or_more('15.0'), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
-                "PCBuild/pcbuild.sln",
-                "/upgrade"]
+    return [os.path.join(get_visual_studio_2017_or_more('15.0'), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
+            "PCBuild/pcbuild.sln", "/upgrade"]
 
+def install(context):
+    make_sure_path_exists(os.path.join(path_install, "libs"))
+    path_segments = [context['build_path'], "PCbuild"]
+    if config['architecture'] == "x86_64":
+        path_segments.append("amd64")
+    path_segments.append("*.lib")
+    shutil.copy(os.path.join(python['build_path'], "PC", "pyconfig.h"),
+                os.path.join(python['build_path'], "Include", "pyconfig.h"))
+    for f in glob(os.path.join(*path_segments)):
+        shutil.copy(f, os.path.join(path_install, "libs"))
+    return True
 
-# if config.get('prefer_binary_dependencies', False):
-if False:
-    # the python installer registers in windows and prevent further installations. This means this installation
-    # would interfere with the rest of the system
-    filename = "python-{0}{1}.msi".format(
-        python_version,
-        ".amd64" if config['architecture'] == "x86_64" else ""
-    )
+def download(context):
+    return True
 
+if config['prefer_precompiled_dependencies']:
+    python_tag = "v{}{}-{}".format(python_version, python_version_minor, config['python_commit'])
     python = Project("Python") \
-        .depend(build.Run("msiexec /i {0} TARGETDIR={1} /qn ADDLOCAL=DefaultFeature,SharedCRT"
-                          .format(os.path.join(config['paths']['download'], filename),
-                                  os.path.join(config['paths']['build'], "python-{}".format(python_version))
-                                  )
-                          )
-                .depend(urldownload.URLDownload("{0}/{1}/{2}"
-                                                .format(python_url,
-                                                        python_version,
-                                                        filename
-                                                        )
-                                                )
-                        )
-                )
+        .depend(build.Execute(install)
+            .depend(build.Run(upgrade_args, name="upgrade python project")
+                .depend(precompiled.dep("CPython", python_tag, "Python-{}".format(python_tag))
+                        .set_destination("python-{}".format(python_tag)))))
+
 else:
-    def install(context):
-        make_sure_path_exists(os.path.join(config["paths"]["install"], "libs"))
-        path_segments = [context['build_path'], "PCbuild"]
-        if config['architecture'] == "x86_64":
-            path_segments.append("amd64")
-        path_segments.append("*.lib")
-        shutil.copy(os.path.join(python['build_path'], "PC", "pyconfig.h"),
-                    os.path.join(python['build_path'], "Include", "pyconfig.h"))
-        for f in glob(os.path.join(*path_segments)):
-            shutil.copy(f, os.path.join(config["paths"]["install"], "libs"))
-        return True
-
-
     python = Project("Python") \
         .depend(build.Execute(install)
                 .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
-                                        project_PlatformToolset=python_toolset)
-                        #                 .depend(build.Run(r'PCBuild\\build.bat -e -c Release -m -p {} "/p:PlatformToolset={}"'.format("x64" if config['architecture'] == 'x86_64' else "x86",config['vc_platform']),
-                        #                                   environment=python_environment(),
-                        #                                   working_directory=lambda: os.path.join(python['build_path']))
+                                        project_PlatformToolset=config['vc_platformtoolset'])
                         .depend(build.Run(upgrade_args, name="upgrade python project")
-                                .depend(github.Source("LePresidente", "cpython-1", config.get('python_version', "2.7"),
-                                                      shallowclone=True) \
-                                        .set_destination("python-{}".format(python_version))))
-                        )
-                )
+                                .depend(github.Source("LePresidente", "cpython-1", config.get('python_version', "2.7"), shallowclone=True) \
+                                        .set_destination("python-{}".format(python_version + python_version_minor))))))

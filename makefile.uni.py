@@ -48,35 +48,6 @@ cmake_parameters = ["-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
 if config.get('optimize', False):
     cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")
 
-usvfs = Project("usvfs")
-
-suffix_32 = "" if config['architecture'] == 'x86_64' else "_32"
-for (project32, dependencies) in [("boost", ["boost_prepare"]),
-      ("GTest", []),
-      ("usvfs", [])]:
-  if config['architecture'] == 'x86_64':
-    unimake32 = \
-      build.Run_With_Output(r'"{0}" unimake.py -d "{1}" --set architecture="x86" -b "build" -p "progress" -i "install" {2}'.format(sys.executable, config['__build_base_path'], project32),
-        name="unimake_x86_{}".format(project32),
-        environment=config['__Default_environment'],
-        working_directory=os.path.join(os.getcwd()))
-    for dep in dependencies:
-        unimake32.depend(dep)
-    Project(project32 + "_32").depend(unimake32)
-  else:
-    Project(project32 + "_32").dummy().depend(project32)
-
-# usvfs build:
-vs_target = "Clean;Build" if config['rebuild'] else "Build"
-usvfs_build = \
-    msbuild.MSBuild("usvfs.sln", vs_target,
-                    os.path.join(config["paths"]["build"], "usvfs", "vsbuild"),
-                    "x64" if config['architecture'] == 'x86_64' else "x86")
-usvfs_build.depend(github.Source(config['Main_Author'], "usvfs", "0.3.1.0-Beta")
-    .set_destination("usvfs"))
-usvfs_build.depend("boost" + suffix_32)
-usvfs_build.depend("GTest" + suffix_32)
-usvfs.depend(usvfs_build)
 
 for author, git_path, path, branch, dependencies, Build in [(config['Main_Author'], "modorganizer-game_features", "game_features", "master", [], False),
     (config['Main_Author'], "modorganizer-archive", "archive", "API_9.20", ["7zip", "Qt5", "boost"], True),

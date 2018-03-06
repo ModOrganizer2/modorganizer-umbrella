@@ -15,17 +15,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import os
 
 from config import config
 from unibuild import Project
 from unibuild.modules import cmake, urldownload
 
-nasm_version = config['NASM_Version']
+nasm_version = config['nasm_Version']
 
 def bitness():
     return "64" if config['architecture'] == "x86_64" else "32"
 
-Project("nasm").depend(urldownload.URLDownload("http://www.nasm.us/pub/nasm/releasebuilds/{}/win{}/nasm-{}-win{}.zip".format(nasm_version, bitness(),nasm_version, bitness()),tree_depth=1).set_destination("NASM"))
+Project("nasm").depend(urldownload.URLDownload("http://www.nasm.us/pub/nasm/releasebuilds/{}/win{}/nasm-{}-win{}.zip"
+                                               .format(nasm_version, bitness(), nasm_version, bitness()),tree_depth=1))

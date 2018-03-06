@@ -76,7 +76,7 @@ config = {
     '7zip_version': '9.20',
     'boost_version': '1.66.0',
     'boost_commit': 'b143a5b',
-    'googletest_version': '1.8.0',
+    'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
     'icu_version': '59',
     'icu_version_minor': '1',

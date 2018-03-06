@@ -15,13 +15,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 from config import config
 from unibuild import Project
 from unibuild.modules import cmake, github, build
-
-googletest_version = "1.8.0"
 
 
 Project("GTest") \

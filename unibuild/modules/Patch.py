@@ -90,8 +90,7 @@ class CreateFile(Task):
     def name(self):
         if self._context is not None:
             return "Create File {}-{}".format(self._context.name, self.__filename)
-        else:
-            return "Create File {}".format(self.__filename)
+        return "Create File {}".format(self.__filename)
 
     def process(self, progress):
         full_path = os.path.join(self._context["build_path"], self.__filename)

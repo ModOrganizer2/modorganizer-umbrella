@@ -15,13 +15,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import os.path
 import time
 
-from config import config
-from manager import TaskManager
+from unibuild.manager import TaskManager
 
 
 class Task(object):
@@ -73,7 +70,8 @@ class Task(object):
         return None
 
     def __success_path(self):
-        task_name = self.name.replace("/", "_").replace("\\", "_")
+        from config import config
+        task_name = self.name.replace("/", "_").replace("\\", "_").replace(" ", "_")
         ctx_name = self._context.name if self._context else task_name
         return os.path.join(config["paths"]["progress"],
                             "{}_complete_{}.txt".format(ctx_name, task_name))
@@ -85,8 +83,7 @@ class Task(object):
         expiration_duration = self._expiration()
         if expiration_duration:
             return os.path.getmtime(self.__success_path()) + expiration_duration > time.time()
-        else:
-            return True
+        return True
 
     def mark_success(self):
         if not self.__dummy:
@@ -105,7 +102,7 @@ class Task(object):
         of two sibling Tasks is processed first. This is because independent tasks could be processed
         asynchronously and they may be also be dependencies for a third task.
         """
-        if type(task) == str:
+        if isinstance(task, str):
             task_obj = TaskManager().get_task(task)
             if task_obj is None:
                 raise KeyError("unknown project \"{}\"".format(task))

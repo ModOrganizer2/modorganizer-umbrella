@@ -15,8 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-from project import Project
+from unibuild.project import Project
 
 
 class Dependency(Project):

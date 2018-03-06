@@ -15,9 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-from dependency import Dependency
-from manager import TaskManager
-from project import Project
-from task import Task
-from version import Version
+from unibuild.dependency import Dependency
+from unibuild.manager import TaskManager
+from unibuild.project import Project
+from unibuild.task import Task
+from unibuild.version import Version

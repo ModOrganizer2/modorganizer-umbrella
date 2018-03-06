@@ -15,6 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-from case_insensitive_dict import CIDict
-from format_dict import FormatDict
-from progress_file import ProgressFile
+from unibuild.utility.case_insensitive_dict import CIDict
+from unibuild.utility.format_dict import FormatDict
+from unibuild.utility.progress_file import ProgressFile

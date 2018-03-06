@@ -20,18 +20,14 @@ from unibuild.manager import TaskManager
 from unibuild.progress import Progress
 from unibuild.project import Project
 from unibuild import Task
-from unibuild.utility import CIDict
-from config import config, vs_editions, program_files_folders
-from subprocess import Popen, PIPE
+from config import config, program_files_folders
 import imp
 import sys
 import traceback
 import logging
 import networkx as nx
-import tempfile
 import os.path
 import argparse
-import re
 from networkx.drawing.nx_pydot import write_dot
 
 exitcode = 0
@@ -78,136 +74,6 @@ def extract_independent(graph):
         if graph.out_degree(node) == 0:
             independent.append(node)
     return independent
-
-
-def vc_year(vc_version):
-    if vc_version == "15.0":
-        return "2017"
-    elif vc_version == "14.0":
-        return "2015"
-    else:
-        ""
-
-# No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir
-def get_visual_studio_2017_or_more(vc_version):
-    try:
-        if os.environ["VisualStudioVersion"] == vc_version:
-            p = os.path.join(os.environ["VSINSTALLDIR"], "VC", "Auxiliary", "Build")
-            f = os.path.join(p, "vcvarsall.bat")
-            res = os.path.isfile(f)
-            if res is not None:
-                return os.path.realpath(p)
-            else:
-                res = None
-    except:
-        res = None
-
-    try:
-        p = os.path.join(config['vc_CustomInstallPath'], "VC", "Auxiliary", "Build")
-        f = os.path.join(p, "vcvarsall.bat")
-        res = os.path.isfile(f)
-        if res is None:
-            res = None
-        elif res:
-            return os.path.realpath(p)
-        else:
-            res = None
-    except:
-        res = None
-
-    for edition in vs_editions:
-        s = os.environ["ProgramFiles(x86)"]
-        p = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version), edition, "VC", "Auxiliary", "Build")
-        f = os.path.join(p, "vcvarsall.bat")
-        if os.path.isfile(f):
-            config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version),
-                                                                    edition)
-            return os.path.realpath(p)
-
-
-def get_visual_studio_2015_or_less(vc_version):
-    res = ""
-    try:
-        s = os.environ["ProgramFiles(x86)"]
-        p = os.path.join(s, "Microsoft Visual Studio {}".format(vc_version), "VC")
-        f = os.path.join(p, "vcvarsall.bat")
-        if os.path.isfile(f):
-            config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio {}".format(vc_version))
-            return os.path.realpath(p)
-        else:
-            res = None
-    except:
-        res = None
-
-    if res == None:
-        try:
-            s = os.environ["ProgramFiles(x86)"]
-            p = os.path.join(s, "Microsoft Visual Studio", "Shared", vc_version, "VC")
-            f = os.path.join(p, "vcvarsall.bat")
-
-            if os.path.isfile(f):
-                config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio", "Shared",
-                                                                        vc_version)
-                return os.path.realpath(p)
-            else:
-                res = None
-        except:
-            res = None
-
-    # We should try the custom VC install path as well
-    if res == None:
-        try:
-            p = os.path.join(config['vc_CustomInstallPath'], "VC")
-            f = os.path.join(p, "vcvarsall.bat")
-            if os.path.isfile(f):
-                config['paths']['visual_studio_basedir'] = os.path.join(config['vc_CustomInstallPath'])
-                return os.path.realpath(p)
-            else:
-                res = None
-        except:
-            res = None
-
-
-def visual_studio(vc_version):
-    config["paths"]["visual_studio"] = get_visual_studio_2015_or_less(vc_version) if vc_version < "15.0" \
-        else get_visual_studio_2017_or_more(vc_version)
-    if not config["paths"]["visual_studio"]:
-        logging.error("Unable to find vcvarsall.bat, please make sure you have 'Common C++ tools' Installed."
-          " If you have changed the default installation folder for VS please set the 'vc_CustomInstallPath' in the config.py file"
-          " to the folder you installed VS to (this folder should contain a 'VC' subfolder).")
-        sys.exit(1)
-
-
-def visual_studio_environment():
-    # when using visual studio we need to set up the environment correctly
-    arch = "amd64" if config["architecture"] == 'x86_64' else "x86"
-    test = config['paths']['visual_studio']
-    if config['paths']['visual_studio']:
-        proc = Popen([os.path.join(config['paths']['visual_studio'], "vcvarsall.bat"), arch, "&&", "SET"],
-                     stdout=PIPE, stderr=PIPE)
-        stdout, stderr = proc.communicate()
-
-        if "Error in script usage. The correct usage is" in stderr:
-            logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
-            return False
-
-        if "Error in script usage. The correct usage is" in stdout:
-            logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
-            return False
-
-        if proc.returncode != 0:
-            logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
-            return False
-    else:
-        sys.exit(1)
-
-    vcenv = CIDict()
-
-    for line in stdout.splitlines():
-        if "=" in line:
-            key, value = line.split("=", 1)
-            vcenv[key] = value
-    return vcenv
 
 
 def get_qt_install(qt_version, qt_minor_version, vc_version):
@@ -341,7 +207,7 @@ def main():
     parser.add_argument('-g', '--graph', action='store_true', help='update dependency graph')
     parser.add_argument('-b', '--builddir', metavar='directory', default='build', help='sets build directory. eg: -b build')
     parser.add_argument('-p', '--progressdir', metavar='directory', default='progress', help='sets progress directory. eg: -p progress')
-    parser.add_argument('-i', '--installdir', metavar='directory', default='install', help='set install directory. eg: .i directory')
+    parser.add_argument('-i', '--installdir', metavar='directory', default='install', help='set install directory. eg: -i directory')
     parser.add_argument('target', nargs='*', help='make this target. eg: modorganizer-archive modorganizer-uibase (you need to delete the progress file. will be fixed eventually)')
     args = parser.parse_args()
 
@@ -401,9 +267,9 @@ def main():
                     progress = Progress()
                     progress.set_change_callback(progress_callback)
                     if isinstance(task, Project):
-                        logging.debug("finished project \"{}\"".format(node))
+                        logging.debug("finished project \"%s\"", node)
                     else:
-                        logging.debug("run task \"{}\"".format(node))
+                        logging.debug("run task \"%s\"", node)
                     if not ShowOnly:
                         Retrieve = (-1 != node.find("retrieve")) or (-1 != node.find("download")) or (-1 != node.find("repository"))
                         Tool = (-1 == node.find("modorganizer")) and (-1 == node.find("githubpp"))
@@ -426,7 +292,7 @@ def main():
                             logging.critical("task %s skipped", node)
                         sys.stdout.write("\n")
             except Exception, e:
-                logging.error("Task {} failed: {}".format(task.name, e))
+                logging.error("Task %s failed: %s", task.name, e)
                 raise
 
             build_graph.remove_node(node)

@@ -26,6 +26,34 @@ program_files_folders = [os.environ['ProgramFiles(x86)'],
     "C:\\",
     "D:\\"]
 
+def qt_inst_path():
+    from config import config
+    if config['binary_qt']:
+        qt_inst_path = config["paths"]["qt_binary_install"]
+    else:
+        qt_inst_path = "{}/qt5".format(build_path).replace("/", os.path.sep)
+    return qt_inst_path
+
+def cmake_parameters():
+    from config import config
+
+    paths_build = config['paths']['build']
+
+    cmake_parameters = ["-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
+                        "-DDEPENDENCIES_DIR={}".format(paths_build),
+                        "-DBOOST_ROOT={}/Boost-{}-{}".format(paths_build, config["boost_version"], config['boost_commit']),
+                        "-DLOOT_API_PATH={}/lootapi-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
+                        "-DLZ4_ROOT={}/lz4-{}".format(paths_build, config["lz4_version"]),
+                        "-DQT_ROOT={}".format(qt_inst_path())]
+
+    if config.get('optimize', False):
+        cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")
+    return cmake_parameters
+
+def bitness():
+    from config import config
+    return "x64" if config['architecture'] == "x86_64" else "Win32"
+
 
 def get_from_hklm(path, name, wow64=False):
     import _winreg

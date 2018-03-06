@@ -15,33 +15,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-from unibuild import copyright, Project
-from unibuild.modules import github, cmake, Patch, git, hg, msbuild, build, dummy, urldownload
-from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc, nasm, openssl, googletest, lz4, WixToolkit,  transaltions
-from unibuild.utility import lazy, FormatDict
-from config import config
-from functools import partial
-from string import Formatter
 import os
-import sys
 
-loot_version = "0.12.4"
-commit_id = "gec946b5"
-
-# TODO modorganizer-lootcli needs an overhaul as the api has changed alot
-def bitness():
-    return "x64" if config['architecture'] == "x86_64" else "Win32"
-
-def bitnessLoot():
-    return "64" if config['architecture'] == "x86_64" else "32"
-
-Project("LootApi") \
-    .depend(Patch.Copy("loot_api.dll", os.path.join(config["paths"]["install"], "bin", "loot"))
-        .depend(github.Release("loot", "loot-api", config['loot_version'],
-                               "loot_api-{}-0-{}_update-deps-win{}".format(config['loot_version'], config['loot_commit'], bitnessLoot()), "7z", tree_depth=1)
-                .set_destination("lootapi")))
+from config import config
+from string import Formatter
+from unibuild import Project
+from unibuild.modules import build, cmake, git, github
+from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, transaltions, python, pyqt5, qt5, WixToolkit, zlib
+from unibuild.utility import FormatDict
+from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
 
 tl_repo = git.SuperRepository("modorganizer_super")
+
 
 def gen_userfile_content(project):
     with open("CMakeLists.txt.user.template", 'r') as f:

@@ -191,9 +191,13 @@ def main():
 
 if __name__ == "__main__":
     try:
-        exitcode = main()
-        if not exitcode == 0:
-            sys.exit(exitcode)
+        if sys.version < "3":
+            exitcode = main()
+            if not exitcode == 0:
+                sys.exit(exitcode)
+        else:
+            logging.error("You started unimake with Python 3 but we only support Python 2!")
+            sys.exit(1)
     except Exception, e:
         traceback.print_exc(file=sys.stdout)
         sys.exit(1)

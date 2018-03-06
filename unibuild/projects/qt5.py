@@ -15,8 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import errno
 import itertools
 import os
@@ -27,33 +25,21 @@ from config import config
 from unibuild import Project, Task
 from unibuild.modules import build, git, urldownload
 
-qt_download_url = "http://download.qt.io/official_releases/qt"
-qt_download_ext = "tar.gz"
-qt_version = config['qt_version']
-qt_version_minor = "1"
-if config['prefer_binary_dependencies']:
-    qt_inst_path = config["paths"]["qt_binary_install"]
-else:
-    qt_inst_path = "{}/qt5".format(config["paths"]["build"]).replace("/", os.path.sep)
+build_path = config['paths']['build']
+grep_version = config['grep_version']
 icu_version = config['icu_version']
+openssl_version = config['openssl_version']
+qt_version = config['qt_version']
+qt_version_minor = config['qt_version_minor']
 
-
-def bitness():
+def bitnessQt():
     return "64" if config['architecture'] == "x86_64" else "32"
 
-
 def variant():
-    return "msvc2013" if config['vc_version'] == "12.0" else "msvc2015" if config[
-                                                                               'vc_version'] == "14.0" else "msvc2017"
-
+    return "msvc2013" if config['vc_version'] == "12.0" else "msvc2015" if config['vc_version'] == "14.0" else "msvc2017"
 
 qt_bin_variant = variant()
-
 platform = "win32-{0}".format(variant())
-
-openssl_version = config['openssl_version']
-grep_version = config['grep_version']
-
 
 def make_sure_path_exists(path):
     try:
@@ -62,18 +48,16 @@ def make_sure_path_exists(path):
         if exception.errno != errno.EEXIST:
             raise
 
-
-# if config.get('prefer_binary_dependencies', False):
-
-if config.get('prefer_binary_dependencies', True):
+if config.get('binary_qt', True):
     qt5 = Project("Qt5")
 else:
+    # import source packages only if we build from source
+    from unibuild.projects.icu import icu
+
     skip_list = ["qtactiveqt", "qtandroidextras", "qtenginio",
                  "qtserialport", "qtsvg",
                  "qtwayland", "qtdoc", "qtconnectivity"]
-
     nomake_list = ["tests", "examples"]
-
     configure_cmd = lambda: " ".join(["configure.bat",
                                       "-platform", platform,
                                       "-debug-and-release", "-force-debug-info",
@@ -89,26 +73,21 @@ else:
     jom = Project("jom") \
         .depend(urldownload.URLDownload("http://download.qt.io/official_releases/jom/jom.zip"))
 
-
     def qt5_environment():
         result = config['__environment'].copy()
-        result['Path'] = ";".join([
-            os.path.join(config['paths']['build'], "icu", "dist", "bin"),
-            os.path.join(config['paths']['build'], "icu", "dist", "lib"),
-            os.path.join(config['paths']['build'], "jom")]) + ";" + result['Path']
-        result['INCLUDE'] = os.path.join(config['paths']['build'], "icu", "dist", "include") + ";" + \
-                            os.path.join(config['paths']['build'],
-                                         "Win{}OpenSSL-{}".format(bitness(), openssl_version.replace(".", "_")),
-                                         "include") + ";" + \
+        result['Path'] = ";".join([os.path.join(build_path, "icu", "dist", "bin"),
+            os.path.join(build_path, "icu", "dist", "lib"),
+            os.path.join(build_path, "jom")]) + ";" + result['Path']
+        result['INCLUDE'] = os.path.join(build_path, "icu", "dist", "include") + ";" + \
+                            os.path.join(build_path, "Win{}OpenSSL-{}".format(bitnessQt(),
+                                         openssl_version.replace(".", "_")), "include") + ";" + \
                             result['INCLUDE']
-        result['LIB'] = os.path.join(config['paths']['build'], "icu", "dist", "lib") + ";" + \
-                        os.path.join(config['paths']['build'],
-                                     "Win{}OpenSSL-{}".format(bitness(), openssl_version.replace(".", "_")), "lib",
-                                     "VC") + ";" + \
+        result['LIB'] = os.path.join(build_path, "icu", "dist", "lib") + ";" + \
+                        os.path.join(build_path, "Win{}OpenSSL-{}".format(bitnessQt(),
+                                     openssl_version.replace(".", "_")), "lib", "VC") + ";" + \
                         result['LIB']
-        result['LIBPATH'] = os.path.join(config['paths']['build'], "icu", "dist", "lib") + ";" + result['LIBPATH']
+        result['LIBPATH'] = os.path.join(build_path, "icu", "dist", "lib") + ";" + result['LIBPATH']
         return result
-
 
     init_repo = build.Run("perl init-repository", name="init qt repository") \
         .set_fail_behaviour(Task.FailBehaviour.CONTINUE) \
@@ -117,33 +96,26 @@ else:
     build_qt5 = build.Run(r"jom.exe -j {}".format(config['num_jobs']),
                           environment=qt5_environment(),
                           name="Build Qt5",
-                          working_directory=lambda: os.path.join(qt5['build_path']))
+                          working_directory=lambda: os.path.join(build_path))
 
     install_qt5 = build.Run(r"nmake install",
                             environment=qt5_environment(),
                             name="Install Qt5",
-                            working_directory=lambda: os.path.join(qt5['build_path']))
-
+                            working_directory=lambda: os.path.join(build_path))
 
     def copy_icu_libs(context):
-        for f in glob(os.path.join(config['paths']['build'], "icu", "dist", "lib", "icu*{}.dll".format(icu_version))):
-            shutil.copy(f, os.path.join(config["paths"]["build"], "qt5", "bin"))
+        for f in glob(os.path.join(build_path, "icu", "dist", "lib", "icu*{}.dll".format(icu_version))):
+            shutil.copy(f, os.path.join(build_path, "qt5", "bin"))
         return True
 
-
     qt5 = Project("Qt5") \
-                        .depend(build.Execute(copy_icu_libs)
-                                .depend(install_qt5
-                                        .depend(build_qt5
-                                                .depend("jom")
-                                                .depend(build.Run(configure_cmd,
-                                                                  name="configure qt",
-                                                                  environment=qt5_environment())
-                                                        .depend(init_repo)
-
-                                                        .depend("icu")
-                                                        .depend("openssl")
-                                                        )
-                                                )
-                                        )
-                                )
+        .depend(build.Execute(copy_icu_libs)
+            .depend(install_qt5
+                .depend(build_qt5
+                    .depend("jom")
+                        .depend(build.Run(configure_cmd,
+                                name="configure qt",
+                                environment=qt5_environment())
+                            .depend(init_repo)
+                                .depend("icu")
+                                    .depend("openssl")))))

@@ -1,4 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
+# Copyright (C) 2016 - 2018 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -26,13 +27,13 @@ from unibuild.modules import build, github, Patch
 # TODO: transifex
 version = "v2.1.0"
 
-def transaltions_install(context):
+def translations_install(context):
     for file in glob.iglob(os.path.join(config["paths"]["build"], "translations-{}".format(version), "*.qm")):
         if os.path.isfile(file):
             shutil.copy2(file, os.path.join(config["paths"]["install"], "bin", "translations"))
     return True
 
 Project("translations") \
-    .depend(build.Execute(transaltions_install)
+    .depend(build.Execute(translations_install)
         .depend(github.Release("LePresidente", "modorganizer", version, "translations", extension="7z", tree_depth=1)
                 .set_destination("translations-{}".format(version))))

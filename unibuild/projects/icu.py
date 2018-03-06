@@ -15,7 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
 from unibuild import Project
 from unibuild.modules import build, sourceforge, Patch
 from config import config
@@ -109,10 +108,5 @@ icu = Project('icu') \
                                                       "#if U_PLATFORM_USES_ONLY_WIN32_API && _MSC_VER < 1900")
                                         .depend(sourceforge.Release("icu","ICU4C/{0}.{1}/icu4c-{0}_{1}-src.tgz"
                                                                     .format(icu_version,icu_version_minor),tree_depth=1)
-                                                                            .set_destination("icu")
-                                                )
-                                        )
-                                )
-                        )
-                )\
+                                                                            .set_destination("icu"))))))\
         .depend("cygwin")

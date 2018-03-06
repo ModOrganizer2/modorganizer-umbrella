@@ -15,13 +15,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import logging
 import os
 from subprocess import Popen
 
-from build import Builder
+from unibuild.modules.build import Builder
 from config import config
 
 
@@ -41,8 +39,7 @@ class MSBuild(Builder):
         suffix_32 = "" if config['architecture'] == 'x86_64' else "_32"
         if self._context is None:
             return "msbuild" + suffix_32
-        else:
-            return "msbuild{} {}".format(suffix_32, self._context.name)
+        return "msbuild{} {}".format(suffix_32, self._context.name)
 
     def applies(self, parameters):
         return True
@@ -62,11 +59,10 @@ class MSBuild(Builder):
           self.__solution,
           "/maxcpucount",
           "/property:Configuration=Release",
-          "/verbosity:"+verbosity,
+          "/verbosity:" + verbosity,
           "/consoleloggerparameters:Summary",
           "/fileLogger",
-          "/fileloggerparameters:Summary;Verbosity="+lverbosity
-        ]
+          "/fileloggerparameters:Summary;Verbosity=" + lverbosity]
 
         if self.__project_platform is None:
             args.append("/property:Platform={}"
@@ -83,8 +79,7 @@ class MSBuild(Builder):
 
         wdir = str(self.__working_directory or self._context["build_path"])
         print "{}> {}".format(wdir, ' '.join(args))
-        proc = Popen(
-            args,
+        proc = Popen(args,
             shell=True,
             cwd=wdir,
             env=config["__environment"])

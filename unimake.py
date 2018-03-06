@@ -20,7 +20,7 @@ from unibuild.manager import TaskManager
 from unibuild.progress import Progress
 from unibuild.project import Project
 from unibuild import Task
-from config import config, program_files_folders
+from config import config
 import imp
 import sys
 import traceback
@@ -74,53 +74,6 @@ def extract_independent(graph):
         if graph.out_degree(node) == 0:
             independent.append(node)
     return independent
-
-
-def get_qt_install(qt_version, qt_minor_version, vc_version):
-    res = None
-    # We only use the 64bit version of QT in MO2 so this should be fine.
-
-    try:
-        for baselocation in program_files_folders:
-            # Offline installer default location
-            p = os.path.join(baselocation, "Qt", "Qt{}".format(qt_version + "." + qt_minor_version
-                                                               if qt_minor_version != '' else qt_version),
-                             "{}".format(qt_version + "." + qt_minor_version
-                                         if qt_minor_version != '' else qt_version),
-                             "msvc{0}_64".format(vc_year(vc_version)))
-            f = os.path.join(p, "bin", "qmake.exe")
-            if os.path.isfile(f):
-                return os.path.realpath(p)
-            # Online installer default location
-            p = os.path.join(baselocation, "Qt", "{}".format(qt_version + "." + qt_minor_version
-                                                             if qt_minor_version != '' else qt_version),
-                             "msvc{0}_64".format(vc_year(vc_version)))
-            f = os.path.join(p, "bin", "qmake.exe")
-            if os.path.isfile(f):
-                return os.path.realpath(p)
-    except:
-        res = None
-
-    # We should try the custom Qt install path as well
-    if res is None:
-        try:
-            p = os.path.join(config['qt_CustomInstallPath'], "{}".format(qt_version + "." + qt_minor_version
-                                                                         if qt_minor_version != '' else qt_version),
-                             "msvc{0}_64".format(vc_year(vc_version)))
-            f = os.path.join(p, "bin", "qmake.exe")
-            if os.path.isfile(f):
-                return os.path.realpath(p)
-        except:
-            res = None
-
-
-def qt_install(qt_version, qt_minor_version, vc_version):
-    config["paths"]["qt_binary_install"] = get_qt_install(qt_version, qt_minor_version, vc_version)
-    if not config["paths"]["qt_binary_install"]:
-        logging.error("Unable to find qmake.exe, please make sure you have QT {} installed. If it is installed "
-                      "please point the 'qt_CustomInstallPath' in the config.py to your Qt installation."
-                      .format(qt_version + "." + qt_minor_version if qt_minor_version != '' else qt_version))
-        sys.exit(1)
 
 
 def init_config(args):

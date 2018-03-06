@@ -15,23 +15,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
-import os
+import os.path
 
 from config import config
 from unibuild import Project
 from unibuild.modules import github, Patch
 
-lz4_version = "v1.7.4"
+lz4_version = config['lz4_version']
+lz_path = os.path.join(config['paths']['build'], "lz4-".format(lz4_version))
 
 Project("lz4") \
-    .depend(Patch.Copy(os.path.join(config['paths']['build'], "lz4", "dll", "liblz4.dll"),
+    .depend(Patch.Copy(os.path.join(lz_path, "dll", "liblz4.dll"),
                        os.path.join(config["paths"]["install"], "bin", "dlls"))
             .depend(github.Release("lz4", "lz4", lz4_version, "lz4_{0}_win{1}".format(lz4_version.replace(".", "_"),
-                                                                                      "64" if config[
-                                                                                                  'architecture'] == 'x86_64' else "32"),
-                                   "zip")
-                    .set_destination("lz4")
-                    )
-            )
+                               "64" if config['architecture'] == 'x86_64' else "32"), "zip")
+                          .set_destination("lz4-{}".format(lz4_version))))

@@ -21,7 +21,7 @@ from config import config
 from string import Formatter
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github
-from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, transaltions, python, pyqt5, qt5, WixToolkit, zlib
+from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, translations, python, pyqt5, qt5, WixToolkit, zlib
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
 

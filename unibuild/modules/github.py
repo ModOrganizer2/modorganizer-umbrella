@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+from config import config
 from git import Clone
 from urldownload import URLDownload
 

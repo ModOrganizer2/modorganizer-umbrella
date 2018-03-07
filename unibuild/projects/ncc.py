@@ -54,15 +54,11 @@ def prepare_nmm(context):
     if changed:
         log.info('Writing NexusClientCli.sln')
         sln.SaveToFile(os.path.relpath(os.path.join(build_path, "Nexus-Mod-Manager", 'NexusClientCli.sln'))) # So we dont get conflicts when pulling
-
-        with open(os.path.join(build_path, "NexusClientCLI", "NexusClientCLI", "NexusClientCLI.csproj"), 'r+') as file:
-            content = file.read()
-            file.seek(0)
-            file.truncate()
-            file.write(content.replace("nmm", "Nexus-Mod-Manager"))
         return True
 
 
+# https://github.com/Nexus-Mods/Nexus-Mod-Manager/commit/03448e0eb02e08f37d7b66507d0537ab67841321 broke fomod installation
+# until this is fixed we lock NMM to the latest nexus release.
 Project("ncc") \
     .depend(build.Run(r"publish.bat".format("-debug" if config['build_type'] == "Debug" else "-release",
                               os.path.join(config["paths"]["install"], "bin")),

@@ -22,7 +22,7 @@ from unibuild import Project
 from unibuild.modules import github, Patch
 
 lz4_version = config['lz4_version']
-lz_path = os.path.join(config['paths']['build'], "lz4-".format(lz4_version))
+lz_path = os.path.join(config['paths']['build'], "lz4-{}".format(lz4_version))
 
 Project("lz4") \
     .depend(Patch.Copy(os.path.join(lz_path, "dll", "liblz4.dll"),

@@ -88,7 +88,7 @@ config = {
     'optimize': True,  # activate link-time code generation and other optimization.
     # This massively increases build time but produces smaller
                          # binaries and marginally faster code
-    'Installer': True,  # Used to create installer at end of build, Forces everything to be built
+    'Installer': False,  # Used to create installer at end of build, Forces everything to be built
     'repo_update_frequency': 60 * 60 * 24,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 

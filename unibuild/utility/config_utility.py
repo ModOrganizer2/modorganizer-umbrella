@@ -41,7 +41,7 @@ def cmake_parameters():
 
     cmake_parameters = ["-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
                         "-DDEPENDENCIES_DIR={}".format(paths_build),
-                        "-DBOOST_ROOT={}/Boost-{}-{}".format(paths_build, config["boost_version"], config['boost_commit']),
+                        "-DBOOST_ROOT={}/Boost-{}".format(paths_build, config["boost_version"]),
                         "-DLOOT_API_PATH={}/lootapi-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
                         "-DLZ4_ROOT={}/lz4-{}".format(paths_build, config["lz4_version"]),
                         "-DQT_ROOT={}".format(qt_inst_path())]

@@ -21,7 +21,7 @@ import shutil
 from glob import glob
 
 from config import config
-from unibuild.modules import build, github, msbuild, precompiled
+from unibuild.modules import build, github, msbuild
 from unibuild.project import Project
 from unibuild.utility.visualstudio import get_visual_studio_2017_or_more
 
@@ -72,19 +72,11 @@ def install(context):
 def download(context):
     return True
 
-if config['prefer_precompiled_dependencies']:
-    python_tag = "v{}{}-{}".format(python_version, python_version_minor, config['python_commit'])
-    python = Project("Python") \
-        .depend(build.Execute(install)
-            .depend(build.Run(upgrade_args, name="upgrade python project")
-                .depend(precompiled.dep("CPython", python_tag, "Python-{}".format(python_tag))
-                        .set_destination("python-{}".format(python_tag)))))
 
-else:
-    python = Project("Python") \
-        .depend(build.Execute(install)
-                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
-                                        project_PlatformToolset=config['vc_platformtoolset'])
-                        .depend(build.Run(upgrade_args, name="upgrade python project")
-                                .depend(github.Source("LePresidente", "cpython-1", config.get('python_version', "2.7"), shallowclone=True) \
-                                        .set_destination("python-{}".format(python_version + python_version_minor))))))
+python = Project("Python") \
+    .depend(build.Execute(install)
+            .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
+                                    project_PlatformToolset=config['vc_platformtoolset'])
+                    .depend(build.Run(upgrade_args, name="upgrade python project")
+                            .depend(github.Source("LePresidente", "cpython-1", config.get('python_version', "2.7"), shallowclone=True) \
+                                    .set_destination("python-{}".format(python_version + python_version_minor))))))

@@ -57,14 +57,6 @@ config = {
     'prefer_binary_dependencies': True,  # Try to use official binary package/SDKs.  Won't work for all stuff
     # works for: 7z, CMake, Git, Perl, Python, Visual Studio
     'binary_qt': True, # use binary Qt5 from the offical website
-    'prefer_precompiled_dependencies': True,  # Use our precompiled dependencies.
-    'use_dependencies_repo': True,  # Use this Repository for download: https://github.com/supersandro2000/modorganizer-deps
-                                    # Otherwise GitHub Releases Packages from SuperSandro2000 will be used.
-    'dependencies_releases_author': 'SuperSandro2000', # releases can't be merged trough pull requests.
-            # This option is mainly for Testing new versions without doing a PR.  The packages should be the same.
-    'dependencies_clone_source': False, # clones dependency repos.  False will download tag archives or from a other official location
-    'dependencies_clone_tag': True, # clones at the version tag instead of using the latest master branch
-                                    # set both dependencies_clone_* to True to clone latest master branch
     'shallowclone': True, # reduces size of repos drastically
     'repo_update_frequency': 60 * 60 * 6,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
@@ -75,7 +67,6 @@ config = {
     # manualy set all versions
     '7zip_version': '9.20',
     'boost_version': '1.66.0',
-    'boost_commit': 'b143a5b',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
     'icu_version': '59',
@@ -85,11 +76,9 @@ config = {
     'lz4_version': 'v1.7.4',
     'nasm_Version': '2.13.03',
     'openssl_version': '1.0.2n',
-    'openssl_commit': '441bcaf',
     'pyqt_version': '5.10',
     'python_version': '2.7',
     'python_version_minor': '.14',
-    'python_commit': 'd111bef',
     'sip_version': '4.19.6',
     'qt_version': '5.10',
     'qt_version_minor': '0',

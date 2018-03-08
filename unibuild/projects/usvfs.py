@@ -29,7 +29,7 @@ vs_target = "Clean;Build" if config['rebuild'] else "Build"
 
 
 # TODO change dynamicaly
-boost_folder = "boost-v{}-{}".format(config["boost_version"], config["boost_commit"])
+boost_folder = "boost-{}".format(config["boost_version"])
 gtest_folder = "googletest"
 
 

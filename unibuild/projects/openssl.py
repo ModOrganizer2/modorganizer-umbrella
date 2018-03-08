@@ -24,7 +24,7 @@ from glob import glob
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build,  Patch, precompiled, urldownload
+from unibuild.modules import build,  Patch, urldownload
 
 nasm_ersion = config['nasm_Version']
 # currently binary installation only
@@ -100,19 +100,12 @@ Configure_openssl = build.Run(r"{} Configure --openssldir={} VC-WIN{}A".format(c
                       name="Configure OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
 
-if config['prefer_precompiled_dependencies']:
-    openssl_tag = "v{}-{}".format(openssl_version, config['openssl_commit'])
-    openssl = Project("openssl") \
-        .depend(build.Execute(openssl_stage)
-            .depend(precompiled.dep("OpenSSL", openssl_tag, "OpenSSL-{}".format(openssl_tag))
-                    .set_destination("openssl-{}".format(openssl_tag))))
 
-else:
-    openssl = Project("openssl") \
-        .depend(build.Execute(openssl_stage)
-            .depend(OpenSSL_Install
-                .depend(OpenSSL_Build
-                    .depend(OpenSSL_Prep
-                        .depend(Configure_openssl
-                            .depend(urldownload.URLDownload(url, tree_depth=1)
-                                .depend("nasm")))))))
+openssl = Project("openssl") \
+    .depend(build.Execute(openssl_stage)
+        .depend(OpenSSL_Install
+            .depend(OpenSSL_Build
+                .depend(OpenSSL_Prep
+                    .depend(Configure_openssl
+                        .depend(urldownload.URLDownload(url, tree_depth=1)
+                            .depend("nasm")))))))

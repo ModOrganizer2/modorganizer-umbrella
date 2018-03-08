@@ -20,11 +20,11 @@ import patch
 
 from config import config
 from unibuild import Project
-from unibuild.modules import b2, build, Patch, precompiled, sourceforge
+from unibuild.modules import b2, build, Patch, sourceforge
 from unibuild.projects import python
 
 # TODO handle variants
-boost_path = "{}/boost-v{}-{}".format(config["paths"]["build"], config["boost_version"], config["boost_commit"])
+boost_path = "{}/boost-{}".format(config["paths"]["build"], config["boost_version"])
 boost_version = config['boost_version']
 python_version = config['python_version']
 vc_version = config['vc_version_for_boost']
@@ -54,24 +54,19 @@ def patchboost(context):
     except OSError:
         return False
 
-if config['prefer_precompiled_dependencies']:
-    boost_tag = "v{}-{}".format(boost_version, config['boost_commit'])
 
-    boost_prepare = Project("boost_prepare") \
-        .depend(precompiled.dep("Boost", boost_tag, "Boost-{}".format(boost_tag)))
-else:
-    boost_prepare = Project("boost_prepare") \
-        .depend(b2.Bootstrap() \
-            .depend(Patch.CreateFile(user_config_jam,
-                                    lambda: config_template.format(python_version,
-                                    os.path.join(python.python['build_path'], "PCBuild",
-                                    "{}".format("" if config['architecture'] == 'x86' else "amd64")).replace("\\",'/'),
-                                        os.path.join(python.python['build_path']).replace("\\", '/'),
-                                        "64" if config['architecture'] == "x86_64" else "32")) \
-                .depend(build.Execute(patchboost)
-                    .depend(sourceforge.Release("boost", "boost/{0}/boost_{1}.tar.bz2"
-                                        .format(boost_version, boost_version.replace(".", "_")),tree_depth=1)
-                                        .set_destination("boost-{}".format(boost_version))))))
+boost_prepare = Project("boost_prepare") \
+    .depend(b2.Bootstrap() \
+        .depend(Patch.CreateFile(user_config_jam,
+                                lambda: config_template.format(python_version,
+                                os.path.join(python.python['build_path'], "PCBuild",
+                                "{}".format("" if config['architecture'] == 'x86' else "amd64")).replace("\\",'/'),
+                                    os.path.join(python.python['build_path']).replace("\\", '/'),
+                                    "64" if config['architecture'] == "x86_64" else "32")) \
+            .depend(build.Execute(patchboost)
+                .depend(sourceforge.Release("boost", "boost/{0}/boost_{1}.tar.bz2"
+                                    .format(boost_version, boost_version.replace(".", "_")),tree_depth=1)
+                                    .set_destination("boost-{}".format(boost_version))))))
 
 if config['architecture'] == 'x86_64':
   # This is a convient way to make each boost flavors we build have these dependencies:
@@ -106,8 +101,5 @@ else:
     b2tasks = [("StaticCRT32", ["link=static", "runtime-link=static", "--buildid=x86"] + with_for_all)]
 
 for (taskname, taskargs) in b2tasks:
-    if config['prefer_precompiled_dependencies']:
-        boost_stage.depend(boost_prepare)
-    else:
-        boost_stage.depend(b2.B2(taskname,boost_path).arguments(commonargs + taskargs)
-            .depend(boost_prepare))
+    boost_stage.depend(b2.B2(taskname,boost_path).arguments(commonargs + taskargs)
+        .depend(boost_prepare))

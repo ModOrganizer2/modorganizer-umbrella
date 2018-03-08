@@ -31,7 +31,7 @@ vs_editions = ["enterprise",
 
 
 # No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir
-def get_visual_studio_2017_or_more(vc_version):
+def get_visual_studio_2017(vc_version):
     try:
         if os.environ["VisualStudioVersion"] == vc_version:
             p = os.path.join(os.environ["VSINSTALLDIR"], "VC", "Auxiliary", "Build")
@@ -75,8 +75,7 @@ def vc_year(vc_version):
 
 
 def visual_studio(vc_version):
-    config["paths"]["visual_studio"] = get_visual_studio_2015_or_less(vc_version) if vc_version < "15.0" \
-        else get_visual_studio_2017_or_more(vc_version)
+    config["paths"]["visual_studio"] = get_visual_studio_2017(vc_version)
     if not config["paths"]["visual_studio"]:
         logging.error("Unable to find vcvarsall.bat, please make sure you have 'Common C++ tools' Installed."
           " If you have changed the default installation folder for VS please set the 'vc_CustomInstallPath' in the config.py file"

@@ -23,7 +23,7 @@ from glob import glob
 from config import config
 from unibuild.modules import build, github, msbuild
 from unibuild.project import Project
-from unibuild.utility.visualstudio import get_visual_studio_2017_or_more
+from unibuild.utility.visualstudio import get_visual_studio_2017
 
 path_install = config["paths"]["install"]
 python_version = config['python_version']

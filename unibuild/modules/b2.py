@@ -15,8 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import logging
 import os
 from subprocess import Popen
@@ -69,8 +67,7 @@ class B2(Builder):
     def name(self):
         if self._context is None:
             return "b2"
-        else:
-            return "b2 {}_{}".format(self._context.name, self.__name)
+        return "b2 {}_{}".format(self._context.name, self.__name)
 
     def applies(self, parameters):
         return True

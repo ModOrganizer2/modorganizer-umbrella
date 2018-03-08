@@ -15,13 +15,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-from urldownload import URLDownload
+from unibuild.modules.urldownload import URLDownload
 
 
 class Release(URLDownload):
     def __init__(self, project, path, tree_depth=0):
         super(Release, self) \
-            .__init__("http://downloads.sourceforge.net/project/{project}/{path}".format(project=project,
-                                                                                         path=path),
-                      tree_depth)
+            .__init__("http://downloads.sourceforge.net/project/{project}/{path}".format(project=project, path=path), tree_depth)

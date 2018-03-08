@@ -1,7 +1,6 @@
 .idea
 .vs
 build
-build/modorganizer_super/modorganizer
 downloads
 eggs/decorator
 eggs/jinja2

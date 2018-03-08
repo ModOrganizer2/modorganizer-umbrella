@@ -19,7 +19,7 @@
 import os
 
 from config import config
-from task import Task
+from unibuild.task import Task
 
 
 class Retrieval(Task):

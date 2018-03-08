@@ -38,7 +38,10 @@ class URLDownload(Retrieval):
         super(URLDownload, self).__init__()
         self.__url = url
         self.__tree_depth = tree_depth
-        self.__file_name = os.path.basename(urlparse(self.__url).path)
+        # strip trailing slashes from urlparse().path that are generated if they url ends with questionmark
+        # eg: github blobs (file.zip?taw=true) otherwise os.path.basename return no file extension
+        self.__file_name = os.path.basename(urlparse(self.__url).path.rstrip("/"))
+        self.__file_path = os.path.join(config['paths']['download'], self.__file_name)
 
     @property
     def name(self):
@@ -64,19 +67,19 @@ class URLDownload(Retrieval):
     def process(self, progress):
         logging.info("processing download")
         output_file_path = self._context['build_path']
-        archive_file_path = os.path.join(config['paths']['download'], self.__file_name)
+        #archive_file_path = os.path.join(config['paths']['download'], self.__file_name)
 
         if os.path.isfile(output_file_path):
-            logging.info("File already extracted: {0}".format(archive_file_path))
+            logging.info("File already extracted: %s", self.__file_path)
         else:
-            if os.path.isfile(archive_file_path):
-                logging.info("File already downloaded: {0}".format(archive_file_path))
+            if os.path.isfile(self.__file_path):
+                logging.info("File already downloaded: %s", self.__file_path)
             else:
-                logging.info("File not yet downloaded: {0}".format(archive_file_path))
-                self.download(archive_file_path, progress)
+                logging.info("File not yet downloaded: %s", self.__file_path)
+                self.download(self.__file_path, progress)
             progress.finish()
 
-        if not self.extract(archive_file_path, output_file_path, progress):
+        if not self.extract(self.__file_path, output_file_path, progress):
             return False
         progress.finish()
 
@@ -110,31 +113,43 @@ class URLDownload(Retrieval):
         def progress_func(pos, size):
             progress.value = int(pos * 100 / size)
 
-        logging.info("Extracting {0}".format(self.__url))
-
-        progress.value = 0
-        progress.job = "Extracting"
-        output_file_path = u"\\\\?\\" + os.path.abspath(output_file_path)
-
         try:
             os.makedirs(output_file_path)
         except Exception:
-            # doesn't matter if the directory already exists.
-            pass
+            # it does matter if the directory already exists otherwise downloads with tree_depth will fail if the are
+            # extracted a second time on a dirty build environment
+            sub_dirs = os.listdir(output_file_path)
+            if not len(sub_dirs) == 0:
+                logging.info("Cleaning {}".format(output_file_path))
+                for ls in sub_dirs:
+                    try:
+                        shutil.rmtree(os.path.join(output_file_path, ls))
+                    except Exception:
+                        os.remove(os.path.join(output_file_path, ls))
+
+        logging.info("Extracting {}".format(self.__file_path))
+        output_file_path = u"\\\\?\\" + os.path.abspath(output_file_path)
+
+        def extractProgress():
+            progress.value = 0
+            progress.job = "Extracting"
 
         with on_failure(lambda: shutil.rmtree(output_file_path)):
             filename, extension = os.path.splitext(self.__file_name)
             if extension == ".gz" or extension == ".tgz":
+                extractProgress()
                 archive_file = ProgressFile(archive_file_path, progress_func)
                 with tarfile.open(fileobj=archive_file, mode='r:gz') as arch:
                     arch.extractall(output_file_path)
                 archive_file.close()
             elif extension == ".bz2":
+                extractProgress()
                 archive_file = ProgressFile(archive_file_path, progress_func)
                 with tarfile.open(fileobj=archive_file, mode='r:bz2') as arch:
                     arch.extractall(output_file_path)
                 archive_file.close()
             elif extension == ".zip":
+                extractProgress()
                 archive_file = ProgressFile(archive_file_path, progress_func)
                 with zipfile.ZipFile(archive_file) as arch:
                     arch.extractall(output_file_path)
@@ -150,7 +165,7 @@ class URLDownload(Retrieval):
                 # TODO maybe add more stuff here
                 return True
             else:
-                logging.error("unsupported file extension {0}".format(extension))
+                logging.error("unsupported file extension %s", extension)
                 return False
 
             for i in range(self.__tree_depth):

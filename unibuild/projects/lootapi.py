@@ -1,4 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
+# Copyright (C) 2016 - 2018 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -14,25 +15,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-import glob
-import os.path
-import shutil
+import os
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build, github, Patch
+from unibuild.modules import github, Patch
 
+loot_version = config['loot_version']
+loot_commit = config['loot_commit']
 
-# TODO: transifex
-version = "v2.1.0"
+def bitnessLoot():
+    return "64" if config['architecture'] == "x86_64" else "32"
 
-def transaltions_install(context):
-    for file in glob.iglob(os.path.join(config["paths"]["build"], "translations-{}".format(version), "*.qm")):
-        if os.path.isfile(file):
-            shutil.copy2(file, os.path.join(config["paths"]["install"], "bin", "translations"))
-    return True
-
-Project("translations") \
-    .depend(build.Execute(transaltions_install)
-        .depend(github.Release("LePresidente", "modorganizer", version, "translations", extension="7z", tree_depth=1)
-                .set_destination("translations-{}".format(version))))
+# TODO modorganizer-lootcli needs an overhaul as the api has changed alot
+Project("lootapi") \
+    .depend(Patch.Copy("loot_api.dll", os.path.join(config["paths"]["install"], "bin", "loot"))
+            .depend(github.Release("loot", "loot-api", loot_version,
+                               "loot_api-{}-0-{}_update-deps-win{}".format(loot_version, loot_commit, bitnessLoot()), "7z", tree_depth=1)
+                          .set_destination("lootapi-{}-{}".format(loot_version, loot_commit))))

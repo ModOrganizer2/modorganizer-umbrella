@@ -15,14 +15,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import logging
 import os
 import subprocess
 
 from config import config
-from repository import Repository
+from unibuild.modules.repository import Repository
 from unibuild import Task
 
 def Popen(cmd, **kwargs):
@@ -32,7 +30,7 @@ def Popen(cmd, **kwargs):
     pc += '>'
     for arg in cmd:
         pc += ' ' + arg
-    print pc;
+    print pc
     return subprocess.Popen(cmd,**kwargs)
 
 class SuperRepository(Task):
@@ -79,9 +77,10 @@ class SuperRepository(Task):
 
 
 class Clone(Repository):
-    def __init__(self, url, branch, super_repository=None, update=True, commit=None,shallowclone=False):
+    def __init__(self, url, branch, super_repository=None, update=True, commit=None, shallowclone=False):
+        if config['shallowclone']:
+            self.shallowclone = True
         super(Clone, self).__init__(url, branch)
-
         self.__super_repository = super_repository
         self.__base_name = os.path.basename(self._url)
         self.__update = update
@@ -114,8 +113,7 @@ class Clone(Repository):
                 if self.__shallowclone:
                     proc = Popen([config['paths']['git'], "submodule", "add", "--depth", "1", "-b", self._branch,
                               "--force", "--name", self.__base_name,
-                              self._url, self.__base_name
-                              ],
+                              self._url, self.__base_name],
                              cwd=self.__super_repository.path,
                              env=config['__environment'])
                 else:

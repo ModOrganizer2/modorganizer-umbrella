@@ -15,26 +15,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import errno
 import logging
 import os
 import shutil
+from glob import glob
 from subprocess import Popen
 
-import python
-import qt5  # import to get at qt version information
-import sip
 from config import config
 from unibuild import Project
-from unibuild.modules import sourceforge, build, Patch
+from unibuild.modules import  build, sourceforge, Patch
+from unibuild.projects import python, sip, qt5
 from unibuild.utility import lazy
+from unibuild.utility.config_utility import qt_inst_path
 from unibuild.utility.lazy import doclambda
 
 icu_version = config['icu_version']
 pyqt_version = config['pyqt_version']
-
+qt_binary_install = config["paths"]["qt_binary_install"]
+__build_base_path = config["__build_base_path"]
 
 def make_sure_path_exists(path):
     try:
@@ -46,19 +45,22 @@ def make_sure_path_exists(path):
 
 def pyqt5_env():
     res = config['__environment'].copy()
-    res['path'] = ";".join([
-        os.path.join(qt5.qt_inst_path, "bin"),
-        os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),
-    ]) + ";" + res['path']
-    res['LIB'] = os.path.join(config["__build_base_path"], "install", "libs") + ";" + res['LIB']
+    res['path'] = ";".join([os.path.join(qt_binary_install, "bin"),
+        os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),]) + ";" + res['path']
+    res['LIB'] = os.path.join(__build_base_path, "install", "libs") + ";" + res['LIB']
     res['pythonhome'] = python.python['build_path']
     return res
 
 
 def copy_pyd(context):
-    make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
+    # fix fir pre compiled deps
+    for file in glob(os.path.join(config["paths"]["build"], "PyQt5-{}".format(pyqt_version), "*.bat")):
+        shutil.copy(file, os.path.join(python.python['build_path']))
+    # for f in glob(os.path.join(build_path, openssl_path, "bin", "ssleay32.dll")):
+    #      shutil.copy(f, os.path.join(dest_bin))
+    make_sure_path_exists(os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5"))
     srcdir = os.path.join(python.python['build_path'], "Lib", "site-packages", "PyQt5")
-    dstdir = os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5")
+    dstdir = os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5")
     shutil.copy(os.path.join(srcdir, "__init__.py"), dstdir)
     shutil.copy(os.path.join(srcdir, "QtCore.pyd"), dstdir)
     shutil.copy(os.path.join(srcdir, "QtGui.pyd"), dstdir)
@@ -80,11 +82,11 @@ class PyQt5Configure(build.Builder):
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
-                if os.path.exists(os.path.join(qt5.qt_inst_path, "include","QtNfc")):
-                    logging.error("Please rename {0} to {0}.disable, as it breaks PyQt5 from compiling".format(os.path.join(qt5.qt_inst_path, "include","QtNfc")))
+                if os.path.exists(os.path.join(qt_binary_install, "include","QtNfc")):
+                    logging.error("Please rename %s to QtNfc.disable, as it breaks PyQt5 from compiling",
+                                  os.path.join(qt_binary_install + "include" + "QtNfc"),)
                     return False
-                proc = Popen(
-                    [os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",
+                proc = Popen([os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",
                      "--confirm-license",
                      "-b", bp,
                      "-d", os.path.join(bp, "Lib", "site-packages"),
@@ -106,18 +108,12 @@ class PyQt5Configure(build.Builder):
 
 Project("PyQt5") \
     .depend(build.Execute(copy_pyd)
-            .depend(Patch.Copy([os.path.join(qt5.qt_inst_path, "bin", "Qt5Core.dll"),
-                                os.path.join(qt5.qt_inst_path, "bin", "Qt5Xml.dll")],
+            .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
+                                os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
                                doclambda(lambda: python.python['build_path'], "python path"))
                     .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
                             .depend(PyQt5Configure()
                                     .depend("sip")
                                     .depend("Qt5")
-                                    .depend(sourceforge.Release("pyqt",
-                                                                "PyQt5/PyQt-{0}/PyQt5_gpl-{0}.zip"
-                                                                .format(pyqt_version),
-                                                                tree_depth=1))
-                                    )
-                            )
-                    )
-            )
+                                    .depend(sourceforge.Release("pyqt", "PyQt5/PyQt-{0}/PyQt5_gpl-{0}.zip"
+                                                                .format(pyqt_version), tree_depth=1))))))

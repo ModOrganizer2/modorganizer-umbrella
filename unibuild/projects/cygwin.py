@@ -15,8 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import logging
 import os
 import time
@@ -65,7 +63,7 @@ def build_func(context):
     time.sleep(5.0)
 
     if wait_counter <= 0:
-        logging.error("Unpacking of Cygwin timed out");
+        logging.error("Unpacking of Cygwin timed out")
         return False  # We timed out and nothing was installed
 
     return True
@@ -73,5 +71,4 @@ def build_func(context):
 
 cygwin = Project("cygwin") \
     .depend(build.Execute(build_func)
-            .depend(urldownload.URLDownload(url))
-            )
+            .depend(urldownload.URLDownload(url)))

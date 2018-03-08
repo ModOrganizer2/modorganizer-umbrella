@@ -15,16 +15,30 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-import os
+import glob
+import os.path
+import shutil
 
 from config import config
 from unibuild import Project
-from unibuild.modules import cmake, urldownload
+from unibuild.modules import build, github, Patch
 
-nasm_version = config['nasm_Version']
 
-def bitness():
-    return "64" if config['architecture'] == "x86_64" else "32"
+# TODO: transifex
+version = "v2.1.0"
 
-Project("nasm").depend(urldownload.URLDownload("http://www.nasm.us/pub/nasm/releasebuilds/{}/win{}/nasm-{}-win{}.zip"
-                                               .format(nasm_version, bitness(), nasm_version, bitness()),tree_depth=1))
+def translations_install(context):
+    try:
+        os.mkdir(os.path.join(config["paths"]["install"], "bin", "translations"))
+    except:
+        pass
+
+    for file in glob.iglob(os.path.join(config["paths"]["build"], "translations-{}".format(version), "*.qm")):
+        if os.path.isfile(file):
+            shutil.copy2(file, os.path.join(config["paths"]["install"], "bin", "translations"))
+    return True
+
+Project("translations") \
+    .depend(build.Execute(translations_install)
+        .depend(github.Release("LePresidente", "modorganizer", version, "translations", extension="7z", tree_depth=1)
+                .set_destination("translations-{}".format(version))))

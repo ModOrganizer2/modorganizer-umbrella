@@ -15,10 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
-from manager import TaskManager, register_project
-from task import Task
+from unibuild.manager import TaskManager, register_project
+from unibuild.task import Task
 
 
 class Project(Task):
@@ -61,7 +59,7 @@ class Project(Task):
         return True
 
     def depend(self, task):
-        if type(task) == str:
+        if isinstance(task, str):
             task_obj = TaskManager().get_task(task)
             if task_obj is None:
                 raise KeyError("unknown project \"{}\"".format(task))

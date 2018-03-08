@@ -15,8 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import logging
 import os.path
 from subprocess import Popen
@@ -42,8 +40,7 @@ class CPP(Builder):
     def name(self):
         if self._context is None:
             return "custom build"
-        else:
-            return "custom build {0}".format(self._context.name)
+        return "custom build {0}".format(self._context.name)
 
     def fulfilled(self):
         return False
@@ -54,8 +51,7 @@ class CPP(Builder):
 
     def __gen_build_cmd(self, target, files):
         if self.__type == STATIC_LIB:
-            return "link.exe /lib /nologo /out:{0}.lib {1}".format(
-                target, " ".join([self.__to_obj(f) for f in files]))
+            return "link.exe /lib /nologo /out:{0}.lib {1}".format(target, " ".join([self.__to_obj(f) for f in files]))
         else:
             raise NotImplementedError("type {} not yet implemented", self.__type)
 
@@ -121,12 +117,11 @@ class Install(Builder):
     def name(self):
         if self._context is None:
             return "make install"
-        else:
-            return "make install {0}".format(self._context.name)
+        return "make install {0}".format(self._context.name)
 
     def process(self, progress):
         if "build_path" not in self._context:
-            logging.error("source path not known for {},"
+            logging.error("source path not known for {}"
                           " are you missing a matching retrieval script?".format(self.name()))
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
@@ -158,8 +153,7 @@ class Make(Builder):
     def name(self):
         if self._context is None:
             return "make"
-        else:
-            return "make {0}".format(self._context.name)
+        return "make {0}".format(self._context.name)
 
     def install(self):
         self.__install = True
@@ -217,8 +211,7 @@ class Execute(Builder):
     def name(self):
         if self._context is None:
             return "execute {}".format(self.__name or self.__function.func_name)
-        else:
-            return "execute {}_{}".format(self._context.name, self.__name or self.__function.func_name)
+        return "execute {}_{}".format(self._context.name, self.__name or self.__function.func_name)
 
     def process(self, progress):
         return self.__function(context=self._context)
@@ -238,8 +231,7 @@ class Run(Builder):
     def name(self):
         if self.__name:
             return "run {}".format(self.__name)
-        else:
-            return "run {}".format(self.__command.peek().split()[0]).replace("\\", "/")
+        return "run {}".format(self.__command.peek().split()[0]).replace("\\", "/")
 
     def process(self, progress):
         if "build_path" not in self._context:
@@ -286,8 +278,7 @@ class Run_With_Output(Builder):
     def name(self):
         if self.__name:
             return "run {}".format(self.__name)
-        else:
-            return "run {}".format(self.__command.peek().split()[0]).replace("\\", "/")
+        return "run {}".format(self.__command.peek().split()[0]).replace("\\", "/")
 
     def process(self, progress):
 
@@ -308,8 +299,6 @@ class Run_With_Output(Builder):
                 logging.error("failed to run %s (returncode %s), see %s and %s",
                               self.__command(), proc.returncode)
                 return False
-            else:
-                logging.error("failed to run {} (returncode {})".format(self.__command(), proc.returncode))
-                return False
-
+            logging.error("failed to run %s (returncode %s)", self.__command(), proc.returncode)
+            return False
         return True

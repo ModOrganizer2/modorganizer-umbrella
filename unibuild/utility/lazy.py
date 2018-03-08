@@ -52,8 +52,7 @@ class Evaluate(object):
     def __len__(self):
         if self.__data is not None:
             return len(self.__data)
-        else:
-            return 0
+        return 0
 
     def __iter__(self):
         self.__evaluate()
@@ -82,14 +81,12 @@ class Lazy(object):
     def type(self):
         if self.__value is None:
             return None
-        else:
-            return type(self.__value)
+        return type(self.__value)
 
     def peek(self):
         if self.__value is None:
             return self.__func.func_doc
-        else:
-            return self.__value
+        return self.__value
 
 
 def doclambda(func, doc):

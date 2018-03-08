@@ -28,6 +28,11 @@ from unibuild.modules import build, github, Patch
 version = "v2.1.0"
 
 def translations_install(context):
+    try:
+        os.mkdir(os.path.join(config["paths"]["install"], "bin", "translations"))
+    except:
+        pass
+
     for file in glob.iglob(os.path.join(config["paths"]["build"], "translations-{}".format(version), "*.qm")):
         if os.path.isfile(file):
             shutil.copy2(file, os.path.join(config["paths"]["install"], "bin", "translations"))

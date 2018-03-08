@@ -58,7 +58,7 @@ config = {
     # works for: 7z, CMake, Git, Perl, Python, Visual Studio
     'binary_qt': True, # use binary Qt5 from the offical website
     'shallowclone': True, # reduces size of repos drastically
-    'repo_update_frequency': 60 * 60 * 6,  # in seconds
+    'repo_update_frequency': 60 * 60 * 12,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
     'Main_Author': 'LePresidente',  # the current maintainer ( I am to lazy to change all references for pure testing)

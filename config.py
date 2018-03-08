@@ -66,7 +66,7 @@ config = {
 
     # manualy set all versions
     '7zip_version': '9.20',
-    'boost_version': '1.66.0',
+    'boost_version': '1_66_0',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
     'icu_version': '59',

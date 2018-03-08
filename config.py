@@ -97,7 +97,7 @@ config = {
     'Work_Author': 'Hugues92',  # yourself
 
     'loot_version': '0.12.4', # loot version
-    'loot_commit': 'gec946b', # loot commit
+    'loot_commit': 'gec946b5', # loot commit
     'qt_version': '5.10',  # currently evolving
     'qt_minor_version': '0',
     'pyqt_version': '5.10',  # pyqt version doesn't always match qt.  So it is now a seperate config

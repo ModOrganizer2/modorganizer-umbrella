@@ -30,11 +30,7 @@ from unibuild.projects import python
 sip_version = config['sip_version']
 python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".13")
 python_path = os.path.join(config['paths']['build'], "Python-{}".format(config['python_version'] + config['python_version_minor']))
-
-if config['use_sf_mirror']:
-    sip_url = urldownload.URLDownload("https://github.com/SuperSandro2000/modorganizer-deps/raw/master/SourceForge%20Mirror/sip-4.19.6.zip", 1)
-else:
-    sip_url = sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)
+sip_url = sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)
 
 def sip_environment():
     result = config['__environment'].copy()

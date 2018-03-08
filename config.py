@@ -52,7 +52,6 @@ config = {
     'rebuild': True,  # if set, does a clean build of the VS projects (for now only usvfs)
     'offline': False,  # if set, non-mandatory network requests won't be made eg: updating source repositories.
                       # The initial download of course can't be supressed.
-    'use_sf_mirror': True, # because sourceforge hates us.  Hosted on modorganizer-deps
 
     'prefer_binary_dependencies': True,  # Try to use official binary package/SDKs.  Won't work for all stuff
     # works for: 7z, CMake, Git, Perl, Python, Visual Studio
@@ -90,7 +89,7 @@ config = {
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code
-    'Installer': True, # Used to create installer at end of build, Forces everything to be built
+    'Installer': False, # Used to create installer at end of build, Forces everything to be built
     'show_only': False,
     'retrieve_only': False,                 # download everything as a reference (to keep track of local edits).  Do modorganizer_super first :)
     'tools_only': False,                    # Build dependencies except modorganizer targets

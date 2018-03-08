@@ -149,3 +149,19 @@ if config['Installer']:
         .depend(github.Source(config['Main_Author'], "modorganizer-WixInstaller", "master", super_repository=tl_repo)
             .set_destination("WixInstaller")) \
             .depend("modorganizer").depend("usvfs").depend("usvfs_32")
+
+
+def fix(context):
+    import shutil
+    try:
+        os.makedirs(os.path.join(config["paths"]["install"], "bin", "dlls", "imageformats"))
+    except:
+        pass
+
+    shutil.copy2(os.path.join(qt_inst_path(), "bin", "Qt5WinExtras.dll"), os.path.join(config["paths"]["install"], "bin", "dlls"))
+    shutil.copy2(os.path.join(config['paths']['build'], "modorganizer_super", "modorganizer", "qdds.dll"), os.path.join(config["paths"]["install"], "bin", "dlls", "imageformats"))
+    return True
+
+
+Project("fixes") \
+    .depend(build.Execute(fix))

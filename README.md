@@ -3,13 +3,50 @@ An umbrella- (super-) project for [modorganizer](https://github.com/LePresidente
 
 ## How to build ModOrganizer 2
 
-If you have questions or you need help visit us in our [Discord](https://discord.gg/cYwdcxj) or write in the [STEP forum thread](http://forum.step-project.com/topic/12538-wip-how-to-build-modorganizer-using-modorganizer-umbrella/).:
+Mod Organizer requires a Windows 64 bit Machine because it is a 64bit binary.
+
+If you have questions or you need help visit us in our [Discord](https://discord.gg/cYwdcxj) or write in the [STEP forum thread](http://forum.step-project.com/topic/12538-wip-how-to-build-modorganizer-using-modorganizer-umbrella/).: 
+
+### Clone Repository
+
+First you need to clone the umbrella repository. We recommend that you clone it into the root of your C:\ drive.
+Open there a console and copy in: ``git clone https://github.com/LePresidente/modorganizer-umbrella``
+  
+### Software Requirements
+
+Now you need to install all required software to build Mod Organizer.
+* If you want to install everything by hand you need all this stuff:
+  * 7zip (Latest 64Bit) Link: http://www.7-zip.org/a/7z1700-x64.exe
+  * CMake (latest 64bit)  Link: https://cmake.org/files/v3.10/cmake-3.10.2-win64-x64.msi
+  * Git Link: https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe
+  * Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi
+  * Qt 5.10.0 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+    #### Qt Packages required:
+    * msvc2017-64
+    * qtscript
+    * qtwebengine
+    
+  Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error.
+  
+  * Visual Studio Community 2017 Link: https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15
+    #### Visual Studio Packages required:
+      * .NET desktop development
+      * Desktop development for C++
+      
+      Additionally you need to activate under Individual components: 
+      
+      * "Windows 8.1 SDK (near the bottom)
+
+Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
+
+If you wish to rebuild only one target once everything is complete, you simply delete the relevant txt file in the progress folder, e.g C:\modorganizer-umbrella\progress\modorganizer_complete_cmake modorganizer.txt
+Then rerun the build script and it will rebuild the relevant project.
 
 ## Purpose
 This repository contains a meta build-system that is able to download and build MO subprojects and dependencies as necessary.
 It can be used to build the whole project to produce a build that should be equivalent to the release or to build subprojects (i.e. plugins) with the minimum of dependencies.
 
-This umbrella project can optionally produce ide projects for developers.
+This umbrella project can optionally produce IDE projects for developers.
 
 ## Notes
 * While mostly functional this project is work in progress and should only be used by those with the will to spend some time.
@@ -55,7 +92,10 @@ optional arguments:
   -p directory, --progressdir directory
                         sets progress directory. eg: -p progress
   -i directory, --installdir directory
-                        set install directory. eg: .i directory
+                        set install directory. eg: -i directory
 ```
 I'd suggest to use a destination folder that isn't too deep, some dependencies don't handle long paths well.
-If the make target is left empty, everything is built.
+If the make target is left empty, everything is built. A incomplete lists of targets can be found [here](targets.md).
+
+Here are the dependency graphs that currently unimake takes care of: https://imgur.com/TT7TFGg.png
+

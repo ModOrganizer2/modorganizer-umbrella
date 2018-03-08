@@ -15,9 +15,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-from unibuild import Project
+from unibuild import copyright, Project
 from unibuild.modules import github, cmake, Patch, git, hg, msbuild, build, dummy, urldownload
-from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc, nasm, openssl, googletest, lz4, WixToolkit
+from unibuild.projects import sevenzip, qt5, boost, zlib, python, sip, pyqt5, ncc, nasm, openssl, googletest, lz4, WixToolkit,  transaltions
 from unibuild.utility import lazy, FormatDict
 from config import config
 from functools import partial
@@ -95,13 +95,13 @@ usvfs.depend(usvfs_build)
 
 for author, git_path, path, branch, dependencies, Build in [(config['Main_Author'], "modorganizer-game_features", "game_features", "master", [], False),
     (config['Main_Author'], "modorganizer-archive", "archive", "API_9.20", ["7zip", "Qt5", "boost"], True),
-    (config['Main_Author'], "modorganizer-uibase", "uibase", "QT5.7", ["Qt5", "boost"], True),
+    (config['Main_Author'], "modorganizer-uibase", "uibase", "master", ["Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-lootcli", "lootcli", "master", ["LootApi", "boost"], True),
     (config['Main_Author'], "modorganizer-esptk", "esptk", "master", ["boost"], True),
     (config['Main_Author'], "modorganizer-bsatk", "bsatk", "master", ["zlib", "boost"], True),
     (config['Main_Author'], "modorganizer-nxmhandler", "nxmhandler", "master", ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-helper", "helper", "master", ["Qt5","boost"], True),
-    (config['Main_Author'], "modorganizer-game_gamebryo", "game_gamebryo", "new_vfs_library",
+    (config['Main_Author'], "modorganizer-game_gamebryo", "game_gamebryo", "master",
      ["Qt5", "modorganizer-uibase",
       "modorganizer-game_features", "lz4"], True),
     (config['Main_Author'], "modorganizer-game_oblivion", "game_oblivion", "master", ["Qt5", "modorganizer-uibase",
@@ -124,6 +124,10 @@ for author, git_path, path, branch, dependencies, Build in [(config['Main_Author
                                                                                         "modorganizer-game_gamebryo",
                                                                                         "modorganizer-game_features"],
      True),
+    (config['Main_Author'], "modorganizer-game_morrowind", "game_morrowind", "master", ["Qt5", "modorganizer-uibase",
+                                                                                         "modorganizer-game_gamebryo",
+                                                                                         "modorganizer-game_features"],
+     True),
     (config['Main_Author'], "modorganizer-game_skyrim", "game_skyrim", "master", ["Qt5", "modorganizer-uibase",
                                                                                   "modorganizer-game_gamebryo",
                                                                                   "modorganizer-game_features"], True),
@@ -133,14 +137,14 @@ for author, git_path, path, branch, dependencies, Build in [(config['Main_Author
     (config['Main_Author'], "modorganizer-tool_inieditor", "tool_inieditor", "master", ["Qt5", "modorganizer-uibase"],
      True),
     (config['Main_Author'], "modorganizer-tool_inibakery", "tool_inibakery", "master", ["modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", "QT5.7", ["PyQt5"], True),
+    (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", "master", ["PyQt5"], True),
     (config['Main_Author'], "modorganizer-preview_base", "preview_base", "master", ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", "master", ["Qt5", "modorganizer-uibase"],
      True),
     (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", "QT5.7", ["Qt5", "modorganizer-uibase"],
+    (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", "master", ["Qt5", "modorganizer-uibase"],
      True),
-    (config['Main_Author'], "modorganizer-installer_manual", "installer_manual", "QT5.7", ["Qt5", "modorganizer-uibase"],
+    (config['Main_Author'], "modorganizer-installer_manual", "installer_manual", "master", ["Qt5", "modorganizer-uibase"],
     True),
     (config['Main_Author'], "modorganizer-installer_bundle", "installer_bundle", "master",
      ["Qt5", "modorganizer-uibase"], True),
@@ -156,7 +160,7 @@ for author, git_path, path, branch, dependencies, Build in [(config['Main_Author
      ["Qt5", "boost", "Python", "modorganizer-uibase",
       "sip"], True),
     (config['Main_Author'], "githubpp", "githubpp", "master", ["Qt5"], True),
-    (config['Main_Author'], "modorganizer", "modorganizer", "new_vfs_library", ["Qt5", "boost", "usvfs_32",
+    (config['Main_Author'], "modorganizer", "modorganizer", "master", ["Qt5", "boost", "usvfs_32",
                                                                       "modorganizer-uibase", "modorganizer-archive",
                                                                       "modorganizer-bsatk", "modorganizer-esptk",
                                                                       "modorganizer-game_features",

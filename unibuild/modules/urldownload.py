@@ -15,8 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-
-
 import logging
 import os
 import shutil
@@ -142,12 +140,14 @@ class URLDownload(Retrieval):
                     arch.extractall(output_file_path)
                 archive_file.close()
             elif extension == ".7z":
-                proc = subprocess.Popen(
-                    [config['paths']['7z'], "x", archive_file_path, "-o{}".format(output_file_path)])
+                proc = subprocess.Popen([config['paths']['7z'], "x", archive_file_path, "-o{}".format(output_file_path)])
                 if proc.wait() != 0:
                     return False
             elif extension in [".exe", ".msi"]:
                 # installers need to be handled by the caller
+                return True
+            elif extension in [".md", ".txt"]:
+                # TODO maybe add more stuff here
                 return True
             else:
                 logging.error("unsupported file extension {0}".format(extension))

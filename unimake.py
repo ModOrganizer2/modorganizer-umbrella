@@ -294,7 +294,7 @@ def init_config(args):
         config['__environment']['PYTHON'] = sys.executable
 
 def dump_config():
-    logging.debug("config['__environment']=%s", config['__environment'])
+    #logging.debug("config['__environment']=%s", config['__environment'])
     logging.debug("  Config: config['__build_base_path']=%s", config['__build_base_path'])
     #logging.debug(" Config: config['paths']['graphviz']=%s", config['paths']['graphviz'])
     logging.debug("  Config: config['paths']['cmake']=%s", config['paths']['cmake'])

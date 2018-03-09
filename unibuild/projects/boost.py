@@ -23,6 +23,7 @@ from unibuild import Project
 from unibuild.modules import b2, build, Patch, sourceforge
 from unibuild.projects import python
 
+# TODO handle variants
 boost_path = "{}/boost_{}".format(config["paths"]["build"], config["boost_version"])
 boost_version = config['boost_version']
 python_version = config['python_version']

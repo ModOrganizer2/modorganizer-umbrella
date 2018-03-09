@@ -29,3 +29,4 @@ install
 *.pyproj
 graph.png
 Thumbs.db
+graph.dot

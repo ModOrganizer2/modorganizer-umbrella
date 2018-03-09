@@ -20,7 +20,7 @@ import patch
 
 from config import config
 from unibuild import Project
-from unibuild.modules import b2, build, Patch, sourceforge
+from unibuild.modules import b2, build, Patch, urldownload
 from unibuild.projects import python
 
 # TODO handle variants
@@ -64,9 +64,12 @@ boost_prepare = Project("boost_prepare") \
                                     os.path.join(python.python['build_path']).replace("\\", '/'),
                                     "64" if config['architecture'] == "x86_64" else "32")) \
             .depend(build.Execute(patchboost)
-                .depend(sourceforge.Release("boost", "boost/{0}/boost_{1}.tar.bz2"
-                                    .format(boost_version, boost_version.replace(".", "_")),tree_depth=1)
+                .depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
+                                                .format(boost_version,boost_version.replace(".","_"))
+                                                , tree_depth=1)
                                     .set_destination("boost_{}".format(boost_version))))))
+
+#https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.zip
 
 if config['architecture'] == 'x86_64':
   # This is a convient way to make each boost flavors we build have these dependencies:

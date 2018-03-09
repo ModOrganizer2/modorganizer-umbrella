@@ -54,10 +54,10 @@ def draw_graph(graph, filename):
             graph_file_name = os.path.join(os.getcwd(), "graph.dot")
             write_dot(graph, graph_file_name)
             call([config['paths']['graphviz'],
-                    "-Tpng", "-Edir=back", "-Gsplines=ortho", "-Grankdir=BT", "-Gconcentrate=true", "-Nshape=box",
+                    "-Tpdf", "-Edir=back", "-Gsplines=ortho", "-Grankdir=BT", "-Gconcentrate=true", "-Nshape=box",
                     "-Gdpi=192",
                     graph_file_name,
-                    "-o", "{}.png".format(filename)])
+                    "-o", "{}.pdf".format(filename)])
         else:
             print("graphviz path not set")
     except KeyError:

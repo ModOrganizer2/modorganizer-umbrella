@@ -54,7 +54,7 @@ def upgrade_args():
         return [os.path.join(devenv_path, "devenv.exe"),
                 "PCBuild/pcbuild.sln",
                 "/upgrade"]
-    return [os.path.join(get_visual_studio_2017_or_more('15.0'), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
+    return [os.path.join(get_visual_studio_2017('15.0'), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
             "PCBuild/pcbuild.sln", "/upgrade"]
 
 def install(context):

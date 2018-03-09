@@ -164,4 +164,5 @@ def fix(context):
 
 
 Project("fixes") \
-    .depend(build.Execute(fix))
+    .depend(build.Execute(fix)
+        .depend("modorganizer"))

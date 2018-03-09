@@ -23,8 +23,7 @@ from unibuild import Project
 from unibuild.modules import b2, build, Patch, sourceforge
 from unibuild.projects import python
 
-# TODO handle variants
-boost_path = "{}/boost-{}".format(config["paths"]["build"], config["boost_version"])
+boost_path = "{}/boost_{}".format(config["paths"]["build"], config["boost_version"])
 boost_version = config['boost_version']
 python_version = config['python_version']
 vc_version = config['vc_version_for_boost']
@@ -66,7 +65,7 @@ boost_prepare = Project("boost_prepare") \
             .depend(build.Execute(patchboost)
                 .depend(sourceforge.Release("boost", "boost/{0}/boost_{1}.tar.bz2"
                                     .format(boost_version, boost_version.replace(".", "_")),tree_depth=1)
-                                    .set_destination("boost-{}".format(boost_version))))))
+                                    .set_destination("boost_{}".format(boost_version))))))
 
 if config['architecture'] == 'x86_64':
   # This is a convient way to make each boost flavors we build have these dependencies:

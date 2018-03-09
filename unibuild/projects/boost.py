@@ -64,7 +64,7 @@ boost_prepare = Project("boost_prepare") \
                                     "64" if config['architecture'] == "x86_64" else "32")) \
             .depend(build.Execute(patchboost)
                 .depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
-                                                .format(boost_version,boost_version.replace(".","_"))
+                                                .format(boost_version,boost_version)
                                                 , tree_depth=1)
                                     .set_destination("boost_{}".format(boost_version))))))
 

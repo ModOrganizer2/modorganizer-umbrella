@@ -60,7 +60,7 @@ config = {
     'repo_update_frequency': 60 * 60 * 12,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
-    'Main_Author': 'LePresidente',  # the current maintainer
+    'Main_Author': 'Modorganizer2',  # the current maintainer
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 

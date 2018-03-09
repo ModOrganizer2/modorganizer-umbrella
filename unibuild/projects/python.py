@@ -78,5 +78,5 @@ python = Project("Python") \
             .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
                                     project_PlatformToolset=config['vc_platformtoolset'])
                     .depend(build.Run(upgrade_args, name="upgrade python project")
-                            .depend(github.Source("LePresidente", "cpython-1", config.get('python_version', "2.7"), shallowclone=True) \
+                            .depend(github.Source("Modorganizer2", "cpython-1", config.get('python_version', "2.7"), shallowclone=True) \
                                     .set_destination("python-{}".format(python_version + python_version_minor))))))

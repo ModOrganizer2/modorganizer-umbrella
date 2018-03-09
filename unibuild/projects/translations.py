@@ -40,5 +40,5 @@ def translations_install(context):
 
 Project("translations") \
     .depend(build.Execute(translations_install)
-        .depend(github.Release("LePresidente", "modorganizer", version, "translations", extension="7z", tree_depth=1)
+        .depend(github.Release("Modorganizer2", "modorganizer", version, "translations", extension="7z", tree_depth=1)
                 .set_destination("translations-{}".format(version))))

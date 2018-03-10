@@ -91,7 +91,7 @@ class GenerateTranslations(build.Builder):
                         logging.error("failed to run pyqt configure.py (returncode %s), see %s and %s",
                                       proc.returncode, soutpath, serrpath)
                         return False
-                    return True
+                return True
 
 
 init_transifex_repo = build.Run("{} init --token={} --force --no-interactive"

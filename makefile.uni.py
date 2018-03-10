@@ -123,7 +123,7 @@ for author, git_path, path, branch, dependencies, Build in [
 
 
 def python_zip_collect(context):
-    import libpatterns
+    from unibuild.libpatterns import patterns
     import glob
     from zipfile import ZipFile
 
@@ -131,7 +131,7 @@ def python_zip_collect(context):
     bp = python.python['build_path']
 
     with ZipFile(os.path.join(ip, "python27.zip"), "w") as pyzip:
-        for pattern in libpatterns.patterns:
+        for pattern in patterns:
             for f in glob.iglob(os.path.join(bp, pattern)):
                 pyzip.write(f, f[len(bp):])
 
@@ -164,5 +164,4 @@ def fix(context):
 
 
 Project("fixes") \
-    .depend(build.Execute(fix)
-        .depend("modorganizer"))
+    .depend(build.Execute(fix).depend("modorganizer"))

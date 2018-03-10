@@ -100,7 +100,7 @@ for author, git_path, path, branch, dependencies, Build in [
                                                                        "modorganizer-esptk",
                                                                        "modorganizer-game_features",
                                                                        "usvfs", "githubpp",
-                                                                       "ncc", "openssl"], True),]:
+                                                                       "ncc", "openssl","translations"], True),]:
 
     cmake_param = cmake_parameters() + ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]
     # build_step = cmake.CMake().arguments(cmake_param).install()

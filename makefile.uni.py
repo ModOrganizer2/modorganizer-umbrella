@@ -41,7 +41,7 @@ def gen_userfile_content(project):
 
 for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_features", "game_features", "master", [], False),
-    (config['Main_Author'], "modorganizer-archive", "archive", "API_9.20", ["7zip", "Qt5",
+    (config['Main_Author'], "modorganizer-archive", "archive", "master", ["7zip", "Qt5",
                                                                             "boost"], True),
     (config['Main_Author'], "modorganizer-uibase", "uibase", "master", ["Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-lootcli", "lootcli", "master", ["lootapi",
@@ -123,7 +123,7 @@ for author, git_path, path, branch, dependencies, Build in [
 
 
 def python_zip_collect(context):
-    import libpatterns
+    from unibuild.libpatterns import patterns
     import glob
     from zipfile import ZipFile
 
@@ -131,7 +131,7 @@ def python_zip_collect(context):
     bp = python.python['build_path']
 
     with ZipFile(os.path.join(ip, "python27.zip"), "w") as pyzip:
-        for pattern in libpatterns.patterns:
+        for pattern in patterns:
             for f in glob.iglob(os.path.join(bp, pattern)):
                 pyzip.write(f, f[len(bp):])
 

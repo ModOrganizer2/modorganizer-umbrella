@@ -64,7 +64,7 @@ boost_prepare = Project("boost_prepare") \
                                     "64" if config['architecture'] == "x86_64" else "32")) \
             .depend(build.Execute(patchboost)
                 .depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
-                                                .format(boost_version,boost_version)
+                                                .format(boost_version,boost_version.replace(".", "_"))
                                                 , tree_depth=1)
                                     .set_destination("boost_{}".format(boost_version))))))
 
@@ -81,7 +81,7 @@ if config['architecture'] == 'x86_64':
                                       .format(boost_path,
                                               vc_version.replace(".", ""),
                                               "x64" if config['architecture'] == "x86_64" else "x86",
-                                              "_".join(boost_version.split("_")[:-1]))),
+                                              "_".join(boost_version.split(".")[:-1]))),
                          os.path.join(config["paths"]["install"], "bin"))
     boost.depend(boost_stage)
 else:

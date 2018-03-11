@@ -71,4 +71,4 @@ usvfs \
             .depend(build.Execute(replace_paths)
                     .depend("boost" + suffix)
                             .depend("GTest" + suffix)
-                                    .depend(github.Source(config['Main_Author'], "usvfs", "Develop"))))
+                                    .depend(github.Source(config['Main_Author'], "usvfs", config['Main_Branch']))))

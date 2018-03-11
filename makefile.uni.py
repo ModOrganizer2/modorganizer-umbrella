@@ -21,7 +21,7 @@ from config import config
 from string import Formatter
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github
-from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, WixToolkit, zlib, translations
+from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, WixToolkit, zlib
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
 
@@ -38,70 +38,69 @@ def gen_userfile_content(project):
         }))
         return res
 
-
+config['Main_Branch']
 for author, git_path, path, branch, dependencies, Build in [
-    (config['Main_Author'], "modorganizer-game_features", "game_features", "master", [], False),
-    (config['Main_Author'], "modorganizer-archive", "archive", "master", ["7zip", "Qt5",
+    (config['Main_Author'], "modorganizer-game_features", "game_features", config['Main_Branch'], [], False),
+    (config['Main_Author'], "modorganizer-archive", "archive", config['Main_Branch'], ["7zip", "Qt5",
                                                                             "boost"], True),
-    (config['Main_Author'], "modorganizer-uibase", "uibase", "master", ["Qt5", "boost"], True),
-    (config['Main_Author'], "modorganizer-lootcli", "lootcli", "master", ["lootapi",
+    (config['Main_Author'], "modorganizer-uibase", "uibase", config['Main_Branch'], ["Qt5", "boost"], True),
+    (config['Main_Author'], "modorganizer-lootcli", "lootcli", config['Main_Branch'], ["lootapi",
                                                                           "boost"], True),
-    (config['Main_Author'], "modorganizer-esptk", "esptk", "master", ["boost"], True),
-    (config['Main_Author'], "modorganizer-bsatk", "bsatk", "master", ["zlib", "boost"], True),
-    (config['Main_Author'], "modorganizer-nxmhandler", "nxmhandler", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-helper", "helper", "master", ["Qt5","boost"], True),
-    (config['Main_Author'], "modorganizer-game_gamebryo", "game_gamebryo", "master", ["Qt5", "modorganizer-uibase",
+    (config['Main_Author'], "modorganizer-esptk", "esptk", config['Main_Branch'], ["boost"], True),
+    (config['Main_Author'], "modorganizer-bsatk", "bsatk", config['Main_Branch'], ["zlib", "boost"], True),
+    (config['Main_Author'], "modorganizer-nxmhandler", "nxmhandler", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-helper", "helper", config['Main_Branch'], ["Qt5","boost"], True),
+    (config['Main_Author'], "modorganizer-game_gamebryo", "game_gamebryo", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                       "modorganizer-game_features",
                                                                                       "lz4"], True),
-    (config['Main_Author'], "modorganizer-game_oblivion", "game_oblivion", "master", ["Qt5", "modorganizer-uibase",
+    (config['Main_Author'], "modorganizer-game_oblivion", "game_oblivion", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                       "modorganizer-game_gamebryo",
                                                                                       "modorganizer-game_features"], True),
-    (config['Main_Author'], "modorganizer-game_fallout3", "game_fallout3", "master", ["Qt5", "modorganizer-uibase",
+    (config['Main_Author'], "modorganizer-game_fallout3", "game_fallout3", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                       "modorganizer-game_gamebryo",
                                                                                       "modorganizer-game_features"], True),
-    (config['Main_Author'], "modorganizer-game_fallout4", "game_fallout4", "master", ["Qt5", "modorganizer-uibase",
+    (config['Main_Author'], "modorganizer-game_fallout4", "game_fallout4", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                       "modorganizer-game_gamebryo",
                                                                                       "modorganizer-game_features"], True),
-    (config['Main_Author'], "modorganizer-game_fallout4vr", "game_fallout4vr", "master", ["Qt5", "modorganizer-uibase",
+    (config['Main_Author'], "modorganizer-game_fallout4vr", "game_fallout4vr", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                           "modorganizer-game_gamebryo",
                                                                                           "modorganizer-game_features"], True),
-    (config['Main_Author'], "modorganizer-game_falloutnv", "game_falloutnv", "master", ["Qt5", "modorganizer-uibase",
+    (config['Main_Author'], "modorganizer-game_falloutnv", "game_falloutnv", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                         "modorganizer-game_gamebryo",
                                                                                         "modorganizer-game_features"], True),
-    (config['Main_Author'], "modorganizer-game_morrowind", "game_morrowind", "master", ["Qt5", "modorganizer-uibase",
+    (config['Main_Author'], "modorganizer-game_morrowind", "game_morrowind", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                         "modorganizer-game_gamebryo",
                                                                                         "modorganizer-game_features"], True),
-    (config['Main_Author'], "modorganizer-game_skyrim", "game_skyrim", "master", ["Qt5", "modorganizer-uibase",
+    (config['Main_Author'], "modorganizer-game_skyrim", "game_skyrim", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                   "modorganizer-game_gamebryo",
                                                                                   "modorganizer-game_features"], True),
-    (config['Main_Author'], "modorganizer-game_skyrimse", "game_skyrimse", "master", ["Qt5", "modorganizer-uibase",
+    (config['Main_Author'], "modorganizer-game_skyrimse", "game_skyrimse", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                       "modorganizer-game_gamebryo",
                                                                                       "modorganizer-game_features"], True),
-    (config['Main_Author'], "modorganizer-tool_inieditor", "tool_inieditor", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-tool_inibakery", "tool_inibakery", "master", ["modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", "master", ["PyQt5"], True),
-    (config['Main_Author'], "modorganizer-preview_base", "preview_base", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-installer_manual", "installer_manual", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-installer_bundle", "installer_bundle", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-installer_quick", "installer_quick", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-installer_fomod", "installer_fomod", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-installer_ncc", "installer_ncc", "master", ["Qt5", "modorganizer-uibase", "ncc"], True),
-    (config['Main_Author'], "modorganizer-bsa_extractor", "bsa_extractor", "master", ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-plugin_python", "plugin_python", "master", ["Qt5", "boost", "Python",
+    (config['Main_Author'], "modorganizer-tool_inieditor", "tool_inieditor", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-tool_inibakery", "tool_inibakery", config['Main_Branch'], ["modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", config['Main_Branch'], ["PyQt5"], True),
+    (config['Main_Author'], "modorganizer-preview_base", "preview_base", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-installer_manual", "installer_manual", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-installer_bundle", "installer_bundle", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-installer_quick", "installer_quick", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-installer_fomod", "installer_fomod", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-installer_ncc", "installer_ncc", config['Main_Branch'], ["Qt5", "modorganizer-uibase", "ncc"], True),
+    (config['Main_Author'], "modorganizer-bsa_extractor", "bsa_extractor", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-plugin_python", "plugin_python", config['Main_Branch'], ["Qt5", "boost", "Python",
                                                                                       "modorganizer-uibase", "sip"], True),
-    (config['Main_Author'], "githubpp", "githubpp", "master", ["Qt5"], True),
-    (config['Main_Author'], "modorganizer", "modorganizer", "master", ["Qt5", "boost", "usvfs_32",
+    (config['Main_Author'], "githubpp", "githubpp", config['Main_Branch'], ["Qt5"], True),
+    (config['Main_Author'], "modorganizer", "modorganizer", config['Main_Branch'], ["Qt5", "boost", "usvfs_32",
                                                                        "modorganizer-uibase",
                                                                        "modorganizer-archive",
                                                                        "modorganizer-bsatk",
                                                                        "modorganizer-esptk",
                                                                        "modorganizer-game_features",
                                                                        "usvfs", "githubpp",
-                                                                       "ncc", "openssl","translations"], True),]:
-
+                                                                       "ncc", "openssl"], True),]:
     cmake_param = cmake_parameters() + ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]
     # build_step = cmake.CMake().arguments(cmake_param).install()
 
@@ -146,10 +145,13 @@ if config['Installer']:
     # build_installer = cmake.CMake().arguments(cmake_parameters
     # +["-DCMAKE_INSTALL_PREFIX:PATH={}/installer".format(config["__build_base_path"])]).install()
     wixinstaller = Project("WixInstaller") \
-        .depend(github.Source(config['Main_Author'], "modorganizer-WixInstaller", "master", super_repository=tl_repo)
+        .depend(github.Source(config['Main_Author'], "modorganizer-WixInstaller", config['Main_Branch'], super_repository=tl_repo)
             .set_destination("WixInstaller")) \
             .depend("modorganizer").depend("usvfs").depend("usvfs_32")
 
+if config['transifex_Enable']:
+    from unibuild.projects import translations
+    translationsBuild = Project("translationsBuild").depend("translations")
 
 def fix(context):
     import shutil

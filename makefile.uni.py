@@ -150,6 +150,7 @@ if config['Installer']:
             .depend("modorganizer").depend("usvfs").depend("usvfs_32")
 
 if config['transifex_Enable']:
+    from unibuild.projects import translations
     translationsBuild = Project("translationsBuild").depend("translations")
 
 def fix(context):

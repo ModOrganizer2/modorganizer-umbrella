@@ -35,11 +35,16 @@ build_path = config["paths"]["build"]
 install_path = config["paths"]["install"]
 download_path = config["paths"]["download"]
 
+def isnotEmpty(s):
+    return bool(s and s.strip())
 
 def translations_stage(context):
             dest_transifex = os.path.join(build_path, "transifex-translations")
             dest_client = os.path.join(build_path, "transifex-client")
             dest_translations = os.path.join(install_path, "bin", "translations")
+            if not isnotEmpty(config['transifex_API']):
+                logging.error("The transifex API key is not set in config.py, Please set it")
+                return False
             if not os.path.exists(dest_transifex):
                 os.makedirs(dest_transifex)
             if not os.path.exists(dest_client):

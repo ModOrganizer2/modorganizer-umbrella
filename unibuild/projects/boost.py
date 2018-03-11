@@ -81,7 +81,7 @@ if config['architecture'] == 'x86_64':
                                       .format(boost_path,
                                               vc_version.replace(".", ""),
                                               "x64" if config['architecture'] == "x86_64" else "x86",
-                                              "_".join(boost_version.split("_")[:-1]))),
+                                              "_".join(boost_version.split(".")[:-1]))),
                          os.path.join(config["paths"]["install"], "bin"))
     boost.depend(boost_stage)
 else:

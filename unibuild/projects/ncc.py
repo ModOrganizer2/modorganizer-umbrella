@@ -68,5 +68,5 @@ Project("ncc") \
                                     project_platform="Any CPU")
                     .depend(build.Execute(prepare_nmm, name="append NexusClientCli project to NMM")
                             .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", "0.63.15", None, False))
-                                    .depend(github.Source(config['Main_Author'], "modorganizer-NCC", "master")
+                                    .depend(github.Source(config['Main_Author'], "modorganizer-NCC", "Develop")
                                                   .set_destination("NexusClientCli")))))

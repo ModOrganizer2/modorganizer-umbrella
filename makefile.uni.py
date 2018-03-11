@@ -21,7 +21,7 @@ from config import config
 from string import Formatter
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github
-from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, translations, python, pyqt5, qt5, WixToolkit, zlib
+from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, WixToolkit, zlib, translations
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
 
@@ -123,7 +123,7 @@ for author, git_path, path, branch, dependencies, Build in [
 
 
 def python_zip_collect(context):
-    import libpatterns
+    from unibuild.libpatterns import patterns
     import glob
     from zipfile import ZipFile
 
@@ -131,7 +131,7 @@ def python_zip_collect(context):
     bp = python.python['build_path']
 
     with ZipFile(os.path.join(ip, "python27.zip"), "w") as pyzip:
-        for pattern in libpatterns.patterns:
+        for pattern in patterns:
             for f in glob.iglob(os.path.join(bp, pattern)):
                 pyzip.write(f, f[len(bp):])
 

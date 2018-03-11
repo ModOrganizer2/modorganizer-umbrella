@@ -22,7 +22,6 @@ from unibuild import Project
 from unibuild.modules import urldownload, build, Patch
 
 # newer versions are beta as of now.  They have slightly (?) different api as well
-# Need to stay on 9.20 till Modorganizer-Archive is either redone or fixed
 sevenzip_version = config['7zip_version']
 build_path = os.path.join(config['paths']['build'], "7zip-{}".format(sevenzip_version))
 

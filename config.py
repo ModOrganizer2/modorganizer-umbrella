@@ -61,6 +61,7 @@ config = {
     'num_jobs': multiprocessing.cpu_count() + 1,
 
     'Main_Author': 'Modorganizer2',  # the current maintainer
+    'Main_Branch': "master",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 

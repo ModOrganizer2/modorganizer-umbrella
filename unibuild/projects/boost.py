@@ -23,7 +23,7 @@ from unibuild import Project
 from unibuild.modules import b2, build, Patch, urldownload
 from unibuild.projects import python
 
-boost_path = "{}/boost_{}".format(config["paths"]["build"], config["boost_version"])
+boost_path = "{}/boost_{}".format(config["paths"]["build"], config["boost_version"].replace(".", "_"))
 boost_version = config['boost_version']
 python_version = config['python_version']
 vc_version = config['vc_version_for_boost']
@@ -64,9 +64,9 @@ boost_prepare = Project("boost_prepare") \
                                     "64" if config['architecture'] == "x86_64" else "32")) \
             .depend(build.Execute(patchboost)
                 .depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
-                                                .format(boost_version,boost_version)
+                                                .format(boost_version,boost_version.replace(".", "_"))
                                                 , tree_depth=1)
-                                    .set_destination("boost_{}".format(boost_version))))))
+                                    .set_destination("boost_{}".format(boost_version.replace(".", "_")))))))
 
 #https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.zip
 

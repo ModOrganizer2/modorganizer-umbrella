@@ -84,7 +84,7 @@ class PyQt5Configure(build.Builder):
                 bp = python.python['build_path']
                 if os.path.exists(os.path.join(qt_binary_install, "include","QtNfc")):
                     logging.error("Please rename %s to QtNfc.disable, as it breaks PyQt5 from compiling",
-                                  os.path.join(qt_binary_install + "include" + "QtNfc"),)
+                                  os.path.join(qt_binary_install + "\include\QtNfc"),)
                     return False
                 proc = Popen([os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",
                      "--confirm-license",

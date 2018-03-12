@@ -60,7 +60,8 @@ config = {
     'repo_update_frequency': 60 * 60 * 12,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
-    'Main_Author': 'LePresidente',  # the current maintainer
+    'Main_Author': 'Modorganizer2',  # the current maintainer
+    'Main_Branch': "Develop",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
@@ -79,7 +80,7 @@ config = {
     'pyqt_version': '5.10.1',
     'python_version': '2.7',
     'python_version_minor': '.14',
-    'sip_version': '4.19.6',
+    'sip_version': '4.19.8',
     'qt_version': '5.10',
     'qt_version_minor': '1',
     'vc_platformtoolset': 'v141',
@@ -95,7 +96,13 @@ config = {
     'retrieve_only': False,                 # download everything as a reference (to keep track of local edits).  Do modorganizer_super first :)
     'tools_only': False,                    # Build dependencies except modorganizer targets
     'tools': {'make': "nmake"},
-    'architecture': 'x86_64'  # Don't change this as we spawn the usvfs x86 build later on.
+    'architecture': 'x86_64',  # Don't change this as we spawn the usvfs x86 build later on.
+
+    # Transifex Translation configuration
+    'transifex_Enable': False, # this should only be changed to true when doing a release
+    'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
+    'transifex-client_version': '0.13.1',
+    'transifex_minimum_percentage': '60'
 }
 config['paths'] = {
     'download': "{base_dir}\\downloads",

@@ -22,7 +22,6 @@ from unibuild import Project
 from unibuild.modules import urldownload, build, Patch
 
 # newer versions are beta as of now.  They have slightly (?) different api as well
-# Need to stay on 9.20 till Modorganizer-Archive is either redone or fixed
 sevenzip_version = config['7zip_version']
 build_path = os.path.join(config['paths']['build'], "7zip-{}".format(sevenzip_version))
 
@@ -45,7 +44,7 @@ Project("7zip") \
                       os.path.join(config["paths"]["install"], "bin", "dlls"))
            .depend(build.Run(r"nmake CPU={} NEW_COMPILER=1 MY_STATIC_LINK=1 NO_BUFFEROVERFLOWU=1".format("x86" if config['architecture'] == 'x86' else "AMD64"),
                              working_directory=os.path.join(build_path, "CPP", "7zip","Bundles", "Format7zF"))
-                .depend(Patch.Replace("CPP/Build.mak", "-WX", "")
-                    .depend(Patch.Replace("CPP/7zip/Bundles/Format7zF/Format7z.dsp", "-WX", "")
+#                .depend(Patch.Replace("CPP/Build.mak", "-WX", "")
+#                    .depend(Patch.Replace("CPP/7zip/Bundles/Format7zF/Format7z.dsp", "-WX", "")
                         .depend(urldownload.URLDownload("http://www.7-zip.org/a/7z{}-src.7z".format(sevenzip_version.replace(".", "")))
-                                            .set_destination("7zip-{}".format(sevenzip_version)))))))
+                                            .set_destination("7zip-{}".format(sevenzip_version)))))

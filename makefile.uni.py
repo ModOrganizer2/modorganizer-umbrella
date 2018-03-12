@@ -152,18 +152,3 @@ if config['Installer']:
 if config['transifex_Enable']:
     from unibuild.projects import translations
     translationsBuild = Project("translationsBuild").depend("translations")
-
-def fix(context):
-    import shutil
-    try:
-        os.makedirs(os.path.join(config["paths"]["install"], "bin", "dlls", "imageformats"))
-    except:
-        pass
-
-    shutil.copy2(os.path.join(qt_inst_path(), "bin", "Qt5WinExtras.dll"), os.path.join(config["paths"]["install"], "bin", "dlls"))
-    shutil.copy2(os.path.join(config['paths']['build'], "modorganizer_super", "modorganizer", "qdds.dll"), os.path.join(config["paths"]["install"], "bin", "dlls", "imageformats"))
-    return True
-
-
-Project("fixes") \
-    .depend(build.Execute(fix).depend("modorganizer"))

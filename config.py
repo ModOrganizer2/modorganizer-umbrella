@@ -82,7 +82,7 @@ config = {
     'python_version_minor': '.14',
     'sip_version': '4.19.8',
     'qt_version': '5.10',
-    'qt_version_minor': '1',
+    'qt_version_minor': '0',
     'vc_platformtoolset': 'v141',
     'vc_version': '15.0',
     'vc_version_for_boost': '14.1',

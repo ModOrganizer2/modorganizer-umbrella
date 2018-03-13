@@ -20,12 +20,13 @@ import os
 from subprocess import Popen
 
 from unibuild.modules.build import Builder
+from unibuild.utility.lazy import Lazy
 from config import config
 
 
 class MSBuild(Builder):
     def __init__(self, solution, project=None, working_directory=None, project_platform=None,
-                 project_PlatformToolset=None, verbosity=None):
+                 project_PlatformToolset=None, verbosity=None, environment=None):
         super(MSBuild, self).__init__()
         self.__solution = solution
         self.__project = project
@@ -33,6 +34,7 @@ class MSBuild(Builder):
         self.__project_platform = project_platform
         self.__project_platformtoolset = project_PlatformToolset
         self.__verbosity = verbosity
+        self.__environment = Lazy(environment)
 
     @property
     def name(self):
@@ -55,6 +57,10 @@ class MSBuild(Builder):
 
         verbosity = "minimal" if self.__verbosity is None else self.__verbosity
         lverbosity = "normal" if self.__verbosity is None else self.__verbosity
+        environment = dict(self.__environment()
+                           if self.__environment() is not None
+                           else config["__environment"])
+
         args = ["msbuild",
           self.__solution,
           "/maxcpucount",
@@ -80,9 +86,9 @@ class MSBuild(Builder):
         wdir = str(self.__working_directory or self._context["build_path"])
         print "{}> {}".format(wdir, ' '.join(args))
         proc = Popen(args,
+            env=environment,
             shell=True,
-            cwd=wdir,
-            env=config["__environment"])
+            cwd=wdir)
         proc.communicate()
         if proc.returncode != 0:
             logging.error("failed to generate makefile (returncode %s), see %s",

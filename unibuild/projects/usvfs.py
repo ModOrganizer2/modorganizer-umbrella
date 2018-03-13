@@ -22,6 +22,7 @@ import sys
 from config import config
 from unibuild import Project
 from unibuild.modules import build, cmake, dummy, msbuild, github
+from unibuild.utility import lazy
 
 build_path = config["paths"]["build"]
 suffix = "" if config['architecture'] == 'x86_64' else "_32"
@@ -34,6 +35,11 @@ gtest_folder = "googletest"
 
 
 usvfs = Project("usvfs")
+
+def usvfs_env():
+    res = config['__environment'].copy()
+    res['path'] = str(os.path.dirname(os.path.normpath(lazy.Evaluate(config['paths']['python'])))) + ";" + res['path']
+    return res
 
 for (project32, dependencies) in [("boost", ["boost_prepare"]),
       ("GTest", []),
@@ -67,8 +73,8 @@ def replace_paths(context):
 
 usvfs \
     .depend(msbuild.MSBuild("usvfs.sln", vs_target, os.path.join(build_path, "usvfs", "vsbuild"),
-                           "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"))
-            .depend(build.Execute(replace_paths)
+                           "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"), environment=usvfs_env())
+                .depend(build.Execute(replace_paths)
                     .depend("boost" + suffix)
                             .depend("GTest" + suffix)
                                     .depend(github.Source(config['Main_Author'], "usvfs", config['Main_Branch']))))

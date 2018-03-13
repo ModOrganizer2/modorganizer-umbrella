@@ -57,7 +57,7 @@ def bitness():
 
 
 def get_from_hklm(path, name, wow64=False):
-    import _winreg
+    from _winreg import QueryValueEx, OpenKey, HKEY_LOCAL_MACHINE, KEY_READ, KEY_WOW64_32KEY
     flags = KEY_READ
     if wow64:
         flags |= KEY_WOW64_32KEY

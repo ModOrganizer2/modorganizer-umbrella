@@ -38,7 +38,6 @@ def gen_userfile_content(project):
         }))
         return res
 
-config['Main_Branch']
 for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_features", "game_features", config['Main_Branch'], [], False),
     (config['Main_Author'], "modorganizer-archive", "archive", config['Main_Branch'], ["7zip", "Qt5",

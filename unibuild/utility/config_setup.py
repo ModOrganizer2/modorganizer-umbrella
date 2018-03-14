@@ -23,6 +23,7 @@ import sys
 from config import config
 from unibuild.utility.visualstudio import visual_studio, visual_studio_environment
 from unibuild.utility.qt import qt_install
+from unibuild.utility import lazy
 
 def init_config(args):
     # some tools gets confused onto what constitutes .  (OpenSSL and maybe CMake)
@@ -69,7 +70,7 @@ def dump_config():
     #logging.debug(" Config: config['paths']['ruby']=%s", config['paths']['ruby'])
     #logging.debug(" Config: config['paths']['svn']=%s", config['paths']['svn'])
     logging.debug("  Config: config['paths']['7z']=%s", config['paths']['7z'])
-    logging.debug("  Config: config['paths']['python']=%s", config['paths']['python'])
+    logging.debug("  Config: config['paths']['python']=%s", lazy.Evaluate(config['paths']['python']))
     logging.debug("  Config: config['paths']['visual_studio']=%s", config['paths']['visual_studio'])
     logging.debug("  Config: config['vc_version']=%s", config['vc_version'])
 

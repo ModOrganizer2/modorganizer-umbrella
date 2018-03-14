@@ -18,7 +18,7 @@
 import multiprocessing
 import os
 
-from unibuild.utility.config_utility import program_files_folders
+from unibuild.utility import config_utility
 from unibuild.utility.lazy import Lazy
 
 global missing_prerequisites
@@ -39,7 +39,7 @@ def path_or_default(filename, *default):
 def gen_search_folders(*subpath):
     return [
         os.path.join(search_folder, *subpath)
-        for search_folder in program_files_folders
+        for search_folder in config_utility.program_files_folders
     ]
 
 
@@ -117,8 +117,8 @@ config['paths'] = {
     #'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
     '7z': path_or_default("7z.exe", "7-Zip"),
     # we need a python that matches the build architecture
-    'python': Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
-                      "", config['architecture'] == "x86"), "python.exe")),
+    'python': Lazy(lambda: os.path.join(config_utility.get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
+                      ""), "python.exe")),
     'visual_studio_base': "",
     'qt_binary_install': "",
     'visual_studio': ""  # will be set in unimake.py after args are evaluated

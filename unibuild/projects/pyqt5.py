@@ -48,6 +48,7 @@ def pyqt5_env():
     res['path'] = ";".join([os.path.join(qt_binary_install, "bin"),
         os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),]) + ";" + res['path']
     res['LIB'] = os.path.join(__build_base_path, "install", "libs") + ";" + res['LIB']
+    res['CL'] = "/MP"
     res['pythonhome'] = python.python['build_path']
     return res
 

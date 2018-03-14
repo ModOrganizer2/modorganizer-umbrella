@@ -30,11 +30,17 @@ vs_target = "Clean;Build" if config['rebuild'] else "Build"
 
 
 # TODO change dynamicaly
-boost_folder = "boost_{}".format(config["boost_version"])
-gtest_folder = "googletest"
-
+boost_folder = os.path.join(build_path,"boost_{}".format(config["boost_version"]))
+gtest_folder = os.path.join(build_path,"googletest")
 
 usvfs = Project("usvfs")
+
+def usvfs_env():
+    res = config['__environment'].copy()
+    res['BOOST_PATH'] = boost_folder
+    res['GTEST_PATH'] = gtest_folder
+    return res
+
 
 for (project32, dependencies) in [("boost", ["boost_prepare"]),
       ("GTest", []),
@@ -51,25 +57,9 @@ for (project32, dependencies) in [("boost", ["boost_prepare"]),
   else:
     Project(project32 + "_32").dummy().depend(project32)
 
-
-# TODO remove after repo merge
-def replace_paths(context):
-    with open(os.path.join(build_path, "usvfs", "vsbuild", "external_dependencies.props"), 'r') as file:
-        lines = file.readlines()
-        # keep whitespaces at the beginning for formatting
-        lines[4] = "    <BOOST_PATH>..\..\{}</BOOST_PATH>\n".format(boost_folder)
-        lines[5] = "    <GTEST_PATH>..\..\{}</GTEST_PATH>\n".format(gtest_folder)
-        file.seek(0)
-        # clean file first or we leave trailing characters behind
-        with open(os.path.join(build_path, "usvfs", "vsbuild", "external_dependencies.props"), 'w') as file:
-            file.writelines(lines)
-    return True
-
-
 usvfs \
     .depend(msbuild.MSBuild("usvfs.sln", vs_target, os.path.join(build_path, "usvfs", "vsbuild"),
-                           "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"))
-                .depend(build.Execute(replace_paths)
+                           "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),environment=usvfs_env())
                     .depend("boost" + suffix)
                             .depend("GTest" + suffix)
-                                    .depend(github.Source(config['Main_Author'], "usvfs", config['Main_Branch']))))
+                                    .depend(github.Source(config['Main_Author'], "usvfs", config['Main_Branch'])))

@@ -35,13 +35,6 @@ gtest_folder = os.path.join(build_path,"googletest")
 
 usvfs = Project("usvfs")
 
-def usvfs_env():
-    res = config['__environment'].copy()
-    res['BOOST_PATH'] = boost_folder
-    res['GTEST_PATH'] = gtest_folder
-    return res
-
-
 for (project32, dependencies) in [("boost", ["boost_prepare"]),
       ("GTest", []),
       ("usvfs", [])]:
@@ -59,7 +52,7 @@ for (project32, dependencies) in [("boost", ["boost_prepare"]),
 
 usvfs \
     .depend(msbuild.MSBuild("usvfs.sln", vs_target, os.path.join(build_path, "usvfs", "vsbuild"),
-                           "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),environment=usvfs_env())
+                           "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"))
                     .depend("boost" + suffix)
                             .depend("GTest" + suffix)
                                     .depend(github.Source(config['Main_Author'], "usvfs", config['Main_Branch'])))

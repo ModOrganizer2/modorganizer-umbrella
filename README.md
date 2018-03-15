@@ -20,7 +20,6 @@ Now you need to install all required software to build Mod Organizer.
   * CMake (latest 64bit)  Link: https://cmake.org/files/v3.10/cmake-3.10.2-win64-x64.msi
   * Git Link: https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe
   * Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi
-  * Python 3.x.x (64Bit) Link: https://www.python.org/ftp/python/3.6.4/python-3.6.4-amd64.exe (USVFS uses the py.exe tool to build only using python 2.7, which is only supplied from the python 3 installer)
   * Qt 5.10.0 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
     #### Qt Packages required:
     * msvc2017-64

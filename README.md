@@ -1,5 +1,5 @@
 # modorganizer-umbrella
-An umbrella- (super-) project for [modorganizer](https://github.com/LePresidente/modorganizer).
+An umbrella- (super-) project for [modorganizer](https://github.com/Modorganizer2/modorganizer).
 
 ## How to build ModOrganizer 2
 
@@ -10,7 +10,7 @@ If you have questions or you need help visit us in our [Discord](https://discord
 ### Clone Repository
 
 First you need to clone the umbrella repository. We recommend that you clone it into the root of your C:\ drive.
-Open there a console and copy in: ``git clone https://github.com/LePresidente/modorganizer-umbrella``
+Open there a console and copy in: ``git clone https://github.com/Modorganizer2/modorganizer-umbrella``
 
 ### Software Requirements
 

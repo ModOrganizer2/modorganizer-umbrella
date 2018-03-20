@@ -75,7 +75,7 @@ config = {
     'loot_version': '0.12.4',
     'loot_commit': 'gec946b5',
     'lz4_version': 'v1.7.4',
-    'nasm_Version': '2.13.03',
+    'nasm_version': '2.13.03',
     'openssl_version': '1.0.2n',
     'pyqt_version': '5.10',
     'python_version': '2.7',

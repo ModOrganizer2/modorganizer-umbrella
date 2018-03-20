@@ -15,12 +15,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-import os
+import os.path
+import shutil
 
 from config import config
 from string import Formatter
 from unibuild import Project
-from unibuild.modules import build, cmake, git, github
+from unibuild.modules import build, cmake, git, github, urldownload
 from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, WixToolkit, zlib
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
@@ -140,15 +141,53 @@ Project("python_zip") \
     .depend(build.Execute(python_zip_collect)
             .depend("Python"))
 
+
 if config['Installer']:
     # build_installer = cmake.CMake().arguments(cmake_parameters
     # +["-DCMAKE_INSTALL_PREFIX:PATH={}/installer".format(config["__build_base_path"])]).install()
     wixinstaller = Project("WixInstaller") \
         .depend(github.Source(config['Main_Author'], "modorganizer-WixInstaller", config['Main_Branch'], super_repository=tl_repo)
             .set_destination("WixInstaller")) \
-            .depend("modorganizer").depend("usvfs").depend("usvfs_32")
+                .depend("modorganizer").depend("usvfs").depend("usvfs_32")
+
 
 if config['transifex_Enable']:
     from unibuild.projects import translations
     translationsBuild = Project("translationsBuild").depend("translations")
 
+
+def copy_licenses(context):
+    license_path = os.path.join(config["paths"]["install"], "bin", "licenses")
+    build_path = config["paths"]["build"]
+    try:
+        os.makedirs(license_path)
+    except:
+        pass
+    shutil.copy(os.path.join(config["paths"]["download"], "gpl-3.0.txt"), os.path.join(license_path, "GPL-v3.0.txt"))
+    shutil.copy(os.path.join(config["paths"]["download"], "lgpl-3.0.txt"), os.path.join(license_path, "LGPL-v3.0.txt"))
+    shutil.copy(os.path.join(build_path, "zlib-{}".format(config['zlib_version']), "zlib.3.pdf"), os.path.join(license_path, "zlib.pdf"))
+    shutil.copy(os.path.join(build_path, "WixToolkit-{}".format(config['WixToolset_version']), "LICENSE.TXT"), os.path.join(license_path, "WixToolkit.txt"))
+    shutil.copy(os.path.join(build_path, "usvfs", "udis86", "LICENSE"), os.path.join(license_path, "udis86.txt"))
+    shutil.copy(os.path.join(build_path, "usvfs", "spdlog", "LICENSE"), os.path.join(license_path, "spdlog.txt"))
+    shutil.copy(os.path.join(build_path, "usvfs", "fmt", "LICENSE.rst"), os.path.join(license_path, "fmt.txt"))
+    shutil.copy(os.path.join(build_path, "usvfs", "licenses", "cppformat.txt"), os.path.join(license_path, "cppformat.txt"))
+    shutil.copy(os.path.join(build_path, "sip-{}".format(config['sip_version']), "LICENSE"), os.path.join(license_path, "sip.txt"))
+    shutil.copy(os.path.join(build_path, "sip-{}".format(config['sip_version']), "LICENSE-GPL2"), os.path.join(license_path, "GPL-v2.0.txt"))
+    shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']), "LICENSE"), os.path.join(license_path, "python.txt"))
+    shutil.copy(os.path.join(build_path, "openssl-{}".format(config['openssl_version']), "LICENSE"), os.path.join(license_path, "openssl.txt"))
+    shutil.copy(os.path.join(build_path, "nasm-{}-win64".format(config['nasm_version']), "LICENSE"), os.path.join(license_path, "nasm.txt"))
+    shutil.copy(os.path.join(build_path, "modorganizer_super", "lootcli", "build", "src", "external", "src", "cpptoml", "LICENSE"), os.path.join(license_path, "cpptoml.txt"))
+    shutil.copy(os.path.join(build_path, "googletest", "LICENSE"), os.path.join(license_path, "googletest.txt"))
+    shutil.copy(os.path.join(build_path, "boost_{}".format(config["boost_version"].replace(".", "_")), "LICENSE_1_0.txt"), os.path.join(license_path, "boost.txt"))
+    shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "License.txt"), os.path.join(license_path, "7zip.txt"))
+    shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "copying.txt"), os.path.join(license_path, "GNU-LGPL-v2.1.txt"))
+    shutil.copy(os.path.join(build_path, "NexusClientCli", "NexusClientCLI", "Castle_License.txt"), os.path.join(license_path, "Castle.txt"))
+    shutil.copy(os.path.join(build_path, "Nexus-Mod-Manager", "AntlrBuildTask", "LICENSE.txt"), os.path.join(license_path, "AntlrBuildTask.txt"))
+    return True
+
+
+Project("licenses") \
+    .depend(build.Execute(copy_licenses)
+        .depend(urldownload.URLDownload("https://www.gnu.org/licenses/lgpl-3.0.txt", 0))
+            .depend(urldownload.URLDownload("https://www.gnu.org/licenses/gpl-3.0.txt", 0))
+                .depend("modorganizer"))

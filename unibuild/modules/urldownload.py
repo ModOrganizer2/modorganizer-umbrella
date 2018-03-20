@@ -162,7 +162,7 @@ class URLDownload(Retrieval):
                 # installers need to be handled by the caller
                 return True
             elif extension in [".md", ".txt"]:
-                # TODO maybe add more stuff here
+                # we don't need todo anything
                 return True
             else:
                 logging.error("unsupported file extension %s", extension)

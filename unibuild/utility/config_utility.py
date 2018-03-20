@@ -54,17 +54,3 @@ def cmake_parameters():
 def bitness():
     from config import config
     return "x64" if config['architecture'] == "x86_64" else "Win32"
-
-
-def get_from_hklm(path, name, wow64=False):
-    from _winreg import QueryValueEx, OpenKey, HKEY_LOCAL_MACHINE, KEY_READ, KEY_WOW64_32KEY
-    flags = KEY_READ
-    if wow64:
-        flags |= KEY_WOW64_32KEY
-
-    # avoids crashing if a product is not present
-    try:
-        with OpenKey(HKEY_LOCAL_MACHINE, path, 0, flags) as key:
-            return QueryValueEx(key, name)[0]
-    except Exception:
-        return None

@@ -21,7 +21,7 @@ from config import config
 from unibuild import Project
 from unibuild.modules import cmake, urldownload
 
-nasm_version = config['nasm_Version']
+nasm_version = config['nasm_version']
 
 def bitness():
     return "64" if config['architecture'] == "x86_64" else "32"

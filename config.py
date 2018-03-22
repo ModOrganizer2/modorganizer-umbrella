@@ -117,8 +117,7 @@ config['paths'] = {
     #'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
     '7z': path_or_default("7z.exe", "7-Zip"),
     # we need a python that matches the build architecture
-    'python': Lazy(lambda: os.path.join(config_utility.get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
-                      ""), "python.exe")),
+    'python': "", # Registry Key can be in multiple places. set in config_setup.py
     'visual_studio_base': "",
     'qt_binary_install': "",
     'visual_studio': ""  # will be set in unimake.py after args are evaluated

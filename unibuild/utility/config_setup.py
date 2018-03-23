@@ -53,7 +53,7 @@ def init_config(args):
 
     python = get_from_hklm("HKEY_LOCAL_MACHINE", r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']), "")
     if python is not None:
-        config['paths']['python'] = Lazy(lambda: os.path.join(python, ""), "python.exe")
+        config['paths']['python'] = Lazy(lambda: os.path.join(python, "python.exe"))
     else:
         config['paths']['python'] = Lazy(lambda: os.path.join(get_from_hklm("HKEY_CURRENT_USER", r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']), ""), "python.exe"))
 

@@ -167,29 +167,27 @@ def copy_licenses(context):
         pass
     shutil.copy(os.path.join(config["paths"]["download"], "gpl-3.0.txt"), os.path.join(license_path, "GPL-v3.0.txt"))
     shutil.copy(os.path.join(config["paths"]["download"], "lgpl-3.0.txt"), os.path.join(license_path, "LGPL-v3.0.txt"))
-    shutil.copy(os.path.join(build_path, "zlib-{}".format(config['zlib_version']), "zlib.3.pdf"), os.path.join(license_path, "zlib.pdf"))
-    shutil.copy(os.path.join(build_path, "WixToolkit-{}".format(config['WixToolset_version']), "LICENSE.TXT"), os.path.join(license_path, "WixToolkit.txt"))
+    #shutil.copy(os.path.join(config["paths"]["download"], "BY-SA-v3.0.txt"), os.path.join(license_path, "BY-SA-v3.0.txt")) figure out a source, creative commons download doesn't work...
     shutil.copy(os.path.join(build_path, "usvfs", "udis86", "LICENSE"), os.path.join(license_path, "udis86.txt"))
     shutil.copy(os.path.join(build_path, "usvfs", "spdlog", "LICENSE"), os.path.join(license_path, "spdlog.txt"))
     shutil.copy(os.path.join(build_path, "usvfs", "fmt", "LICENSE.rst"), os.path.join(license_path, "fmt.txt"))
-    shutil.copy(os.path.join(build_path, "usvfs", "licenses", "cppformat.txt"), os.path.join(license_path, "cppformat.txt"))
     shutil.copy(os.path.join(build_path, "sip-{}".format(config['sip_version']), "LICENSE"), os.path.join(license_path, "sip.txt"))
     shutil.copy(os.path.join(build_path, "sip-{}".format(config['sip_version']), "LICENSE-GPL2"), os.path.join(license_path, "GPL-v2.0.txt"))
     shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']), "LICENSE"), os.path.join(license_path, "python.txt"))
     shutil.copy(os.path.join(build_path, "openssl-{}".format(config['openssl_version']), "LICENSE"), os.path.join(license_path, "openssl.txt"))
-    shutil.copy(os.path.join(build_path, "nasm-{}-win64".format(config['nasm_version']), "LICENSE"), os.path.join(license_path, "nasm.txt"))
     shutil.copy(os.path.join(build_path, "modorganizer_super", "lootcli", "build", "src", "external", "src", "cpptoml", "LICENSE"), os.path.join(license_path, "cpptoml.txt"))
-    shutil.copy(os.path.join(build_path, "googletest", "LICENSE"), os.path.join(license_path, "googletest.txt"))
     shutil.copy(os.path.join(build_path, "boost_{}".format(config["boost_version"].replace(".", "_")), "LICENSE_1_0.txt"), os.path.join(license_path, "boost.txt"))
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "License.txt"), os.path.join(license_path, "7zip.txt"))
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "copying.txt"), os.path.join(license_path, "GNU-LGPL-v2.1.txt"))
     shutil.copy(os.path.join(build_path, "NexusClientCli", "NexusClientCLI", "Castle_License.txt"), os.path.join(license_path, "Castle.txt"))
     shutil.copy(os.path.join(build_path, "Nexus-Mod-Manager", "AntlrBuildTask", "LICENSE.txt"), os.path.join(license_path, "AntlrBuildTask.txt"))
+    shutil.copy(os.path.join(config["paths"]["download"], "LICENSE"), os.path.join(license_path, "DXTex.txt"))
     return True
 
 
 Project("licenses") \
     .depend(build.Execute(copy_licenses)
         .depend(urldownload.URLDownload("https://www.gnu.org/licenses/lgpl-3.0.txt", 0))
-            .depend(urldownload.URLDownload("https://www.gnu.org/licenses/gpl-3.0.txt", 0))
-                .depend("modorganizer"))
+        .depend(urldownload.URLDownload("https://www.gnu.org/licenses/gpl-3.0.txt", 0))
+        .depend(urldownload.URLDownload("https://raw.githubusercontent.com/Microsoft/DirectXTex/master/LICENSE"))
+        .depend("modorganizer"))

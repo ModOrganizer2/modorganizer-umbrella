@@ -76,6 +76,9 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_skyrimse", "game_skyrimse", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                   "modorganizer-game_gamebryo",
                                                                                   "modorganizer-game_features"], True),
+    (config['Main_Author'], "modorganizer-game_skyrimvr", "game_skyrimvr", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
+                                                                                  "modorganizer-game_gamebryo",
+                                                                                  "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-game_ttw", "game_ttw", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                          "modorganizer-game_gamebryo",
                                                                                          "modorganizer-game_features"], True),
@@ -189,5 +192,5 @@ Project("licenses") \
     .depend(build.Execute(copy_licenses)
         .depend(urldownload.URLDownload("https://www.gnu.org/licenses/lgpl-3.0.txt", 0))
         .depend(urldownload.URLDownload("https://www.gnu.org/licenses/gpl-3.0.txt", 0))
-        .depend(urldownload.URLDownload("https://raw.githubusercontent.com/Microsoft/DirectXTex/master/LICENSE"))
+        .depend(urldownload.URLDownload("https://raw.githubusercontent.com/Microsoft/DirectXTex/master/LICENSE", 0).set_destination("DXTex.txt"))
         .depend("modorganizer"))

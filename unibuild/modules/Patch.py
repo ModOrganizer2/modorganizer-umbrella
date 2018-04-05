@@ -53,6 +53,10 @@ class Copy(Task):
         self.__source = Lazy(source)
         self.__destination = Lazy(destination)
 
+    def set_filename(self, name):
+        self.__filename = name
+        return self
+
     @property
     def name(self):
         if self.__source.type() == list:
@@ -66,6 +70,9 @@ class Copy(Task):
             full_destination = self.__destination()
         else:
             full_destination = os.path.join(self._context["build_path"], self.__destination())
+
+        if self.__filename:
+            full_destination = os.path.join(full_destination, self.__filename)
 
         for source in self.__source():
             if not os.path.isabs(source):

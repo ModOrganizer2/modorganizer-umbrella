@@ -52,6 +52,7 @@ class Copy(Task):
             source = [source]
         self.__source = Lazy(source)
         self.__destination = Lazy(destination)
+        self.__filename = ""
 
     def set_filename(self, name):
         self.__filename = name

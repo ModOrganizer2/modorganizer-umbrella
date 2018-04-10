@@ -182,7 +182,7 @@ def copy_licenses(context):
     shutil.copy(os.path.join(build_path, "sip-{}".format(config['sip_version']), "LICENSE-GPL2"), os.path.join(license_path, "GPL-v2.0.txt"))
     shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']), "LICENSE"), os.path.join(license_path, "python.txt"))
     shutil.copy(os.path.join(build_path, "openssl-{}".format(config['openssl_version']), "LICENSE"), os.path.join(license_path, "openssl.txt"))
-    shutil.copy(os.path.join(build_path, "modorganizer_super", "lootcli", "build", "src", "external", "src", "cpptoml", "LICENSE"), os.path.join(license_path, "cpptoml.txt"))
+    shutil.copy(os.path.join(build_path, "modorganizer_super", "lootcli", "vsbuild", "src", "external", "src", "cpptoml", "LICENSE"), os.path.join(license_path, "cpptoml.txt"))
     shutil.copy(os.path.join(build_path, "boost_{}".format(config["boost_version"].replace(".", "_")), "LICENSE_1_0.txt"), os.path.join(license_path, "boost.txt"))
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "License.txt"), os.path.join(license_path, "7zip.txt"))
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "copying.txt"), os.path.join(license_path, "GNU-LGPL-v2.1.txt"))

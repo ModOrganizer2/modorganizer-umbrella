@@ -28,6 +28,7 @@ from unibuild.modules import build,  Patch, urldownload
 
 # currently binary installation only
 openssl_version = config['openssl_version']
+nasm_version = config['nasm_version']
 build_path = config["paths"]["build"]
 install_path = config["paths"]["install"]
 openssl_path = os.path.join(build_path, "openssl-{}".format(openssl_version))
@@ -45,7 +46,8 @@ url = "https://www.openssl.org/source/{}".format(filename)
 
 def openssl_environment():
     result = config['__environment'].copy()
-    result['Path'] += ";" + os.path.join(build_path, "nasm")
+    result['Path'] += ";" + os.path.join(build_path, "nasm-{}-win{}".format(nasm_version, bitness(), nasm_version, bitness()))
+    result['CL'] = "/MP"
     return result
 
 
@@ -59,40 +61,30 @@ def openssl_stage(context):
             os.makedirs(dest_lib)
         if not os.path.exists(dest_pdb):
              os.makedirs(dest_pdb)
-        for f in glob(os.path.join(build_path, openssl_path, "bin", "ssleay32.dll")):
-             shutil.copy(f, os.path.join(dest_bin))
-             shutil.copy(f, os.path.join(dest_bin, "dlls"))
-        for f in glob(os.path.join(build_path, openssl_path, "bin", "libeay32.dll")):
-             shutil.copy(f, os.path.join(dest_bin))
-             shutil.copy(f, os.path.join(dest_bin, "dlls"))
-        for f in glob(os.path.join(build_path, openssl_path,"out32dll", "ssleay32.pdb")):
-            shutil.copy(f, os.path.join(dest_pdb))
-        for f in glob(os.path.join(build_path, openssl_path,"out32dll", "libeay32.pdb")):
-            shutil.copy(f, os.path.join(dest_pdb))
-        for f in glob(os.path.join(build_path, openssl_path, "lib", "ssleay32.lib")):
-            shutil.copy(f, os.path.join(dest_lib, "ssleay32.lib"))
-        for f in glob(os.path.join(build_path, openssl_path, "lib", "libeay32.lib")):
-            shutil.copy(f, os.path.join(dest_lib, "libeay32.lib"))
+        for f in glob(os.path.join(openssl_path, "bin", "libcrypto-1_1-x64.dll")):
+             shutil.copy(f, os.path.join(dest_bin, "libcrypto.dll"))
+             shutil.copy(f, os.path.join(dest_bin, "dlls", "libcrypto.dll"))
+        for f in glob(os.path.join(openssl_path, "bin", "libssl-1_1-x64.dll")):
+             shutil.copy(f, os.path.join(dest_bin, "libssl.dll"))
+             shutil.copy(f, os.path.join(dest_bin, "dlls", "libssl.dll"))
+        for f in glob(os.path.join(openssl_path,"bin", "libcrypto-1_1-x64.pdb")):
+            shutil.copy(f, os.path.join(dest_pdb, "libcrypto.pdb"))
+        for f in glob(os.path.join(openssl_path,"bin", "libssl-1_1-x64.pdb")):
+            shutil.copy(f, os.path.join(dest_pdb, "libssl.pdb"))
+        for f in glob(os.path.join(openssl_path, "lib", "libcrypto.lib")):
+            shutil.copy(f, os.path.join(dest_lib, "libcrypto.lib"))
+        for f in glob(os.path.join(openssl_path, "lib", "libssl.lib")):
+            shutil.copy(f, os.path.join(dest_lib, "libssl.lib"))
         return True
 
 
-OpenSSL_Install = build.Run(r"nmake -f ms\ntdll.mak install",
-                      environment=openssl_environment(),
-                      name="Install OpenSSL",
-                      working_directory=lambda: os.path.join(openssl_path))
-
-OpenSSL_Build = build.Run(r"nmake -f ms\ntdll.mak",
+OpenSSL_Build = build.Run(r"nmake",
                       environment=openssl_environment(),
                       name="Building OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
 
-OpenSSL_Prep = build.Run(r"ms\do_win64a",
-                      environment=openssl_environment(),
-                      name="Prepping OpenSSL",
-                      working_directory=lambda: os.path.join(openssl_path))
 
-
-Configure_openssl = build.Run(r"{} Configure --openssldir={} VC-WIN{}A".format(config['paths']['perl'],
+Configure_openssl = build.Run(r"{} Configure --prefix={} VC-WIN{}A".format(config['paths']['perl'],
                                                                               openssl_path,
                                                                                bitness()),
                       environment=openssl_environment(),
@@ -102,9 +94,7 @@ Configure_openssl = build.Run(r"{} Configure --openssldir={} VC-WIN{}A".format(c
 
 openssl = Project("openssl") \
     .depend(build.Execute(openssl_stage)
-        .depend(OpenSSL_Install
             .depend(OpenSSL_Build
-                .depend(OpenSSL_Prep
                     .depend(Configure_openssl
                         .depend(urldownload.URLDownload(url, tree_depth=1)
-                            .depend("nasm")))))))
+                            .depend("nasm")))))

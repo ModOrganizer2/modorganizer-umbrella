@@ -72,8 +72,9 @@ class Copy(Task):
         else:
             full_destination = os.path.join(self._context["build_path"], self.__destination())
 
+        final_filepath = full_destination;
         if self.__filename:
-            full_destination = os.path.join(full_destination, self.__filename)
+            final_filepath = os.path.join(full_destination, self.__filename)
 
         for source in self.__source():
             if not os.path.isabs(source):
@@ -81,7 +82,7 @@ class Copy(Task):
             if not os.path.exists(full_destination):
                 os.makedirs(full_destination)
             if os.path.isfile(source):
-                shutil.copy(source, full_destination)
+                shutil.copy(source, final_filepath)
             else:
                 print "{} doesn't exist, Can't copy".format(source)
 

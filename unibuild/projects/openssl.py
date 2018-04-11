@@ -78,13 +78,19 @@ def openssl_stage(context):
         return True
 
 
+OpenSSL_Install = build.Run(r"nmake install",
+                      environment=openssl_environment(),
+                      name="Install OpenSSL",
+                      working_directory=lambda: os.path.join(openssl_path))
+
 OpenSSL_Build = build.Run(r"nmake",
                       environment=openssl_environment(),
                       name="Building OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
 
 
-Configure_openssl = build.Run(r"{} Configure --prefix={} VC-WIN{}A".format(config['paths']['perl'],
+Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} VC-WIN{}A".format(config['paths']['perl'],
+                                                                              openssl_path,
                                                                               openssl_path,
                                                                                bitness()),
                       environment=openssl_environment(),
@@ -94,7 +100,8 @@ Configure_openssl = build.Run(r"{} Configure --prefix={} VC-WIN{}A".format(confi
 
 openssl = Project("openssl") \
     .depend(build.Execute(openssl_stage)
+        .depend(OpenSSL_Install
             .depend(OpenSSL_Build
                     .depend(Configure_openssl
                         .depend(urldownload.URLDownload(url, tree_depth=1)
-                            .depend("nasm")))))
+                            .depend("nasm"))))))

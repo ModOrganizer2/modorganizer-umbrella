@@ -31,5 +31,5 @@ def bitnessLoot():
 Project("lootapi") \
     .depend(Patch.Copy("loot_api.dll", os.path.join(config["paths"]["install"], "bin", "loot"))
             .depend(github.Release("loot", "loot-api", loot_version,
-                               "loot_api-{}-0-{}_update-deps-win{}".format(loot_version, loot_commit, bitnessLoot()), "7z", tree_depth=1)
+                               "loot_api-{}-0-{}_dev-win{}".format(loot_version, loot_commit, bitnessLoot()), "7z", tree_depth=1)
                           .set_destination("lootapi-{}-{}".format(loot_version, loot_commit))))

@@ -30,10 +30,19 @@ vs_target = "Clean;Build" if config['rebuild'] else "Build"
 
 
 # TODO change dynamicaly
-boost_folder = os.path.join(build_path,"boost_{}".format(config["boost_version"]))
+boost_version = config['boost_version']
+boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
+boost_folder = os.path.join(build_path,"boost_{}".format(boost_tag_version).replace(".", '_'))
 gtest_folder = os.path.join(build_path,"googletest")
 
 usvfs = Project("usvfs")
+
+
+def usvfs_environment():
+    env = config['__environment'].copy()
+    env['BOOST_PATH'] = boost_folder
+    return env
+
 
 for (project32, dependencies) in [("boost", ["boost_prepare"]),
       ("GTest", []),
@@ -52,7 +61,8 @@ for (project32, dependencies) in [("boost", ["boost_prepare"]),
 
 usvfs \
     .depend(msbuild.MSBuild("usvfs.sln", vs_target, os.path.join(build_path, "usvfs", "vsbuild"),
-                           "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"))
-                    .depend("boost" + suffix)
-                            .depend("GTest" + suffix)
-                                    .depend(github.Source(config['Main_Author'], "usvfs", config['Main_Branch'])))
+                            "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
+                            None, None, None, usvfs_environment())
+            .depend("boost" + suffix)
+            .depend("GTest" + suffix)
+            .depend(github.Source(config['Main_Author'], "usvfs", config['Main_Branch'])))

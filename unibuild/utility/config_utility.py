@@ -37,15 +37,18 @@ def qt_inst_path():
 def cmake_parameters():
     from config import config
 
+    boost_version = config['boost_version']
+    boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
+
     paths_build = config['paths']['build']
 
     cmake_parameters = ["-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
                         "-DDEPENDENCIES_DIR={}".format(paths_build),
-                        "-DBOOST_ROOT={}/boost_{}".format(paths_build, config["boost_version"]),
-                        "-DLOOT_API_PATH={}/lootapi-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
-                        "-DLZ4_ROOT={}/lz4-{}".format(paths_build, config["lz4_version"]),
+                        "-DBOOST_ROOT={}\\boost_{}".format(paths_build, boost_tag_version.replace(".", "_")),
+                        "-DLOOT_API_PATH={}\\lootapi-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
+                        "-DLZ4_ROOT={}\\lz4-{}".format(paths_build, config["lz4_version"]),
                         "-DQT_ROOT={}".format(qt_inst_path()),
-                        "-DZLIB_ROOT={}/zlib-{}".format(paths_build, config["zlib_version"])]
+                        "-DZLIB_ROOT={}\\\zlib-{}".format(paths_build, config["zlib_version"])]
 
     if config.get('optimize', False):
         cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")

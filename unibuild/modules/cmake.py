@@ -237,70 +237,10 @@ class CMakeVS(Builder):
                           " are you missing a matching retrieval script?".format(self._context.name))
             return False
 
-        # prepare for out-of-source build
-        # if os.path.exists(build_path):
-        #    shutil.rmtree(build_path)
-        build_path = os.path.join(self._context["build_path"], "build")
-        try:
-            os.mkdir(build_path)
-        except Exception:
-            pass
-
-        soutpath = os.path.join(self._context["build_path"], "stdout.log")
-        serrpath = os.path.join(self._context["build_path"], "stderr.log")
-
-        try:
-            with on_exit(lambda: progress.finish()):
-                with open(soutpath, "w") as sout:
-                    with open(serrpath, "w") as serr:
-                        proc = Popen([config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments,
-                            cwd=build_path,
-                            env=config["__environment"],
-                            stdout=sout, stderr=serr)
-                        proc.communicate()
-                        if proc.returncode != 0:
-                            raise Exception("failed to generate makefile (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
-
-                        proc = Popen([config['tools']['make'], "verbose=1"],
-                                     shell=True,
-                                     env=config["__environment"],
-                                     cwd=build_path,
-                                     stdout=PIPE, stderr=serr)
-                        progress.job = "Compiling"
-                        progress.maximum = 100
-                        while proc.poll() is None:
-                            while True:
-                                line = proc.stdout.readline()
-                                if line != '':
-                                    match = re.search("^\\[([0-9 ][0-9 ][0-9])%\\]", line)
-                                    if match is not None:
-                                        progress.value = int(match.group(1))
-                                    sout.write(line)
-                                else:
-                                    break
-
-                        if proc.returncode != 0:
-                            raise Exception("failed to build (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
-
-                        if self.__install:
-                            proc = Popen([config['tools']['make'], "install"],
-                                         shell=True,
-                                         env=config["__environment"],
-                                         cwd=build_path,
-                                         stdout=sout, stderr=serr)
-                            proc.communicate()
-                            if proc.returncode != 0:
-                                raise Exception("failed to install (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
-
-        except Exception, e:
-            logging.error(e.message)
-            return False
-
-
         # prepare for out-of-source vs build
-        # if os.path.exists(build_path):
-        #    shutil.rmtree(build_path)
         build_path = os.path.join(self._context["build_path"], "vsbuild")
+        if os.path.exists(build_path):
+            shutil.rmtree(build_path)
         try:
             os.mkdir(build_path)
         except Exception:

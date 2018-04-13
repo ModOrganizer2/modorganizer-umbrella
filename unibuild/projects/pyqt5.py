@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import errno
+import itertools
 import logging
 import os
 import shutil
@@ -35,6 +36,8 @@ pyqt_version = config['pyqt_version']
 qt_binary_install = config["paths"]["qt_binary_install"]
 __build_base_path = config["__build_base_path"]
 
+enabled_modules = ["QtCore", "QtGui", "QtWidgets"]
+
 def make_sure_path_exists(path):
     try:
         os.makedirs(path)
@@ -48,6 +51,7 @@ def pyqt5_env():
     res['path'] = ";".join([os.path.join(qt_binary_install, "bin"),
         os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),]) + ";" + res['path']
     res['LIB'] = os.path.join(__build_base_path, "install", "libs") + ";" + res['LIB']
+    res['CL'] = "/MP"
     res['pythonhome'] = python.python['build_path']
     return res
 
@@ -82,17 +86,14 @@ class PyQt5Configure(build.Builder):
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
                 bp = python.python['build_path']
-                if os.path.exists(os.path.join(qt_binary_install, "include","QtNfc")):
-                    logging.error("Please rename %s to QtNfc.disable, as it breaks PyQt5 from compiling",
-                                  os.path.join(qt_binary_install + "include" + "QtNfc"),)
-                    return False
                 proc = Popen([os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",
                      "--confirm-license",
                      "-b", bp,
                      "-d", os.path.join(bp, "Lib", "site-packages"),
                      "-v", os.path.join(bp, "sip", "PyQt5"),
                      "--sip-incdir", os.path.join(bp, "Include"),
-                     "--spec=win32-msvc"],
+                     "--spec=win32-msvc"] \
+                     + list(itertools.chain(*[("--enable", s) for s in enabled_modules])),
                     env=pyqt5_env(),
                     cwd=self._context["build_path"],
                     shell=True,

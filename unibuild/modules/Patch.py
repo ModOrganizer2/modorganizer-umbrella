@@ -52,6 +52,11 @@ class Copy(Task):
             source = [source]
         self.__source = Lazy(source)
         self.__destination = Lazy(destination)
+        self.__filename = ""
+
+    def set_filename(self, name):
+        self.__filename = name
+        return self
 
     @property
     def name(self):
@@ -67,13 +72,17 @@ class Copy(Task):
         else:
             full_destination = os.path.join(self._context["build_path"], self.__destination())
 
+        final_filepath = full_destination;
+        if self.__filename:
+            final_filepath = os.path.join(full_destination, self.__filename)
+
         for source in self.__source():
             if not os.path.isabs(source):
                 source = os.path.join(self._context["build_path"], source)
             if not os.path.exists(full_destination):
                 os.makedirs(full_destination)
             if os.path.isfile(source):
-                shutil.copy(source, full_destination)
+                shutil.copy(source, final_filepath)
             else:
                 print "{} doesn't exist, Can't copy".format(source)
 

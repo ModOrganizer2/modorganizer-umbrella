@@ -16,15 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import os
-import patch
 
 from config import config
 from unibuild import Project
 from unibuild.modules import b2, build, Patch, urldownload
 from unibuild.projects import python
 
-boost_path = "{}/boost_{}".format(config["paths"]["build"], config["boost_version"])
 boost_version = config['boost_version']
+boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
+boost_path = "{}/boost_{}".format(config["paths"]["build"], boost_tag_version.replace(".", "_"))
 python_version = config['python_version']
 vc_version = config['vc_version_for_boost']
 
@@ -55,20 +55,21 @@ def patchboost(context):
 
 
 boost_prepare = Project("boost_prepare") \
-    .depend(b2.Bootstrap() \
-        .depend(Patch.CreateFile(user_config_jam,
-                                lambda: config_template.format(python_version,
-                                os.path.join(python.python['build_path'], "PCBuild",
-                                "{}".format("" if config['architecture'] == 'x86' else "amd64")).replace("\\",'/'),
-                                    os.path.join(python.python['build_path']).replace("\\", '/'),
-                                    "64" if config['architecture'] == "x86_64" else "32")) \
+    .depend(b2.Bootstrap()
+            .depend(Patch.CreateFile(user_config_jam,
+                                     lambda: config_template.format(
+                                         python_version,
+                                         os.path.join(
+                                            python.python['build_path'], "PCBuild",
+                                            "{}".format("" if config['architecture'] == 'x86' else "amd64"))
+                                         .replace("\\", '/'),
+                                         os.path.join(python.python['build_path']).replace("\\", '/'),
+                                         "64" if config['architecture'] == "x86_64" else "32"))
             .depend(build.Execute(patchboost)
-                .depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
-                                                .format(boost_version,boost_version.replace(".", "_"))
-                                                , tree_depth=1)
-                                    .set_destination("boost_{}".format(boost_version))))))
-
-#https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.zip
+                    .depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
+                                                    .format(boost_version,boost_tag_version.replace(".", "_"))
+                                                    , tree_depth=1)
+                            .set_destination("boost_{}".format(boost_tag_version.replace(".", "_")))))))
 
 if config['architecture'] == 'x86_64':
   # This is a convient way to make each boost flavors we build have these dependencies:
@@ -78,11 +79,11 @@ boost = Project("boost")
 
 if config['architecture'] == 'x86_64':
     boost_stage = Patch.Copy(os.path.join("{}/stage/lib/boost_python-vc{}-mt-{}-{}.dll"
-                                      .format(boost_path,
-                                              vc_version.replace(".", ""),
-                                              "x64" if config['architecture'] == "x86_64" else "x86",
-                                              "_".join(boost_version.split(".")[:-1]))),
-                         os.path.join(config["paths"]["install"], "bin"))
+                                          .format(boost_path,
+                                                  vc_version.replace(".", ""),
+                                                  "x64" if config['architecture'] == "x86_64" else "x86",
+                                                  "_".join(boost_version.split(".")[:-1]))),
+                             os.path.join(config["paths"]["install"], "bin"))
     boost.depend(boost_stage)
 else:
     boost_stage = boost

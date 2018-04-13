@@ -18,7 +18,7 @@
 import multiprocessing
 import os
 
-from unibuild.utility.config_utility import program_files_folders
+from unibuild.utility import config_utility
 from unibuild.utility.lazy import Lazy
 
 global missing_prerequisites
@@ -39,11 +39,14 @@ def path_or_default(filename, *default):
 def gen_search_folders(*subpath):
     return [
         os.path.join(search_folder, *subpath)
-        for search_folder in program_files_folders
+        for search_folder in config_utility.program_files_folders
     ]
 
 
 config = {
+
+    'Release_Build': False,  #Used to override certain versions in umbrella when doing an officail release
+                            #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
                                  # eg.  'E:\Microsoft Visual Studio 14.0'
     'qt_CustomInstallPath': '',  # If you installed QT to a custom location put the full path here
@@ -68,26 +71,31 @@ config = {
     # manualy set all versions
     '7zip_version': '18.01',
     'boost_version': '1.66.0',
+    'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
     'icu_version': '59',
     'icu_version_minor': '1',
-    'loot_version': '0.12.4',
-    'loot_commit': 'gec946b5',
-    'lz4_version': 'v1.7.4',
-    'nasm_Version': '2.13.03',
-    'openssl_version': '1.0.2n',
-    'pyqt_version': '5.10.1',
+    'loot_version': '0.12.5',
+    'loot_commit': 'g9ba600c',
+    'lz4_version': 'v1.8.1',
+    'lz4_version_minor': '2', # leave empty if no minor version
+    'nasm_version': '2.13.03',
+    'openssl_version': '1.0.2o',
+    'pyqt_version': '5.10',
     'python_version': '2.7',
     'python_version_minor': '.14',
     'sip_version': '4.19.8',
     'qt_version': '5.10',
-    'qt_version_minor': '1',
+    'qt_version_minor': '0',
     'vc_platformtoolset': 'v141',
     'vc_version': '15.0',
     'vc_version_for_boost': '14.1',
     'WixToolset_version': '311',
     'zlib_version': '1.2.11',
+
+    #the usvfs version below will only be used if
+    'usvfs_version': '0.3.1.0',
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code
@@ -101,7 +109,7 @@ config = {
     # Transifex Translation configuration
     'transifex_Enable': False, # this should only be changed to true when doing a release
     'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
-    'transifex-client_version': '0.13.1',
+    'transifex-client_version': '0.13.2',
     'transifex_minimum_percentage': '60'
 }
 config['paths'] = {
@@ -117,8 +125,7 @@ config['paths'] = {
     #'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
     '7z': path_or_default("7z.exe", "7-Zip"),
     # we need a python that matches the build architecture
-    'python': Lazy(lambda: os.path.join(get_from_hklm(r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']),
-                      "", config['architecture'] == "x86"), "python.exe")),
+    'python': "", # Registry Key can be in multiple places. set in config_setup.py
     'visual_studio_base': "",
     'qt_binary_install': "",
     'visual_studio': ""  # will be set in unimake.py after args are evaluated

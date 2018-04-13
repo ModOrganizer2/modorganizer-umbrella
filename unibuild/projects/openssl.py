@@ -26,7 +26,6 @@ from config import config
 from unibuild import Project
 from unibuild.modules import build,  Patch, urldownload
 
-nasm_ersion = config['nasm_Version']
 # currently binary installation only
 openssl_version = config['openssl_version']
 build_path = config["paths"]["build"]

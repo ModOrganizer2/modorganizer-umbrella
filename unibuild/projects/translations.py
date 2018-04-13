@@ -108,7 +108,7 @@ config_transifex_repo = build.Run("{} config mapping-remote https://www.transife
                                 name="config transifex repository")
 
 
-pull_transifex_repo = build.Run("{} pull -a -f --minimum-perc={}"
+pull_transifex_repo = build.Run("{} pull -a -f --parallel --minimum-perc={}"
                                 .format(transifex_client_binary,transifex_minimum_percentage),
                                 name="pull transifex repository")
 

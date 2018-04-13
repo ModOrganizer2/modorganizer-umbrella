@@ -22,11 +22,12 @@ from unibuild import Project
 from unibuild.modules import github, Patch
 
 lz4_version = config['lz4_version']
+lz4_version_minor = ".".join(filter(None, [lz4_version, config['lz4_version_minor']]))
 lz_path = os.path.join(config['paths']['build'], "lz4-{}".format(lz4_version))
 
 Project("lz4") \
-    .depend(Patch.Copy(os.path.join(lz_path, "dll", "liblz4.dll"),
-                       os.path.join(config["paths"]["install"], "bin", "dlls"))
-            .depend(github.Release("lz4", "lz4", lz4_version, "lz4_{0}_win{1}".format(lz4_version.replace(".", "_"),
+    .depend(Patch.Copy(os.path.join(lz_path, "dll", "liblz4.so.{0}.dll".format(lz4_version[1:])),
+                       os.path.join(config["paths"]["install"], "bin", "dlls")).set_filename("liblz4.dll")
+            .depend(github.Release("lz4", "lz4", lz4_version_minor, "lz4_{0}_win{1}".format(lz4_version.replace(".", "_"),
                                "64" if config['architecture'] == 'x86_64' else "32"), "zip")
                           .set_destination("lz4-{}".format(lz4_version))))

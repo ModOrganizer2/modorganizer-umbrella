@@ -23,17 +23,31 @@ from config import config
 from unibuild import Project
 from unibuild.modules import build, cmake, dummy, msbuild, github
 
+
 build_path = config["paths"]["build"]
 suffix = "" if config['architecture'] == 'x86_64' else "_32"
 vs_target = "Clean;Build" if config['rebuild'] else "Build"
 
+if config['Release_Build']:
+    usvfs_version = config['usvfs_version']
+else:
+    usvfs_version = config['Main_Branch']
+
 
 # TODO change dynamicaly
-boost_folder = "boost_{}".format(config["boost_version"])
-gtest_folder = "googletest"
-
+boost_version = config['boost_version']
+boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
+boost_folder = os.path.join(build_path,"boost_{}".format(boost_tag_version).replace(".", '_'))
+gtest_folder = os.path.join(build_path,"googletest")
 
 usvfs = Project("usvfs")
+
+
+def usvfs_environment():
+    env = config['__environment'].copy()
+    env['BOOST_PATH'] = boost_folder
+    return env
+
 
 for (project32, dependencies) in [("boost", ["boost_prepare"]),
       ("GTest", []),
@@ -50,25 +64,10 @@ for (project32, dependencies) in [("boost", ["boost_prepare"]),
   else:
     Project(project32 + "_32").dummy().depend(project32)
 
-
-# TODO remove after repo merge
-def replace_paths(context):
-    with open(os.path.join(build_path, "usvfs", "vsbuild", "external_dependencies.props"), 'r') as file:
-        lines = file.readlines()
-        # keep whitespaces at the beginning for formatting
-        lines[4] = "    <BOOST_PATH>..\..\{}</BOOST_PATH>\n".format(boost_folder)
-        lines[5] = "    <GTEST_PATH>..\..\{}</GTEST_PATH>\n".format(gtest_folder)
-        file.seek(0)
-        # clean file first or we leave trailing characters behind
-        with open(os.path.join(build_path, "usvfs", "vsbuild", "external_dependencies.props"), 'w') as file:
-            file.writelines(lines)
-    return True
-
-
 usvfs \
     .depend(msbuild.MSBuild("usvfs.sln", vs_target, os.path.join(build_path, "usvfs", "vsbuild"),
-                           "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"))
-            .depend(build.Execute(replace_paths)
-                    .depend("boost" + suffix)
-                            .depend("GTest" + suffix)
-                                    .depend(github.Source(config['Main_Author'], "usvfs", config['Main_Branch']))))
+                            "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
+                            None, None, None, usvfs_environment())
+            .depend("boost" + suffix)
+            .depend("GTest" + suffix)
+            .depend(github.Source(config['Main_Author'], "usvfs", usvfs_version)))

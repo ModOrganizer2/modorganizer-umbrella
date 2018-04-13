@@ -1,17 +1,17 @@
 # modorganizer-umbrella
-An umbrella- (super-) project for [modorganizer](https://github.com/LePresidente/modorganizer).
+An umbrella- (super-) project for [modorganizer](https://github.com/Modorganizer2/modorganizer).
 
 ## How to build ModOrganizer 2
 
 Mod Organizer requires a Windows 64 bit Machine because it is a 64bit binary.
 
-If you have questions or you need help visit us in our [Discord](https://discord.gg/cYwdcxj) or write in the [STEP forum thread](http://forum.step-project.com/topic/12538-wip-how-to-build-modorganizer-using-modorganizer-umbrella/).: 
+If you have questions or you need help visit us in our [Discord](https://discord.gg/cYwdcxj) or write in the [STEP forum thread](http://forum.step-project.com/topic/12538-wip-how-to-build-modorganizer-using-modorganizer-umbrella/).:
 
 ### Clone Repository
 
 First you need to clone the umbrella repository. We recommend that you clone it into the root of your C:\ drive.
-Open there a console and copy in: ``git clone https://github.com/LePresidente/modorganizer-umbrella``
-  
+Open there a console and copy in: ``git clone https://github.com/Modorganizer2/modorganizer-umbrella``
+
 ### Software Requirements
 
 Now you need to install all required software to build Mod Organizer.
@@ -25,18 +25,19 @@ Now you need to install all required software to build Mod Organizer.
     * msvc2017-64
     * qtscript
     * qtwebengine
-    
+
   Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error.
-  
+
   * Strawberry Perl Link: http://strawberryperl.com/download/5.26.1.1/strawberry-perl-5.26.1.1-64bit.msi
   * Visual Studio Community 2017 Link: https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15
     #### Visual Studio Packages required:
       * .NET desktop development
       * Desktop development for C++
-      
-      Additionally you need to activate under Individual components: 
-      
-      * "Windows 8.1 SDK (near the bottom)
+
+      Additionally you need to activate under Individual components:
+
+      * "Windows Universal CRT SDK" (Under Compilers, build tools, and runtimes)
+      * "Windows 8.1 SDK" (near the bottom)
 
 Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
 
@@ -99,4 +100,3 @@ I'd suggest to use a destination folder that isn't too deep, some dependencies d
 If the make target is left empty, everything is built. A incomplete lists of targets can be found [here](targets.md).
 
 Here are the dependency graphs that currently unimake takes care of: https://imgur.com/TT7TFGg.png
-

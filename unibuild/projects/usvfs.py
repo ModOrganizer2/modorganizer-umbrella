@@ -28,6 +28,11 @@ build_path = config["paths"]["build"]
 suffix = "" if config['architecture'] == 'x86_64' else "_32"
 vs_target = "Clean;Build" if config['rebuild'] else "Build"
 
+if config['Release_Build']:
+    usvfs_version = config['usvfs_version']
+else:
+    usvfs_version = config['Main_Branch']
+
 
 # TODO change dynamicaly
 boost_version = config['boost_version']
@@ -65,4 +70,4 @@ usvfs \
                             None, None, None, usvfs_environment())
             .depend("boost" + suffix)
             .depend("GTest" + suffix)
-            .depend(github.Source(config['Main_Author'], "usvfs", config['Main_Branch'])))
+            .depend(github.Source(config['Main_Author'], "usvfs", usvfs_version)))

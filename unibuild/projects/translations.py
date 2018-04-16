@@ -112,12 +112,27 @@ pull_transifex_repo = build.Run("{} pull -a -f --parallel --minimum-perc={}"
                                 .format(transifex_client_binary,transifex_minimum_percentage),
                                 name="pull transifex repository")
 
+def install_qt_translations(context):
+    full_install_path = os.path.join(install_path, "bin", "translations")
+    qt_qm_path = os.path.join(config["paths"]["qt_binary_install"], "translations")
+    translated_ts_path = os.path.join(build_path, "transifex-translations", "translations", "mod-organizer.organizer")
+    for ts_file in glob(os.path.join(translated_ts_path, "*.ts")):
+        language_code = os.path.splitext(os.path.basename(ts_file))[0]
+        qt_qm = "qt_" + language_code + ".qm"
+        if os.path.isfile(os.path.join(qt_qm_path, qt_qm)):
+            shutil.copy(os.path.join(qt_qm_path, qt_qm), os.path.join(full_install_path, qt_qm))
+        qtbase_qm = "qtbase_" + language_code + ".qm"
+        if os.path.isfile(os.path.join(qt_qm_path, qtbase_qm)):
+            shutil.copy(os.path.join(qt_qm_path, qtbase_qm), os.path.join(full_install_path, qtbase_qm))
+    return True
+
 
 Project("translations") \
-    .depend(GenerateTranslations()
-        .depend(pull_transifex_repo
-            .depend(config_transifex_repo
-                .depend(init_transifex_repo
-                    .depend(build.Execute(translations_stage)
-                        .depend(github.Release("transifex", "transifex-client", transifex_version, "tx.py27.x64", extension="exe")
-                            .set_destination("transifex-translations")))))))
+    .depend(build.Execute(install_qt_translations)
+        .depend(GenerateTranslations()
+            .depend(pull_transifex_repo
+                .depend(config_transifex_repo
+                    .depend(init_transifex_repo
+                        .depend(build.Execute(translations_stage)
+                            .depend(github.Release("transifex", "transifex-client", transifex_version, "tx.py27.x64", extension="exe")
+                                .set_destination("transifex-translations"))))))))

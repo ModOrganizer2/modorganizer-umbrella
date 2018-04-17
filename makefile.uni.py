@@ -166,6 +166,8 @@ if config['transifex_Enable']:
 
 
 def copy_licenses(context):
+    boost_version = config['boost_version']
+    boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
     license_path = os.path.join(config["paths"]["install"], "bin", "licenses")
     build_path = config["paths"]["build"]
     try:
@@ -183,7 +185,7 @@ def copy_licenses(context):
     shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']), "LICENSE"), os.path.join(license_path, "python.txt"))
     shutil.copy(os.path.join(build_path, "openssl-{}".format(config['openssl_version']), "LICENSE"), os.path.join(license_path, "openssl.txt"))
     shutil.copy(os.path.join(build_path, "modorganizer_super", "lootcli", "vsbuild", "src", "external", "src", "cpptoml", "LICENSE"), os.path.join(license_path, "cpptoml.txt"))
-    shutil.copy(os.path.join(build_path, "boost_{}".format(config["boost_version"].replace(".", "_")), "LICENSE_1_0.txt"), os.path.join(license_path, "boost.txt"))
+    shutil.copy(os.path.join(build_path, "boost_{}".format(boost_tag_version.replace(".", "_")), "LICENSE_1_0.txt"), os.path.join(license_path, "boost.txt"))
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "License.txt"), os.path.join(license_path, "7zip.txt"))
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "copying.txt"), os.path.join(license_path, "GNU-LGPL-v2.1.txt"))
     shutil.copy(os.path.join(build_path, "NexusClientCli", "NexusClientCLI", "Castle_License.txt"), os.path.join(license_path, "Castle.txt"))

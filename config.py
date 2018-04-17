@@ -66,7 +66,7 @@ config = {
     'Main_Author': 'Modorganizer2',  # the current maintainer
     'Main_Branch': "Develop",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
-    'Work_Author': '',  # yourself
+    'Work_Author': 'Silarn',  # yourself
 
     # manualy set all versions
     '7zip_version': '18.01',
@@ -76,8 +76,8 @@ config = {
     'grep_version': '2.5.4',
     'icu_version': '59',
     'icu_version_minor': '1',
-    'loot_version': '0.12.5',
-    'loot_commit': 'g9ba600c',
+    'loot_version': '0.13.1',
+    'loot_commit': 'g1804e45',
     'lz4_version': 'v1.8.1',
     'lz4_version_minor': '2', # leave empty if no minor version
     'nasm_version': '2.13.03',
@@ -107,8 +107,8 @@ config = {
     'architecture': 'x86_64',  # Don't change this as we spawn the usvfs x86 build later on.
 
     # Transifex Translation configuration
-    'transifex_Enable': False, # this should only be changed to true when doing a release
-    'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
+    'transifex_Enable': True, # this should only be changed to true when doing a release
+    'transifex_API': '1/9df63ff335e8e882f6640ebd2810e36120f49a9b', # you can generate an api at https://www.transifex.com/user/settings/api/
     'transifex-client_version': '0.13.2',
     'transifex_minimum_percentage': '60'
 }

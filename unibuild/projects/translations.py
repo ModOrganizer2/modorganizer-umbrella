@@ -38,6 +38,11 @@ download_path = config["paths"]["download"]
 def isnotEmpty(s):
     return bool(s and s.strip())
 
+def transifex_environment():
+    result = config['__Default_environment'].copy()
+    result["TX_TOKEN"] = transifex_api
+    return result
+
 def translations_stage(context):
             dest_transifex = os.path.join(build_path, "transifex-translations")
             dest_client = os.path.join(build_path, "transifex-client")
@@ -99,18 +104,21 @@ class GenerateTranslations(build.Builder):
                 return True
 
 
-init_transifex_repo = build.Run("{} init --token={} --force --no-interactive"
-                                .format(transifex_client_binary,transifex_api),
-                                name="init transifex repository")
+init_transifex_repo = build.Run("{} init --force --no-interactive"
+                                .format(transifex_client_binary),
+                                name="init transifex repository",
+                                environment=transifex_environment())
 
 config_transifex_repo = build.Run("{} config mapping-remote https://www.transifex.com/tannin/mod-organizer/"
-                                .format(transifex_client_binary),
-                                name="config transifex repository")
+                                  .format(transifex_client_binary),
+                                  name="config transifex repository",
+                                  environment=transifex_environment())
 
 
 pull_transifex_repo = build.Run("{} pull -a -f --parallel --minimum-perc={}"
                                 .format(transifex_client_binary,transifex_minimum_percentage),
-                                name="pull transifex repository")
+                                name="pull transifex repository",
+                                environment=transifex_environment())
 
 def install_qt_translations(context):
     full_install_path = os.path.join(install_path, "bin", "translations")

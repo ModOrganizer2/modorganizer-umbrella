@@ -110,7 +110,7 @@ config = {
     # Transifex Translation configuration
     'transifex_Enable': False, # this should only be changed to true when doing a release
     'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
-    'transifex-client_version': '0.13.2',
+    'transifex-client_version': '0.13.3',
     'transifex_minimum_percentage': '60'
 }
 config['paths'] = {

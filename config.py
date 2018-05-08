@@ -64,13 +64,13 @@ config = {
     'num_jobs': multiprocessing.cpu_count() + 1,
 
     'Main_Author': 'Modorganizer2',  # the current maintainer
-    'Main_Branch': "master",
+    'Main_Branch': "Develop",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
     # manualy set all versions
-    '7zip_version': '18.01',
-    'boost_version': '1.66.0',
+    '7zip_version': '18.05',
+    'boost_version': '1.67.0',
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
@@ -81,6 +81,7 @@ config = {
     'lz4_version': 'v1.8.1',
     'lz4_version_minor': '2', # leave empty if no minor version
     'nasm_version': '2.13.03',
+    'nmm_version': '0.65.2',
     'openssl_version': '1.0.2o',
     'pyqt_version': '5.10',
     'python_version': '2.7',
@@ -109,7 +110,7 @@ config = {
     # Transifex Translation configuration
     'transifex_Enable': False, # this should only be changed to true when doing a release
     'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
-    'transifex-client_version': '0.13.2',
+    'transifex-client_version': '0.13.3',
     'transifex_minimum_percentage': '60'
 }
 config['paths'] = {

@@ -21,6 +21,7 @@ from config import config
 from unibuild import Project
 from unibuild.modules import b2, build, Patch, urldownload
 from unibuild.projects import python
+import patch
 
 boost_version = config['boost_version']
 boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
@@ -49,6 +50,11 @@ config_template = ("using python\n"
 
 def patchboost(context):
     try:
+        savedpath = os.getcwd()
+        os.chdir(boost_path)
+        pset = patch.fromfile(os.path.join(config['__Umbrella_path'], "patches", "boost_python_libname.patch"))
+        pset.apply()
+        os.chdir(savedpath)
         return True
     except OSError:
         return False
@@ -78,8 +84,9 @@ if config['architecture'] == 'x86_64':
 boost = Project("boost")
 
 if config['architecture'] == 'x86_64':
-    boost_stage = Patch.Copy(os.path.join("{}/stage/lib/boost_python-vc{}-mt-{}-{}.dll"
+    boost_stage = Patch.Copy(os.path.join("{}/stage/lib/boost_python{}-vc{}-mt-{}-{}.dll"
                                           .format(boost_path,
+                                                  config["python_version"].replace(".", ""),
                                                   vc_version.replace(".", ""),
                                                   "x64" if config['architecture'] == "x86_64" else "x86",
                                                   "_".join(boost_version.split(".")[:-1]))),

@@ -111,6 +111,10 @@ def main():
         logging.error("Missing pre requisite")
         return False
 
+    py_dir = os.path.dirname(config["paths"]["python"])
+    if py_dir.lower() not in os.environ["PATH"].lower().split(os.pathsep):
+        os.environ["PATH"] += os.pathsep + py_dir
+ 
     logging.debug("  Build: args.target=%s", args.target)
     logging.debug("  Build: args.destination=%s", args.destination)
 

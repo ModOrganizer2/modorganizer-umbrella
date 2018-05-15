@@ -81,7 +81,7 @@ config = {
     'lz4_version': 'v1.8.1',
     'lz4_version_minor': '2', # leave empty if no minor version
     'nasm_version': '2.13.03',
-    'nmm_version': '0.65.2',
+    'nmm_version': '0.65.4',
     'openssl_version': '1.0.2o',
     'pyqt_version': '5.10',
     'python_version': '2.7',

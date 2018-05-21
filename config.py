@@ -49,8 +49,9 @@ config = {
                             #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
                                  # eg.  'E:\Microsoft Visual Studio 14.0'
-    'qt_CustomInstallPath': '',  # If you installed QT to a custom location put the full path here
-                                 # eg.  'Z:\Dev\QT'
+    'qt_CustomInstallPath': r'',  # If you installed QT to a custom location put the full path here
+                                  # eg.  r'Z:\Dev\QT' if you have Z:\Dev\QT\5.10.0\msvc2017_64\bin\qmake.exe
+                                  # The r before the start of the string prevents backslashes being treated as special characters
     'build_type': "RelWithDebInfo", # build type.  other possible types could be Debug.  not tested
     'rebuild': True,  # if set, does a clean build of the VS projects (for now only usvfs)
     'offline': False,  # if set, non-mandatory network requests won't be made eg: updating source repositories.

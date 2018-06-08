@@ -77,8 +77,8 @@ config = {
     'grep_version': '2.5.4',
     'icu_version': '59',
     'icu_version_minor': '1',
-    'loot_version': '0.12.5',
-    'loot_commit': 'g9ba600c',
+    'loot_version': '0.13.1',
+    'loot_commit': 'g1804e45',
     'lz4_version': 'v1.8.1',
     'lz4_version_minor': '2', # leave empty if no minor version
     'nasm_version': '2.13.03',

@@ -138,7 +138,7 @@ def python_zip_collect(context):
     ip = os.path.join(config["paths"]["install"], "bin")
     bp = python.python['build_path']
 
-    with ZipFile(os.path.join(ip, "python27.zip"), "w") as pyzip:
+    with ZipFile(os.path.join(ip, "python{}.zip".format(config['python_version'].replace(".", ""))), "w") as pyzip:
         for pattern in patterns:
             for f in glob.iglob(os.path.join(bp, pattern)):
                 pyzip.write(f, f[len(bp):])

@@ -91,8 +91,7 @@ class PyQt5Configure(build.Builder):
                      "-b", bp,
                      "-d", os.path.join(bp, "Lib", "site-packages"),
                      "-v", os.path.join(bp, "sip", "PyQt5"),
-                     "--sip-incdir", os.path.join(bp, "Include"),
-                     "--spec=win32-msvc"] \
+                     "--sip-incdir", os.path.join(bp, "Include")] \
                      + list(itertools.chain(*[("--enable", s) for s in enabled_modules])),
                     env=pyqt5_env(),
                     cwd=self._context["build_path"],

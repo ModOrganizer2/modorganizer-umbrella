@@ -99,6 +99,7 @@ config = {
     #the usvfs version below will only be used if
     'usvfs_version': '0.4.1',
 
+
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code
     'Installer': False, # Used to create installer at end of build, Forces everything to be built

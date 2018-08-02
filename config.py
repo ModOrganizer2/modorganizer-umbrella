@@ -97,7 +97,7 @@ config = {
     'zlib_version': '1.2.11',
 
     #the usvfs version below will only be used if
-    'usvfs_version': '0.3.1.0',
+    'usvfs_version': '0.4.1',
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code

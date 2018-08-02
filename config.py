@@ -45,7 +45,7 @@ def gen_search_folders(*subpath):
 
 config = {
 
-    'Release_Build': False,  #Used to override certain versions in umbrella when doing an officail release
+    'Release_Build': True,  #Used to override certain versions in umbrella when doing an officail release
                             #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
                                  # eg.  'E:\Microsoft Visual Studio 14.0'
@@ -65,7 +65,7 @@ config = {
     'num_jobs': multiprocessing.cpu_count() + 1,
 
     'Main_Author': 'Modorganizer2',  # the current maintainer
-    'Main_Branch': "Develop",
+    'Main_Branch': "master",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 

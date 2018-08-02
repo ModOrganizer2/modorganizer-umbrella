@@ -49,8 +49,9 @@ config = {
                             #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
                                  # eg.  'E:\Microsoft Visual Studio 14.0'
-    'qt_CustomInstallPath': '',  # If you installed QT to a custom location put the full path here
-                                 # eg.  'Z:\Dev\QT'
+    'qt_CustomInstallPath': r'',  # If you installed QT to a custom location put the full path here
+                                  # eg.  r'Z:\Dev\QT' if you have Z:\Dev\QT\5.10.0\msvc2017_64\bin\qmake.exe
+                                  # The r before the start of the string prevents backslashes being treated as special characters
     'build_type': "RelWithDebInfo", # build type.  other possible types could be Debug.  not tested
     'rebuild': True,  # if set, does a clean build of the VS projects (for now only usvfs)
     'offline': False,  # if set, non-mandatory network requests won't be made eg: updating source repositories.
@@ -76,12 +77,12 @@ config = {
     'grep_version': '2.5.4',
     'icu_version': '59',
     'icu_version_minor': '1',
-    'loot_version': '0.12.5',
-    'loot_commit': 'g9ba600c',
+    'loot_version': '0.13.6',
+    'loot_commit': 'g958d0cf',
     'lz4_version': 'v1.8.1',
     'lz4_version_minor': '2', # leave empty if no minor version
     'nasm_version': '2.13.03',
-    'nmm_version': '0.65.2',
+    'nmm_version': '0.65.4',
     'openssl_version': '1.0.2o',
     'pyqt_version': '5.10',
     'python_version': '2.7',
@@ -96,7 +97,8 @@ config = {
     'zlib_version': '1.2.11',
 
     #the usvfs version below will only be used if
-    'usvfs_version': 'v0.4.0.0',
+    'usvfs_version': '0.4.1',
+
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code

@@ -84,7 +84,7 @@ class Copy(Task):
             if os.path.isfile(source):
                 shutil.copy(source, final_filepath)
             else:
-                print "{} doesn't exist, Can't copy".format(source)
+                print("{} doesn't exist, Can't copy".format(source))
 
         return True
 

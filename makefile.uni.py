@@ -167,7 +167,7 @@ if config['transifex_Enable']:
 
 def copy_licenses(context):
     boost_version = config['boost_version']
-    boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
+    boost_tag_version = ".".join([_f for _f in [boost_version, config['boost_version_tag']] if _f])
     license_path = os.path.join(config["paths"]["install"], "bin", "licenses")
     build_path = config["paths"]["build"]
     try:

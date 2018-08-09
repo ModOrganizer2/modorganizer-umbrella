@@ -20,11 +20,10 @@ import networkx as nx
 from unibuild.utility.singleton import Singleton
 
 
-class TaskManager(object):
+class TaskManager(object, metaclass=Singleton):
     """
     manages task dependency graph
     """
-    __metaclass__ = Singleton
 
     def __init__(self):
         self.__topLevelTask = []

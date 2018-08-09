@@ -17,16 +17,16 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import os.path
 import sys
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
-import pip
+import subprocess
 
 
 def download(url, filename):
     if os.path.exists(filename):
         return False
 
-    data = urllib2.urlopen(url)
+    data = urllib.request.urlopen(url)
     with open(filename, 'wb') as outfile:
         while True:
             block = data.read(4096)
@@ -47,7 +47,7 @@ for dep in [
 for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "networkx", "pydot", "pydotplus"]:
     destpath = "{0}/{1}".format(path, dep)
     if not os.path.exists(destpath):
-        pip.main(["install", "--target={0}".format(destpath), dep])
+        subprocess.check_call(["python", "-m", "pip", "install", "--target={0}".format(destpath), dep])
     sys.path.append(destpath)
 
 """ neither of these work. particularly building pygraphviz requires a specific VC version in a specific location

@@ -93,7 +93,7 @@ class GenerateTranslations(build.Builder):
             with open(serrpath, "w") as serr:
                 data = {}
                 data = GenerateFiles(self._context["build_path"],data)
-                for i, o in data.items():
+                for i, o in list(data.items()):
                     proc = Popen([qt_lrelease_binary, i,
                                 "-qm",
                                  o],

@@ -21,9 +21,9 @@ import shutil
 import subprocess
 import sys
 import tarfile
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import zipfile
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from config import config
 from unibuild.retrieval import Retrieval
@@ -91,14 +91,14 @@ class URLDownload(Retrieval):
     def download(self, output_file_path, progress):
         logging.info("Downloading {} to {}".format(self.__url, output_file_path))
         progress.job = "Downloading"
-        data = urllib2.urlopen(self.__url)
+        data = urllib.request.urlopen(self.__url)
         with open(output_file_path, 'wb') as outfile:
             meta = data.info()
             length_str = meta.getheaders("Content-Length")
             if length_str:
                 progress.maximum = int(length_str[0])
             else:
-                progress.maximum = sys.maxint
+                progress.maximum = sys.maxsize
 
             bytes_read = 0
             while True:
@@ -128,7 +128,7 @@ class URLDownload(Retrieval):
                         os.remove(os.path.join(output_file_path, ls))
 
         logging.info("Extracting {}".format(self.__file_path))
-        output_file_path = u"\\\\?\\" + os.path.abspath(output_file_path)
+        output_file_path = "\\\\?\\" + os.path.abspath(output_file_path)
 
         def extractProgress():
             progress.value = 0

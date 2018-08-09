@@ -85,8 +85,8 @@ class CMake(Builder):
             with on_exit(lambda: progress.finish()):
                 with open(soutpath, "w") as sout:
                     with open(serrpath, "w") as serr:
-                        cmdline = [config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments
-                        print "{}> {}".format(build_path, ' '.join(cmdline))
+                        cmdline = [config["paths"]["cmake"], "-G", "Ninja", ".."] + self.__arguments
+                        print("{}> {}".format(build_path, ' '.join(cmdline)))
                         proc = Popen(cmdline,
                             cwd=build_path,
                             env=config["__environment"],
@@ -96,7 +96,7 @@ class CMake(Builder):
                             raise Exception("failed to generate makefile (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
 
                         cmdline = [config['tools']['make'], "verbose=1"]
-                        print "{}> {}".format(build_path, ' '.join(cmdline))
+                        print("{}> {}".format(build_path, ' '.join(cmdline)))
                         proc = Popen(cmdline,
                                      shell=True,
                                      env=config["__environment"],
@@ -120,7 +120,7 @@ class CMake(Builder):
 
                         if self.__install:
                             cmdline = [config['tools']['make'], "install"]
-                            print "{}> {}".format(build_path, ' '.join(cmdline))
+                            print("{}> {}".format(build_path, ' '.join(cmdline)))
                             proc = Popen(cmdline,
                                          shell=True,
                                          env=config["__environment"],
@@ -130,8 +130,8 @@ class CMake(Builder):
                             if proc.returncode != 0:
                                 raise Exception("failed to install (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
 
-        except Exception, e:
-            logging.error(e.message)
+        except Exception as e:
+            logging.exception(e)
             return False
         return True
 
@@ -265,8 +265,8 @@ class CMakeVS(Builder):
                         if proc.returncode != 0:
                             raise Exception("failed to generate vs project (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
 
-        except Exception, e:
-            logging.error(e.message)
+        except Exception as e:
+            logging.exception(e)
             return False
 
         return True

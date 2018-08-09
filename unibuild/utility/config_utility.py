@@ -38,7 +38,7 @@ def cmake_parameters():
     from config import config
 
     boost_version = config['boost_version']
-    boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
+    boost_tag_version = ".".join([_f for _f in [boost_version, config['boost_version_tag']] if _f])
 
     paths_build = config['paths']['build']
 

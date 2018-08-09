@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import logging
+import traceback
 import os
 import re
 from subprocess import PIPE, Popen
@@ -101,7 +102,7 @@ class MSBuild(Builder):
                             args.append("/target:{}".format(self.__project))
 
                         wdir = str(self.__working_directory or self._context["build_path"])
-                        print "{}> {}".format(wdir, ' '.join(args))
+                        print("{}> {}".format(wdir, ' '.join(args)))
                         proc = Popen(args,
                             env=environment,
                             shell=True,
@@ -129,7 +130,7 @@ class MSBuild(Builder):
         #                   proc.returncode, os.path.join(wdir, "msbuild.log"))
         #     return False
 
-        except Exception, e:
-            logging.error(e.message)
+        except Exception as e:
+            logging.exception(e)
             return False
         return True

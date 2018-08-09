@@ -21,7 +21,7 @@ from unibuild.progress import Progress
 from unibuild.project import Project
 from unibuild import Task
 from config import config
-import imp
+from importlib import machinery
 import sys
 import traceback
 import logging
@@ -120,7 +120,7 @@ def main():
 
     logging.debug("building dependency graph")
     manager = TaskManager()
-    imp.load_source(args.builddir, args.file)
+    machinery.SourceFileLoader(args.builddir, args.file).load_module()
     build_graph = manager.create_graph({})
     assert isinstance(build_graph, nx.DiGraph)
 
@@ -180,7 +180,7 @@ def main():
                         else:
                             logging.critical("task %s skipped", node)
                         sys.stdout.write("\n")
-            except Exception, e:
+            except Exception as e:
                 logging.error("Task %s failed: %s", task.name, e)
                 raise
 
@@ -191,13 +191,13 @@ def main():
 
 if __name__ == "__main__":
     try:
-        if sys.version < "3":
+        if sys.version >= "3":
             exitcode = main()
             if not exitcode == 0:
                 sys.exit(exitcode)
         else:
-            logging.error("You started unimake with Python 3 but we only support Python 2!")
+            logging.error("You started unimake with Python 2 but we only support Python 3!")
             sys.exit(1)
-    except Exception, e:
+    except Exception as e:
         traceback.print_exc(file=sys.stdout)
         sys.exit(1)

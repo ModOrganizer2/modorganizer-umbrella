@@ -30,7 +30,7 @@ def path_or_default(filename, *default):
     defaults = gen_search_folders(*default)
     res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
     if res is None:
-        print 'Cannot find', filename, 'on your path or in', os.path.join('', *default)
+        print('Cannot find', filename, 'on your path or in', os.path.join('', *default))
         global missing_prerequisites
         missing_prerequisites = True
     return res
@@ -133,5 +133,5 @@ config['paths'] = {
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
 if missing_prerequisites:
-    print '\nMissing prerequisites listed above - cannot continue'
+    print('\nMissing prerequisites listed above - cannot continue')
     exit(1)

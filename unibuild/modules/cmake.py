@@ -85,7 +85,7 @@ class CMake(Builder):
             with on_exit(lambda: progress.finish()):
                 with open(soutpath, "w") as sout:
                     with open(serrpath, "w") as serr:
-                        cmdline = [config["paths"]["cmake"], "-G", "Ninja", ".."] + self.__arguments
+                        cmdline = [config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments
                         print("{}> {}".format(build_path, ' '.join(cmdline)))
                         proc = Popen(cmdline,
                             cwd=build_path,

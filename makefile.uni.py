@@ -46,7 +46,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-uibase", "uibase", config['Main_Branch'], ["Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-lootcli", "lootcli", config['Main_Branch'], ["lootapi", "boost"], True),
     (config['Main_Author'], "modorganizer-esptk", "esptk", config['Main_Branch'], ["boost"], True),
-    (config['Main_Author'], "modorganizer-bsatk", "bsatk", config['Main_Branch'], ["zlib", "boost"], True),
+    (config['Main_Author'], "modorganizer-bsatk", "bsatk", config['Main_Branch'], ["zlib", "boost", "lz4"], True),
     (config['Main_Author'], "modorganizer-nxmhandler", "nxmhandler", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-helper", "helper", config['Main_Branch'], ["Qt5","boost"], True),
     (config['Main_Author'], "modorganizer-game_gamebryo", "game_gamebryo", config['Main_Branch'], ["Qt5", "modorganizer-uibase",
@@ -151,15 +151,6 @@ Project("python_zip") \
             .depend("Python"))
 
 
-if config['Installer']:
-    # build_installer = cmake.CMake().arguments(cmake_parameters
-    # +["-DCMAKE_INSTALL_PREFIX:PATH={}/installer".format(config["__build_base_path"])]).install()
-    wixinstaller = Project("WixInstaller") \
-        .depend(github.Source(config['Main_Author'], "modorganizer-WixInstaller", config['Main_Branch'], super_repository=tl_repo)
-            .set_destination("WixInstaller")) \
-                .depend("modorganizer").depend("usvfs").depend("usvfs_32")
-
-
 if config['transifex_Enable']:
     from unibuild.projects import translations
     translationsBuild = Project("translationsBuild").depend("translations")
@@ -200,3 +191,11 @@ Project("licenses") \
         .depend(urldownload.URLDownload("https://www.gnu.org/licenses/gpl-3.0.txt", 0))
         .depend(urldownload.URLDownload("https://raw.githubusercontent.com/Microsoft/DirectXTex/master/LICENSE", 0).set_destination("DXTex.txt"))
         .depend("modorganizer"))
+
+if config['Installer']:
+    # build_installer = cmake.CMake().arguments(cmake_parameters
+    # +["-DCMAKE_INSTALL_PREFIX:PATH={}/installer".format(config["__build_base_path"])]).install()
+    wixinstaller = Project("WixInstaller") \
+        .depend(github.Source(config['Main_Author'], "modorganizer-WixInstaller", "master", super_repository=tl_repo)
+            .set_destination("WixInstaller")) \
+                .depend("modorganizer").depend("usvfs").depend("usvfs_32").depend("WixToolkit")

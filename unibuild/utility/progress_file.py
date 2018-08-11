@@ -16,19 +16,20 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import os
+import io
 
 
-class ProgressFile:
+class ProgressFile(io.FileIO):
     def __init__(self, filename, progress_cb):
-        self.f = open(filename, "rb")
+        super(ProgressFile, self).__init__(filename, "rb")
 
         assert callable(progress_cb)
         self.__progress_cb = progress_cb
-        self.f.seek(0, os.SEEK_END)
-        self.__size = self.f.tell()
-        self.f.seek(0, os.SEEK_SET)
+        self.seek(0, os.SEEK_END)
+        self.__size = self.tell()
+        self.seek(0, os.SEEK_SET)
 
     def read(self, *args, **kwargs):
-        self.__progress_cb(self.f.tell(), self.__size)
+        self.__progress_cb(self.tell(), self.__size)
 
-        return self.f.read(*args, **kwargs)
+        return super(ProgressFile, self).read(*args, **kwargs)

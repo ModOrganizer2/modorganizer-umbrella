@@ -93,10 +93,9 @@ class URLDownload(Retrieval):
         progress.job = "Downloading"
         data = urllib.request.urlopen(self.__url)
         with open(output_file_path, 'wb') as outfile:
-            meta = data.info()
-            length_str = meta.getheaders("Content-Length")
+            length_str = data.getheader("Content-Length")
             if length_str:
-                progress.maximum = int(length_str[0])
+                progress.maximum = int(length_str)
             else:
                 progress.maximum = sys.maxsize
 

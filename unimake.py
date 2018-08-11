@@ -39,8 +39,8 @@ def progress_callback(job, percentage):
         sys.stdout.write("\n")
     else:
         pb_length = 50
-        filled = int((pb_length * percentage) / 100)  # cast to int may be necessary in python 3
-        # sys.stdout.write("\r%d%%" % percentage)
+        filled = int((pb_length * percentage) / 100)
+        #sys.stdout.write("\r%d%%" % percentage)
         sys.stdout.write("\r%s [%s%s] %d%%" % (job, "=" * filled, " " * (pb_length - filled), percentage))
 
     sys.stdout.flush()

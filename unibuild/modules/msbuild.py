@@ -112,7 +112,7 @@ class MSBuild(Builder):
                         progress.maximum = 100
                         while proc.poll() is None:
                             while True:
-                                line = proc.stdout.readline()
+                                line = proc.stdout.readline().decode("utf-8")
                                 if line != '':
                                     match = re.search("^\\[([0-9 ][0-9 ][0-9])%\\]", line)
                                     if match is not None:

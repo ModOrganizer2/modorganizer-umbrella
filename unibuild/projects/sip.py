@@ -96,4 +96,5 @@ Project('sip') \
     .depend(build.Execute(copy_pyd)
             .depend(build.Make(environment=sip_environment()).install()
                     .depend(SipConfigure()
+                            .depend("Python")
                             .depend(sip_url))))

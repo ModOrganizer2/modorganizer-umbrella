@@ -131,10 +131,6 @@ for author, git_path, path, branch, dependencies, Build in [
 
 
 def python_core_collect(context):
-    from unibuild.libpatterns import patterns
-    import glob
-    from zipfile import ZipFile
-
     ip = os.path.join(config["paths"]["install"], "bin")
     bp = python.python['build_path']
 
@@ -143,7 +139,7 @@ def python_core_collect(context):
     except OSError:
         pass
 
-    shutil.copytree(os.path.join(bp, "Lib"), os.path.join(ip, "pythoncore"), ignore=shutil.ignore_patterns("site-packages"))
+    shutil.copytree(os.path.join(bp, "Lib"), os.path.join(ip, "pythoncore"), ignore=shutil.ignore_patterns("site-packages", '__pycache__'))
 
     return True
 

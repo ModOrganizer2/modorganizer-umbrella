@@ -71,11 +71,10 @@ boost_prepare = Project("boost_prepare") \
                                          .replace("\\", '/'),
                                          os.path.join(python.python['build_path']).replace("\\", '/'),
                                          "64" if config['architecture'] == "x86_64" else "32"))
-            .depend(build.Execute(patchboost)
                     .depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
-                                                    .format(boost_version,boost_tag_version.replace(".", "_"))
-                                                    , tree_depth=1)
-                            .set_destination("boost_{}".format(boost_tag_version.replace(".", "_")))))))
+                                                  .format(boost_version,boost_tag_version.replace(".", "_"))
+                                                  , tree_depth=1)
+                            .set_destination("boost_{}".format(boost_tag_version.replace(".", "_"))))))
 
 if config['architecture'] == 'x86_64':
   # This is a convient way to make each boost flavors we build have these dependencies:

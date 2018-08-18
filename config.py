@@ -71,7 +71,7 @@ config = {
 
     # manualy set all versions
     '7zip_version': '18.05',
-    'boost_version': '1.67.0',
+    'boost_version': '1.68.0',
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',

@@ -71,7 +71,7 @@ config = {
 
     # manualy set all versions
     '7zip_version': '18.05',
-    'boost_version': '1.67.0',
+    'boost_version': '1.68.0',
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
@@ -112,7 +112,7 @@ config = {
     # Transifex Translation configuration
     'transifex_Enable': False, # this should only be changed to true when doing a release
     'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
-    'transifex-client_version': '0.13.3',
+    'transifex-client_version': '0.13.4',
     'transifex_minimum_percentage': '60'
 }
 config['paths'] = {

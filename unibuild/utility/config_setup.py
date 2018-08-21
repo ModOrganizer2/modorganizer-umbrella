@@ -52,10 +52,12 @@ def init_config(args):
                                                            install_dir=args.installdir)
 
     python = get_from_hklm("HKEY_LOCAL_MACHINE", r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']), "")
+    if python is None:
+        python = get_from_hklm("HKEY_CURRENT_USER", r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']), "")
     if python is not None:
-        config['paths']['python'] = Lazy(lambda: os.path.join(python, "python.exe"))
+        config['paths']['python'] = os.path.join(python, "python.exe")
     else:
-        config['paths']['python'] = Lazy(lambda: os.path.join(get_from_hklm("HKEY_CURRENT_USER", r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(config['python_version']), ""), "python.exe"))
+        config['paths']['python'] = sys.executable
 
     # parse -s argument.  Example -s paths.build=bin would set config[paths][build] to bin
     if args.set:
@@ -91,7 +93,7 @@ def dump_config():
     #logging.debug(" Config: config['paths']['ruby']=%s", config['paths']['ruby'])
     #logging.debug(" Config: config['paths']['svn']=%s", config['paths']['svn'])
     logging.debug("  Config: config['paths']['7z']=%s", config['paths']['7z'])
-    logging.debug("  Config: config['paths']['python']=%s", Evaluate(config['paths']['python']))
+    logging.debug("  Config: config['paths']['python']=%s", config['paths']['python'])
     logging.debug("  Config: config['paths']['visual_studio']=%s", config['paths']['visual_studio'])
     logging.debug("  Config: config['vc_version']=%s", config['vc_version'])
 

@@ -18,7 +18,6 @@
 import os.path
 import sys
 import urllib.request, urllib.error, urllib.parse
-
 import subprocess
 
 
@@ -49,20 +48,3 @@ for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "
     if not os.path.exists(destpath):
         subprocess.check_call(["python", "-m", "pip", "install", "--target={0}".format(destpath), dep])
     sys.path.append(destpath)
-
-""" neither of these work. particularly building pygraphviz requires a specific VC version in a specific location
-
-
-for dep in ["pygraphviz"]:
-    pip.main(["install", "--install-option=\"--prefix={}\"".format(path), dep])
-
-
-for dep in ["https://pypi.python.org/packages/source/p/pygraphviz/pygraphviz-1.3.1.tar.gz"]:
-    basename = os.path.basename(dep)
-    libpath = os.path.join(path, basename)
-    if download(dep, libpath):
-        with tarfile.open(libpath, 'r') as tar:
-            tar.extractall(path=path)
-        cwd = os.path.join(path, os.path.splitext(os.path.splitext(basename)[0])[0])
-        call(["python", "setup.py", "install"], cwd=cwd)
-"""

@@ -52,7 +52,7 @@ def pyqt5_env():
         os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),]) + ";" + res['path']
     res['LIB'] = os.path.join(__build_base_path, "install", "libs") + ";" + res['LIB']
     res['CL'] = "/MP"
-    res['pythonhome'] = python.python['build_path']
+    res['PYTHONHOME'] = python.python['build_path']
     return res
 
 
@@ -65,10 +65,10 @@ def copy_pyd(context):
     make_sure_path_exists(os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5"))
     srcdir = os.path.join(python.python['build_path'], "Lib", "site-packages", "PyQt5")
     dstdir = os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5")
-    shutil.copy(os.path.join(srcdir, "__init__.py"), dstdir)
-    shutil.copy(os.path.join(srcdir, "QtCore.pyd"), dstdir)
-    shutil.copy(os.path.join(srcdir, "QtGui.pyd"), dstdir)
-    shutil.copy(os.path.join(srcdir, "QtWidgets.pyd"), dstdir)
+    shutil.copy(os.path.join(srcdir, "__init__.py"), os.path.join(dstdir, "__init__.py"))
+    shutil.copy(os.path.join(srcdir, "QtCore.pyd"), os.path.join(dstdir, "QtCore.pyd"))
+    shutil.copy(os.path.join(srcdir, "QtGui.pyd"), os.path.join(dstdir, "QtGui.pyd"))
+    shutil.copy(os.path.join(srcdir, "QtWidgets.pyd"), os.path.join(dstdir, "QtWidgets.pyd"))
     return True
 
 
@@ -91,8 +91,7 @@ class PyQt5Configure(build.Builder):
                      "-b", bp,
                      "-d", os.path.join(bp, "Lib", "site-packages"),
                      "-v", os.path.join(bp, "sip", "PyQt5"),
-                     "--sip-incdir", os.path.join(bp, "Include"),
-                     "--spec=win32-msvc"] \
+                     "--sip-incdir", os.path.join(bp, "Include")] \
                      + list(itertools.chain(*[("--enable", s) for s in enabled_modules])),
                     env=pyqt5_env(),
                     cwd=self._context["build_path"],

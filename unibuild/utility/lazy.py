@@ -85,7 +85,7 @@ class Lazy(object):
 
     def peek(self):
         if self.__value is None:
-            return self.__func.func_doc
+            return self.__func.__doc__
         return self.__value
 
 

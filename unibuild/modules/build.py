@@ -210,8 +210,8 @@ class Execute(Builder):
     @property
     def name(self):
         if self._context is None:
-            return "execute {}".format(self.__name or self.__function.func_name)
-        return "execute {}_{}".format(self._context.name, self.__name or self.__function.func_name)
+            return "execute {}".format(self.__name or self.__function.__name__)
+        return "execute {}_{}".format(self._context.name, self.__name or self.__function.__name__)
 
     def process(self, progress):
         return self.__function(context=self._context)
@@ -295,7 +295,7 @@ class Run_With_Output(Builder):
                      shell=True)
         proc.communicate()
         if proc.returncode != 0:
-            if isinstance(proc.returncode, (str, unicode)):
+            if isinstance(proc.returncode, str):
                 logging.error("failed to run %s (returncode %s), see %s and %s",
                               self.__command(), proc.returncode)
                 return False

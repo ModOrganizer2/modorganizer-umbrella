@@ -28,14 +28,15 @@ from unibuild.modules import build, sourceforge, urldownload
 from unibuild.projects import python
 
 sip_version = config['sip_version']
-python_version = config.get('python_version', "2.7") + config.get('python_version_minor', ".13")
-python_path = os.path.join(config['paths']['build'], "Python-{}".format(config['python_version'] + config['python_version_minor']))
+python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
+python_path = os.path.join(config['paths']['build'], "python-{}".format(config['python_version'] + config['python_version_minor']))
 sip_url = sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)
+
 
 def sip_environment():
     result = config['__environment'].copy()
     result['LIB'] += os.path.join(python_path, "PCbuild", "amd64")
-    logging.debug(os.path.join(python_path, "PCbuild", "amd64"))
+    logging.debug(os.path.join(os.path.join(config['paths']['build'], "Python-{}".format(config['python_version'] + config['python_version_minor'])), "PCbuild", "amd64"))
     return result
 
 
@@ -49,8 +50,10 @@ def make_sure_path_exists(path):
 
 def copy_pyd(context):
     make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
-    for f in glob(os.path.join(python_path, "Lib", "site-packages", "sip.pyd")):
-        shutil.copy(f, os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
+    os.makedirs(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
+    for f in glob(os.path.join(python_path, "Lib", "site-packages", "PyQt5", "sip.pyd")):
+        shutil.copy(f, os.path.join(config["__build_base_path"],
+                                    "install", "bin", "plugins", "data", "PyQt5", "sip.pyd"))
     return True
 
 
@@ -60,7 +63,7 @@ class SipConfigure(build.Builder):
 
     @property
     def name(self):
-        return "sip configure"
+        return "sip configure module"
 
     def process(self, progress):
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
@@ -70,11 +73,12 @@ class SipConfigure(build.Builder):
                 logging.debug("123 %s", python.python['build_path'])
                 bp = python.python['build_path']
 
-                proc = Popen([os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",
+                proc = Popen([os.path.join(bp, "PCbuild", "amd64", "python.exe"), "configure.py",
                      "-b", bp,
                      "-d", os.path.join(bp, "Lib", "site-packages"),
                      "-v", os.path.join(bp, "sip"),
-                     "-e", os.path.join(bp, "include")],
+                     "-e", os.path.join(bp, "include"),
+                     "--sip-module=PyQt5.sip"],
                     env=config["__environment"],
                     cwd=self._context["build_path"],
                     shell=True,

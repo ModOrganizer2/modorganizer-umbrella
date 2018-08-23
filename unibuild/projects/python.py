@@ -67,6 +67,8 @@ def install(context):
                 os.path.join(python['build_path'], "Include", "pyconfig.h"))
     for f in glob(os.path.join(*path_segments)):
         shutil.copy(f, os.path.join(path_install, "libs"))
+    shutil.copy(os.path.join(path_install, "libs", "python{}.lib".format(python_version.replace(".", ""))),
+                os.path.join(path_install, "libs", "python3.lib"))
     return True
 
 def download(context):
@@ -78,5 +80,5 @@ python = Project("Python") \
             .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
                                     project_PlatformToolset=config['vc_platformtoolset'])
                     .depend(build.Run(upgrade_args, name="upgrade python project")
-                            .depend(github.Source("LePresidente", "cpython-1", config.get('python_version', "2.7"), shallowclone=True) \
+                            .depend(github.Source("python", "cpython", "v{}{}".format(config['python_version'], config['python_version_minor']), shallowclone=True)
                                     .set_destination("python-{}".format(python_version + python_version_minor))))))

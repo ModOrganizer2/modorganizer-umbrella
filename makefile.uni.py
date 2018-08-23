@@ -130,24 +130,22 @@ for author, git_path, path, branch, dependencies, Build in [
                        .set_destination(path))
 
 
-def python_zip_collect(context):
-    from unibuild.libpatterns import patterns
-    import glob
-    from zipfile import ZipFile
-
+def python_core_collect(context):
     ip = os.path.join(config["paths"]["install"], "bin")
     bp = python.python['build_path']
 
-    with ZipFile(os.path.join(ip, "python27.zip"), "w") as pyzip:
-        for pattern in patterns:
-            for f in glob.iglob(os.path.join(bp, pattern)):
-                pyzip.write(f, f[len(bp):])
+    try:
+        os.remove(os.path.join(ip, "pythoncore"))
+    except OSError:
+        pass
+
+    shutil.copytree(os.path.join(bp, "Lib"), os.path.join(ip, "pythoncore"), ignore=shutil.ignore_patterns("site-packages", '__pycache__'))
 
     return True
 
 
-Project("python_zip") \
-    .depend(build.Execute(python_zip_collect)
+Project("python_core") \
+    .depend(build.Execute(python_core_collect)
             .depend("Python"))
 
 
@@ -158,7 +156,7 @@ if config['transifex_Enable']:
 
 def copy_licenses(context):
     boost_version = config['boost_version']
-    boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
+    boost_tag_version = ".".join([_f for _f in [boost_version, config['boost_version_tag']] if _f])
     license_path = os.path.join(config["paths"]["install"], "bin", "licenses")
     build_path = config["paths"]["build"]
     try:

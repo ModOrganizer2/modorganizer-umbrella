@@ -30,7 +30,7 @@ def path_or_default(filename, *default):
     defaults = gen_search_folders(*default)
     res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
     if res is None:
-        print 'Cannot find', filename, 'on your path or in', os.path.join('', *default)
+        print('Cannot find', filename, 'on your path or in', os.path.join('', *default))
         global missing_prerequisites
         missing_prerequisites = True
     return res
@@ -79,17 +79,17 @@ config = {
     'icu_version_minor': '1',
     'loot_version': '0.13.6',
     'loot_commit': 'g958d0cf',
-    'lz4_version': 'v1.8.1',
-    'lz4_version_minor': '2', # leave empty if no minor version
+    'lz4_version': 'v1.8.2',
+    'lz4_version_minor': '', # leave empty if no minor version
     'nasm_version': '2.13.03',
     'nmm_version': '0.65.4',
     'openssl_version': '1.0.2o',
-    'pyqt_version': '5.10',
-    'python_version': '2.7',
-    'python_version_minor': '.14',
-    'sip_version': '4.19.8',
-    'qt_version': '5.10',
-    'qt_version_minor': '0',
+    'pyqt_version': '5.11.2',
+    'python_version': '3.7',
+    'python_version_minor': '.0',
+    'sip_version': '4.19.12',
+    'qt_version': '5.11',
+    'qt_version_minor': '1',
     'vc_platformtoolset': 'v141',
     'vc_version': '15.0',
     'vc_version_for_boost': '14.1',
@@ -134,5 +134,5 @@ config['paths'] = {
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
 if missing_prerequisites:
-    print '\nMissing prerequisites listed above - cannot continue'
+    print('\nMissing prerequisites listed above - cannot continue')
     exit(1)

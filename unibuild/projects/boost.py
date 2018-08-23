@@ -24,7 +24,7 @@ from unibuild.projects import python
 import patch
 
 boost_version = config['boost_version']
-boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
+boost_tag_version = ".".join([_f for _f in [boost_version, config['boost_version_tag']] if _f])
 boost_path = "{}/boost_{}".format(config["paths"]["build"], boost_tag_version.replace(".", "_"))
 python_version = config['python_version']
 vc_version = config['vc_version_for_boost']

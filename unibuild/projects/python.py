@@ -62,11 +62,12 @@ def install(context):
     path_segments = [context['build_path'], "PCbuild"]
     if config['architecture'] == "x86_64":
         path_segments.append("amd64")
-    path_segments.append("*.lib")
     shutil.copy(os.path.join(python['build_path'], "PC", "pyconfig.h"),
                 os.path.join(python['build_path'], "Include", "pyconfig.h"))
-    for f in glob(os.path.join(*path_segments)):
+    for f in glob(os.path.join(*path_segments,"*.lib")):
         shutil.copy(f, os.path.join(path_install, "libs"))
+    for f in glob(os.path.join(*path_segments,"*.dll")):
+        shutil.copy(f, os.path.join(path_install, "bin"))
     shutil.copy(os.path.join(path_install, "libs", "python{}.lib".format(python_version.replace(".", ""))),
                 os.path.join(path_install, "libs", "python3.lib"))
     return True

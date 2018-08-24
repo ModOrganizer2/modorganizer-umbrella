@@ -135,7 +135,7 @@ def python_core_collect(context):
     bp = python.python['build_path']
 
     try:
-        os.remove(os.path.join(ip, "pythoncore"))
+        shutil.rmtree(os.path.join(ip, "pythoncore"))
     except OSError:
         pass
 

@@ -19,8 +19,9 @@ Now you need to install all required software to build Mod Organizer.
   * 7zip (Latest 64Bit) Link: http://www.7-zip.org/a/7z1700-x64.exe
   * CMake (latest 64bit)  Link: https://cmake.org/files/v3.10/cmake-3.10.2-win64-x64.msi
   * Git Link: https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe
-  * Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi
-  * Qt 5.10.0 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+  * ~~Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi~~
+  * Python 3.7 (64Bit) Link: https://www.python.org/downloads/windows/
+  * Qt 5.11.1 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
     #### Qt Packages required:
     * msvc2017-64
     * qtscript
@@ -39,7 +40,7 @@ Now you need to install all required software to build Mod Organizer.
       * "Windows Universal CRT SDK" (Under Compilers, build tools, and runtimes)
       * "Windows 8.1 SDK" (near the bottom)
 
-Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
+Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py`` or ``python.exe unimake.py -d "<destination\path>"`` to build to a custom output path (replace <destination\path>) instead of inside the umbrella repo itself.
 
 If you wish to rebuild only one target once everything is complete, you simply delete the relevant txt file in the progress folder, e.g C:\modorganizer-umbrella\progress\modorganizer_complete_cmake modorganizer.txt
 Then rerun the build script and it will rebuild the relevant project.

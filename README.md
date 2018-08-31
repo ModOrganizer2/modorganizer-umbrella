@@ -40,7 +40,7 @@ Now you need to install all required software to build Mod Organizer.
       * "Windows Universal CRT SDK" (Under Compilers, build tools, and runtimes)
       * "Windows 8.1 SDK" (near the bottom)
 
-Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py`` or ``python.exe unimake.py -d "<destination\path>"`` to build to a custom output path (replace <destination\path>) instead of inside the umbrella repo itself.
+Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
 
 If you wish to rebuild only one target once everything is complete, you simply delete the relevant txt file in the progress folder, e.g C:\modorganizer-umbrella\progress\modorganizer_complete_cmake modorganizer.txt
 Then rerun the build script and it will rebuild the relevant project.

@@ -178,7 +178,7 @@ def copy_licenses(context):
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "License.txt"), os.path.join(license_path, "7zip.txt"))
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "copying.txt"), os.path.join(license_path, "GNU-LGPL-v2.1.txt"))
     shutil.copy(os.path.join(build_path, "NexusClientCli", "NexusClientCLI", "Castle_License.txt"), os.path.join(license_path, "Castle.txt"))
-    shutil.copy(os.path.join(build_path, "Nexus-Mod-Manager", "AntlrBuildTask", "LICENSE.txt"), os.path.join(license_path, "AntlrBuildTask.txt"))
+    shutil.copy(os.path.join(build_path, "Nexus-Mod-Manager", "lib", "Antlr", "LICENSE.txt"), os.path.join(license_path, "AntlrBuildTask.txt"))
     shutil.copy(os.path.join(config["paths"]["download"], "LICENSE"), os.path.join(license_path, "DXTex.txt"))
     return True
 

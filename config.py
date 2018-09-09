@@ -75,15 +75,15 @@ config = {
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
-    'icu_version': '59',
+    'icu_version': '62',
     'icu_version_minor': '1',
     'loot_version': '0.13.6',
     'loot_commit': 'g958d0cf',
     'lz4_version': 'v1.8.2',
     'lz4_version_minor': '', # leave empty if no minor version
     'nasm_version': '2.13.03',
-    'nmm_version': '0.65.4',
-    'openssl_version': '1.0.2o',
+    'nmm_version': '0.65.9',
+    'openssl_version': '1.0.2p',
     'pyqt_version': '5.11.2',
     'python_version': '3.7',
     'python_version_minor': '.0',

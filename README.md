@@ -19,7 +19,7 @@ Now you need to install all required software to build Mod Organizer.
   * 7zip (Latest 64Bit) Link: http://www.7-zip.org/a/7z1700-x64.exe
   * CMake (latest 64bit)  Link: https://cmake.org/files/v3.10/cmake-3.10.2-win64-x64.msi
   * Git Link: https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe
-  * ~~Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi~~
+  * ~~Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi~~ *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.`
   * Python 3.7 (64Bit) Link: https://www.python.org/downloads/windows/
   * Qt 5.11.1 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
     #### Qt Packages required:
@@ -53,7 +53,7 @@ This umbrella project can optionally produce IDE projects for developers.
 
 ## Notes
 * While mostly functional this project is work in progress and should only be used by those with the will to spend some time.
-* Currently all dependencies are built from source, including monsters like Qt and python. This is necessary to produce releasable bundles (pre-built python would introduce additional run-time dependencies, pre-built Qt doesn't provide debug symbols (pdbs)) but it is overkill if all you want to do is contribute to a plugin.
+* Currently all dependencies (except, optionally, Qt) are built from source, including monsters like Boost and Python. This is necessary to produce releasable bundles (pre-built python would introduce additional run-time dependencies, pre-built Qt doesn't provide debug symbols (pdbs)) but it is overkill if all you want to do is contribute to a plugin.
 
 ## Concept
 At its base this is actually a fairly simple program. Arbitrary command calls are wrapped inside Task objects (grouped as projects) and put into a dependency graph.

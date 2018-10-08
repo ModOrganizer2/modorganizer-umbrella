@@ -31,7 +31,7 @@ def qt_inst_path():
     if config['binary_qt']:
         qt_inst_path = config["paths"]["qt_binary_install"]
     else:
-        qt_inst_path = "{}/qt5".format(build_path).replace("/", os.path.sep)
+        qt_inst_path = "{}/qt5".format(config['paths']['build']).replace("/", os.path.sep)
     return qt_inst_path
 
 def cmake_parameters():
@@ -46,7 +46,7 @@ def cmake_parameters():
                         "-DDEPENDENCIES_DIR={}".format(paths_build),
                         "-DBOOST_ROOT={}\\boost_{}".format(paths_build, boost_tag_version.replace(".", "_")),
                         "-DLOOT_API_PATH={}\\lootapi-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
-                        "-DLZ4_ROOT={}\\lz4-{}".format(paths_build, config["lz4_version"]),
+                        "-DLZ4_ROOT={}\\lz4-v{}".format(paths_build, ".".join([_f for _f in [config["lz4_version"], config['lz4_version_minor']] if _f])),
                         "-DQT_ROOT={}".format(qt_inst_path()),
                         "-DZLIB_ROOT={}\\\zlib-{}".format(paths_build, config["zlib_version"])]
 

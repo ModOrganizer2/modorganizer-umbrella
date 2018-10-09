@@ -21,10 +21,9 @@ Now you need to install all required software to build Mod Organizer.
   * Git Link: https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe
   * ~~Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi~~ *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.*
   * Python 3.7 (64Bit) Link: https://www.python.org/downloads/windows/
-  * Qt 5.11.1 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+  * Qt 5.11.2 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
     #### Qt Packages required:
     * msvc2017-64
-    * qtscript
     * qtwebengine
 
   Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error.
@@ -37,8 +36,8 @@ Now you need to install all required software to build Mod Organizer.
 
       Additionally you need to activate under Individual components:
 
-      * "Windows Universal CRT SDK" (Under Compilers, build tools, and runtimes)
-      * "Windows 8.1 SDK" (near the bottom)
+      * "Windows 8.1 SDK and UCRT SDK" (Under Compilers, build tools, and runtimes)
+      * "Windows 10 SDK (10.0.16299.0) for Desktop c++" (near the bottom)
 
 Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
 

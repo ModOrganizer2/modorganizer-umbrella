@@ -21,10 +21,18 @@ from buildtools import log
 from buildtools.buildsystem.visualstudio import ProjectType, VisualStudio2015Solution, VS2015Project
 from config import config
 from unibuild import Project
-from unibuild.modules import build, msbuild, github
+from unibuild.modules import build, msbuild, github, urldownload
 from unibuild.utility import lazy
+nuget_version = config['nuget_version']
 
 build_path = config['paths']['build']
+download_path = config['paths']['download']
+
+def ncc_environment():
+    result = config['__environment'].copy()
+    result['Path'] += ";" + os.path.join(download_path)
+    return result
+
 
 
 def prepare_nmm(context):
@@ -66,7 +74,11 @@ Project("ncc") \
             .depend(msbuild.MSBuild(os.path.join(build_path, "Nexus-Mod-Manager", 'NexusClientCli.sln'),
                                     working_directory=lazy.Evaluate(lambda: os.path.join(build_path, "Nexus-Mod-Manager")),
                                     project_platform="Any CPU")
+            .depend(build.Run(r"nuget.exe restore {}".format(os.path.join(build_path, "Nexus-Mod-Manager", 'NexusClientCli.sln')),
+                              environment=ncc_environment(),
+                              working_directory=lazy.Evaluate(lambda: os.path.join(build_path, "Nexus-Mod-Manager")))
                     .depend(build.Execute(prepare_nmm, name="append NexusClientCli project to NMM")
                             .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", config["nmm_version"], None, False))
                                     .depend(github.Source(config['Main_Author'], "modorganizer-NCC", config["Main_Branch"])
-                                                  .set_destination("NexusClientCli")))))
+                                                  .set_destination("NexusClientCli")).depend(urldownload.URLDownload("https://dist.nuget.org/win-x86-commandline/v{}/nuget.exe"
+                                               .format(nuget_version)))))))

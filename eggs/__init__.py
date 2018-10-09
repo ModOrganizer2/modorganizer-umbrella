@@ -38,12 +38,12 @@ def download(url, filename):
 path = os.path.abspath(os.path.join(os.path.realpath(__file__), os.pardir))
 
 for dep in [
-    "https://gitlab.com/LePresidente/python-build-tools/uploads/18a195f7945ca35ad563b428739f254b/buildtools-0.0.2-py2.7.egg"]:
+    "https://gitlab.com/LePresidente/python-build-tools/uploads/2d5288682a4905940c8d37422d4128f0/pybuildtools-0.2.1-py3.7.egg"]:
     eggpath = os.path.join(path, os.path.basename(dep))
     download(dep, eggpath)
     sys.path.append(eggpath)
 
-for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "networkx", "pydot", "pydotplus"]:
+for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "networkx", "pydot", "pydotplus","colorama","tqdm"]:
     destpath = "{0}/{1}".format(path, dep)
     if not os.path.exists(destpath):
         subprocess.check_call(["python", "-m", "pip", "install", "--target={0}".format(destpath), dep])

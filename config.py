@@ -60,6 +60,7 @@ config = {
     'prefer_binary_dependencies': True,  # Try to use official binary package/SDKs.  Won't work for all stuff
     # works for: 7z, CMake, Git, Perl, Python, Visual Studio
     'binary_qt': True, # use binary Qt5 from the offical website
+    'binary_boost': False, # Custom prebuilt boost compiled by MO2 team and uploaded to https://github.com/Modorganizer2/3rdParty_Dependencies
     'shallowclone': True, # reduces size of repos drastically
     'repo_update_frequency': 60 * 60 * 12,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,

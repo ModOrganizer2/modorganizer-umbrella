@@ -48,6 +48,7 @@ config_template = ("using python\n"
                    "  : <define>BOOST_ALL_NO_LIB=1\n"
                    "  ;")
 
+
 def patchboost(context):
     try:
         savedpath = os.getcwd()
@@ -59,56 +60,61 @@ def patchboost(context):
     except OSError:
         return False
 
-
-boost_prepare = Project("boost_prepare") \
-    .depend(b2.Bootstrap()
-            .depend(Patch.CreateFile(user_config_jam,
-                                     lambda: config_template.format(
-                                         python_version,
-                                         os.path.join(
-                                            python.python['build_path'], "PCBuild",
-                                            "{}".format("" if config['architecture'] == 'x86' else "amd64"))
-                                         .replace("\\", '/'),
-                                         os.path.join(python.python['build_path']).replace("\\", '/'),
-                                         "64" if config['architecture'] == "x86_64" else "32"))
-                    .depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
-                                                  .format(boost_version,boost_tag_version.replace(".", "_"))
-                                                  , tree_depth=1)
-                            .set_destination("boost_{}".format(boost_tag_version.replace(".", "_"))))))
-
-if config['architecture'] == 'x86_64':
-  # This is a convient way to make each boost flavors we build have these dependencies:
-    boost_prepare.depend("Python")
-
-boost = Project("boost")
-
-if config['architecture'] == 'x86_64':
-    boost_stage = Patch.Copy(os.path.join("{}/stage/lib/boost_python{}-vc{}-mt-{}-{}.dll"
-                                          .format(boost_path,
-                                                  config["python_version"].replace(".", ""),
-                                                  vc_version.replace(".", ""),
-                                                  "x64" if config['architecture'] == "x86_64" else "x86",
-                                                  "_".join(boost_version.split(".")[:-1]))),
-                             os.path.join(config["paths"]["install"], "bin"))
-    boost.depend(boost_stage)
+if config.get('binary_boost', True):
+    boost = Project("boost").depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
+                                                        .format(boost_version,boost_tag_version.replace(".", "_"))
+                                                         , tree_depth=1))
 else:
-    boost_stage = boost
+    boost_prepare = Project("boost_prepare") \
+        .depend(b2.Bootstrap()
+                .depend(Patch.CreateFile(user_config_jam,
+                                         lambda: config_template.format(
+                                             python_version,
+                                             os.path.join(
+                                                python.python['build_path'], "PCBuild",
+                                                "{}".format("" if config['architecture'] == 'x86' else "amd64"))
+                                             .replace("\\", '/'),
+                                             os.path.join(python.python['build_path']).replace("\\", '/'),
+                                             "64" if config['architecture'] == "x86_64" else "32"))
+                        .depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
+                                                        .format(boost_version,boost_tag_version.replace(".", "_"))
+                                                         , tree_depth=1)
+                                .set_destination("boost_{}".format(boost_tag_version.replace(".", "_"))))))
 
-with_for_all = ["--with-{0}".format(component) for component in boost_components]
-with_for_shared = ["--with-{0}".format(component) for component in boost_components_shared]
-commonargs = ["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
-    "-a",
-    "--user-config={}".format(os.path.join(boost_path,user_config_jam)),
-    "-j {}".format(config['num_jobs']),
-    "toolset=msvc-" + vc_version]
+    if config['architecture'] == 'x86_64':
+    # This is a convient way to make each boost flavors we build have these dependencies:
+        boost_prepare.depend("Python")
 
-if config['architecture'] == 'x86_64':
-    b2tasks = [("Shared", ["link=shared"] + with_for_all + with_for_shared),
-               ("Static", ["link=static", "runtime-link=shared"] + with_for_all),
-               ("StaticCRT64", ["link=static", "runtime-link=static"] + with_for_all)]
-else:
-    b2tasks = [("StaticCRT32", ["link=static", "runtime-link=static", "--buildid=x86"] + with_for_all)]
+    boost = Project("boost")
 
-for (taskname, taskargs) in b2tasks:
-    boost_stage.depend(b2.B2(taskname,boost_path).arguments(commonargs + taskargs)
-        .depend(boost_prepare))
+    if config['architecture'] == 'x86_64':
+        boost_stage = Patch.Copy(os.path.join("{}/stage/lib/boost_python{}-vc{}-mt-{}-{}.dll"
+                                              .format(boost_path,
+                                                      config["python_version"].replace(".", ""),
+                                                      vc_version.replace(".", ""),
+                                                      "x64" if config['architecture'] == "x86_64" else "x86",
+                                                      "_".join(boost_version.split(".")[:-1]))),
+                                 os.path.join(config["paths"]["install"], "bin"))
+        boost.depend(boost_stage)
+    else:
+        boost_stage = boost
+
+    with_for_all = ["--with-{0}".format(component) for component in boost_components]
+    with_for_shared = ["--with-{0}".format(component) for component in boost_components_shared]
+    commonargs = ["address-model={}".format("64" if config['architecture'] == 'x86_64' else "32"),
+        "-a",
+        "--user-config={}".format(os.path.join(boost_path,user_config_jam)),
+        "-j {}".format(config['num_jobs']),
+        "toolset=msvc-" + vc_version,
+        "--stagedir=lib{}-msvc-{}".format("64" if config['architecture'] == 'x86_64' else "32",vc_version)]
+
+    if config['architecture'] == 'x86_64':
+        b2tasks = [("Shared", ["link=shared"] + with_for_all + with_for_shared),
+                   ("Static", ["link=static", "runtime-link=shared"] + with_for_all),
+                   ("StaticCRT64", ["link=static", "runtime-link=static"] + with_for_all)]
+    else:
+        b2tasks = [("StaticCRT32", ["link=static", "runtime-link=static"] + with_for_all)]
+
+    for (taskname, taskargs) in b2tasks:
+        boost_stage.depend(b2.B2(taskname,boost_path).arguments(commonargs + taskargs)
+            .depend(boost_prepare))

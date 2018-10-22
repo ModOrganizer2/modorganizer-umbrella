@@ -61,9 +61,9 @@ def patchboost(context):
         return False
 
 if config.get('binary_boost', True):
-    boost = Project("boost").depend(urldownload.URLDownload("https://dl.bintray.com/boostorg/release/{}/source/boost_{}.7z"
-                                                        .format(boost_version,boost_tag_version.replace(".", "_"))
-                                                         , tree_depth=1))
+    boost_prepare = Project("boost_prepare")
+    boost = Project("boost").depend(urldownload.URLDownload("https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.0/boost_prebuilt_{}.7z"
+                                                        .format(boost_tag_version.replace(".", "_"))).set_destination("boost_{}".format(boost_tag_version.replace(".", "_"))))
 else:
     boost_prepare = Project("boost_prepare") \
         .depend(b2.Bootstrap()
@@ -106,7 +106,8 @@ else:
         "--user-config={}".format(os.path.join(boost_path,user_config_jam)),
         "-j {}".format(config['num_jobs']),
         "toolset=msvc-" + vc_version,
-        "--stagedir=lib{}-msvc-{}".format("64" if config['architecture'] == 'x86_64' else "32",vc_version)]
+        "--stagedir=lib{}-msvc-{}".format("64" if config['architecture'] == 'x86_64' else "32",vc_version),
+        "--libdir=lib{}-msvc-{}".format("64" if config['architecture'] == 'x86_64' else "32",vc_version)]
 
     if config['architecture'] == 'x86_64':
         b2tasks = [("Shared", ["link=shared"] + with_for_all + with_for_shared),

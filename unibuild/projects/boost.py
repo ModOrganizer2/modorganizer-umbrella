@@ -64,6 +64,19 @@ if config.get('binary_boost', True):
     boost_prepare = Project("boost_prepare")
     boost = Project("boost").depend(urldownload.URLDownload("https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.0/boost_prebuilt_{}.7z"
                                                         .format(boost_tag_version.replace(".", "_"))).set_destination("boost_{}".format(boost_tag_version.replace(".", "_"))))
+    if config['architecture'] == 'x86_64':
+        boost_stage = Patch.Copy(os.path.join("{}/lib{}-msvc-{}/lib/boost_python{}-vc{}-mt-{}-{}.dll"
+                                              .format(boost_path,
+                                                      "64" if config['architecture'] == 'x86_64' else "32",
+                                                      vc_version,
+                                                      config["python_version"].replace(".", ""),
+                                                      vc_version.replace(".", ""),
+                                                      "x64" if config['architecture'] == "x86_64" else "x86",
+                                                      "_".join(boost_version.split(".")[:-1]))),
+                                 os.path.join(config["paths"]["install"], "bin"))
+        boost.depend(boost_stage)
+
+
 else:
     boost_prepare = Project("boost_prepare") \
         .depend(b2.Bootstrap()

@@ -38,6 +38,7 @@ def cmake_parameters():
     from config import config
 
     boost_version = config['boost_version']
+    vc_version = config['vc_version_for_boost']
     boost_tag_version = ".".join([_f for _f in [boost_version, config['boost_version_tag']] if _f])
 
     paths_build = config['paths']['build']
@@ -45,6 +46,7 @@ def cmake_parameters():
     cmake_parameters = ["-DCMAKE_BUILD_TYPE={}".format(config["build_type"]),
                         "-DDEPENDENCIES_DIR={}".format(paths_build),
                         "-DBOOST_ROOT={}\\boost_{}".format(paths_build, boost_tag_version.replace(".", "_")),
+                        "-DBoost_LIBRARY_DIRS={}\\boost_{}\\lib{}-msvc-{}\\lib".format(paths_build, boost_tag_version.replace(".", "_"),"64" if config['architecture'] == 'x86_64' else "32",vc_version),
                         "-DLOOT_API_PATH={}\\lootapi-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
                         "-DLZ4_ROOT={}\\lz4-v{}".format(paths_build, ".".join([_f for _f in [config["lz4_version"], config['lz4_version_minor']] if _f])),
                         "-DQT_ROOT={}".format(qt_inst_path()),

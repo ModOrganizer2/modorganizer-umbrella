@@ -126,7 +126,7 @@ config['paths'] = {
     'cmake': path_or_default("cmake.exe", "CMake", "bin"),
     'git': path_or_default("git.exe", "Git", "bin"),
     'perl': path_or_default("perl.exe", "StrawberryPerl", "perl", "bin"),
-    #'ruby': path_or_default("ruby.exe", "Ruby22-x64", "bin"),
+    'InnoSetup': path_or_default("ISCC.exe", "Inno Setup 5"),
     #'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
     '7z': path_or_default("7z.exe", "7-Zip"),
     # we need a python that matches the build architecture

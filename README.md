@@ -17,6 +17,7 @@ Open there a console and copy in: ``git clone https://github.com/Modorganizer2/m
 Now you need to install all required software to build Mod Organizer.
 * If you want to install everything by hand you need all this stuff:
   * 7zip (Latest 64Bit) Link: http://www.7-zip.org/a/7z1700-x64.exe
+  * Inno (Only required to build Installer) Setup Link: http://www.jrsoftware.org/download.php/is.exe
   * CMake (latest 64bit)  Link: https://cmake.org/files/v3.10/cmake-3.10.2-win64-x64.msi
   * Git Link: https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe
   * ~~Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi~~ *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.*

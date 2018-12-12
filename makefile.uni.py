@@ -22,7 +22,7 @@ from config import config
 from string import Formatter
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github, urldownload, msbuild
-from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, WixToolkit, zlib, nuget
+from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, zlib, nuget
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
 
@@ -192,9 +192,11 @@ Project("licenses") \
         .depend("modorganizer"))
 
 if config['Installer']:
-    # build_installer = cmake.CMake().arguments(cmake_parameters
-    # +["-DCMAKE_INSTALL_PREFIX:PATH={}/installer".format(config["__build_base_path"])]).install()
-    wixinstaller = Project("WixInstaller") \
-        .depend(github.Source(config['Main_Author'], "modorganizer-WixInstaller", "master", super_repository=tl_repo)
-            .set_destination("WixInstaller")) \
-                .depend("modorganizer").depend("usvfs").depend("usvfs_32").depend("WixToolkit")
+    build_installer =  build.Run(r'"{}" {}'.format(config["paths"]["InnoSetup"],"dist/MO2-Installer.iss"),
+              name="Build MO2 Installer")
+
+    installer = Project("Installer") \
+        .depend(build_installer
+            .depend(github.Source(config['Main_Author'], "modorganizer-Installer", "Develop", super_repository=tl_repo)
+                .set_destination("Installer"))) \
+                    .depend("modorganizer").depend("usvfs").depend("usvfs_32")

@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+import os
 import os.path
 import time
 
@@ -73,8 +74,12 @@ class Task(object):
         from config import config
         task_name = self.name.replace("/", "_").replace("\\", "_").replace(" ", "_")
         ctx_name = self._context.name if self._context else task_name
-        return os.path.join(config["paths"]["progress"],
-                            "{}_complete_{}.txt".format(ctx_name, task_name))
+        if (config['progress_method'] == 'folders'):
+            return os.path.join(config["paths"]["progress"], ctx_name,
+                                "{}_complete.txt".format(task_name))
+        else:
+            return os.path.join(config["paths"]["progress"],
+                                "{}_complete_{}.txt".format(ctx_name, task_name))
 
     def already_processed(self):
         if not os.path.exists(self.__success_path()):
@@ -87,6 +92,9 @@ class Task(object):
 
     def mark_success(self):
         if not self.__dummy:
+          dir_path = os.path.split(self.__success_path())[0]
+          if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
           with open(self.__success_path(), "w"):
             pass
 

@@ -65,6 +65,10 @@ config = {
     'repo_update_frequency': 60 * 60 * 12,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
+    'progress_method': 'flat', # Changes how the progress files are generated
+                               # flat:    All files in one folder, <project>_complete_<task>.txt (default)
+                               # folders: <project>\<task>_complete.txt
+
     'Main_Author': 'Modorganizer2',  # the current maintainer
     'Main_Branch': "Develop",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)

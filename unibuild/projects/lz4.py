@@ -21,8 +21,8 @@ from config import config
 from unibuild import Project
 from unibuild.modules import github, Patch
 
-lz4_version = config['lz4_version']
-lz4_version_minor = ".".join(filter(None, [lz4_version, config['lz4_version_minor']]))
+lz4_version = 'v' + config['lz4_version']
+lz4_version_minor = ".".join([_f for _f in [lz4_version, config['lz4_version_minor']] if _f])
 lz_path = os.path.join(config['paths']['build'], "lz4-{}".format(lz4_version))
 
 Project("lz4") \

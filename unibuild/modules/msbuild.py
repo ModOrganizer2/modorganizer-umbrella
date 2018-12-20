@@ -101,7 +101,7 @@ class MSBuild(Builder):
                             args.append("/target:{}".format(self.__project))
 
                         wdir = str(self.__working_directory or self._context["build_path"])
-                        print "{}> {}".format(wdir, ' '.join(args))
+                        print("{}> {}".format(wdir, ' '.join(args)))
                         proc = Popen(args,
                             env=environment,
                             shell=True,
@@ -112,7 +112,7 @@ class MSBuild(Builder):
                         progress.maximum = 100
                         while proc.poll() is None:
                             while True:
-                                line = proc.stdout.readline()
+                                line = proc.stdout.readline().decode("utf-8")
                                 if line != '':
                                     match = re.search("^\\[([0-9 ][0-9 ][0-9])%\\]", line)
                                     if match is not None:
@@ -129,7 +129,7 @@ class MSBuild(Builder):
         #                   proc.returncode, os.path.join(wdir, "msbuild.log"))
         #     return False
 
-        except Exception, e:
-            logging.error(e.message)
+        except Exception as e:
+            logging.exception(e)
             return False
         return True

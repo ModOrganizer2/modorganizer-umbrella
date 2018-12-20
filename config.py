@@ -30,7 +30,7 @@ def path_or_default(filename, *default):
     defaults = gen_search_folders(*default)
     res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
     if res is None:
-        print 'Cannot find', filename, 'on your path or in', os.path.join('', *default)
+        print('Cannot find', filename, 'on your path or in', os.path.join('', *default))
         global missing_prerequisites
         missing_prerequisites = True
     return res
@@ -60,9 +60,14 @@ config = {
     'prefer_binary_dependencies': True,  # Try to use official binary package/SDKs.  Won't work for all stuff
     # works for: 7z, CMake, Git, Perl, Python, Visual Studio
     'binary_qt': True, # use binary Qt5 from the offical website
+    'binary_boost': True, # Custom prebuilt boost compiled by MO2 team and uploaded to https://github.com/Modorganizer2/3rdParty_Dependencies
     'shallowclone': True, # reduces size of repos drastically
     'repo_update_frequency': 60 * 60 * 12,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
+
+    'progress_method': 'flat', # Changes how the progress files are generated
+                               # flat:    All files in one folder, <project>_complete_<task>.txt (default)
+                               # folders: <project>\<task>_complete.txt
 
     'Main_Author': 'Modorganizer2',  # the current maintainer
     'Main_Branch': "master",
@@ -75,21 +80,22 @@ config = {
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
-    'icu_version': '59',
+    'icu_version': '62',
     'icu_version_minor': '1',
-    'loot_version': '0.13.6',
-    'loot_commit': 'g958d0cf',
-    'lz4_version': 'v1.8.1',
-    'lz4_version_minor': '2', # leave empty if no minor version
+    'loot_version': '0.13.7',
+    'loot_commit': 'g3a747b8',
+    'lz4_version': '1.8.3',
+    'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.13.03',
-    'nmm_version': '0.65.4',
-    'openssl_version': '1.0.2o',
-    'pyqt_version': '5.10',
-    'python_version': '2.7',
-    'python_version_minor': '.14',
-    'sip_version': '4.19.8',
-    'qt_version': '5.10',
-    'qt_version_minor': '0',
+    'nuget_version': '4.7.1',
+    'nmm_version': '0.65.10',
+    'openssl_version': '1.0.2p',
+    'pyqt_version': '5.11.3',
+    'python_version': '3.7',
+    'python_version_minor': '.0',
+    'sip_version': '4.19.13',
+    'qt_version': '5.11',
+    'qt_version_minor': '2',
     'vc_platformtoolset': 'v141',
     'vc_version': '15.0',
     'vc_version_for_boost': '14.1',
@@ -97,7 +103,7 @@ config = {
     'zlib_version': '1.2.11',
 
     #the usvfs version below will only be used if
-    'usvfs_version': '0.4.1',
+    'usvfs_version': 'v0.4.2',
 
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
@@ -124,7 +130,7 @@ config['paths'] = {
     'cmake': path_or_default("cmake.exe", "CMake", "bin"),
     'git': path_or_default("git.exe", "Git", "bin"),
     'perl': path_or_default("perl.exe", "StrawberryPerl", "perl", "bin"),
-    #'ruby': path_or_default("ruby.exe", "Ruby22-x64", "bin"),
+    'InnoSetup': path_or_default("ISCC.exe", "Inno Setup 5"),
     #'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
     '7z': path_or_default("7z.exe", "7-Zip"),
     # we need a python that matches the build architecture
@@ -134,5 +140,5 @@ config['paths'] = {
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
 if missing_prerequisites:
-    print '\nMissing prerequisites listed above - cannot continue'
+    print('\nMissing prerequisites listed above - cannot continue')
     exit(1)

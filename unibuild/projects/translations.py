@@ -28,7 +28,7 @@ from unibuild.modules import build, github, Patch
 
 transifex_version = config['transifex-client_version']
 transifex_api = config['transifex_API']
-transifex_client_binary = os.path.join(config["paths"]["build"],"transifex-client", "tx.py27.x64.exe")
+transifex_client_binary = os.path.join(config["paths"]["build"],"transifex-client", "tx.py36.x64.exe")
 qt_lrelease_binary = os.path.join(config["paths"]["qt_binary_install"], "bin","lrelease.exe")
 transifex_minimum_percentage = config['transifex_minimum_percentage']
 build_path = config["paths"]["build"]
@@ -59,7 +59,7 @@ def translations_stage(context):
                 os.makedirs(dest_client)
             if not os.path.exists(dest_translations):
                  os.makedirs(dest_translations)
-            for f in glob(os.path.join(download_path, "tx.py27.x64.exe")):
+            for f in glob(os.path.join(download_path, "tx.py36.x64.exe")):
                  shutil.copy(f, os.path.join(dest_client))
             return True
 
@@ -93,7 +93,7 @@ class GenerateTranslations(build.Builder):
             with open(serrpath, "w") as serr:
                 data = {}
                 data = GenerateFiles(self._context["build_path"],data)
-                for i, o in data.items():
+                for i, o in list(data.items()):
                     proc = Popen([qt_lrelease_binary, i,
                                 "-qm",
                                  o],
@@ -194,5 +194,5 @@ Project("translations") \
             .depend(PullTranslations()
                     .depend(init_transifex_repo
                         .depend(build.Execute(translations_stage)
-                            .depend(github.Release("transifex", "transifex-client", transifex_version, "tx.py27.x64", extension="exe")
+                            .depend(github.Release("transifex", "transifex-client", transifex_version, "tx.py36.x64", extension="exe")
                                 .set_destination("transifex-translations")))))))

@@ -91,11 +91,11 @@ def visual_studio_environment():
                      stdout=PIPE, stderr=PIPE)
         stdout, stderr = proc.communicate()
 
-        if "Error in script usage. The correct usage is" in stderr:
+        if b"Error in script usage. The correct usage is" in stderr:
             logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
             return False
 
-        if "Error in script usage. The correct usage is" in stdout:
+        if b"Error in script usage. The correct usage is" in stdout:
             logging.error("failed to set up environment (returncode %s): %s", proc.returncode, stderr)
             return False
 
@@ -108,7 +108,7 @@ def visual_studio_environment():
     vcenv = CIDict()
 
     for line in stdout.splitlines():
-        if "=" in line:
-            key, value = line.split("=", 1)
+        if b"=" in line:
+            key, value = line.split(b"=", 1)
             vcenv[key] = value
     return vcenv

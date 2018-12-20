@@ -22,7 +22,7 @@ from config import config
 from string import Formatter
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github, urldownload, msbuild
-from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, WixToolkit, zlib
+from unibuild.projects import boost, googletest, lootapi, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, zlib, nuget
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
 
@@ -85,6 +85,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-tool_inieditor", "tool_inieditor", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-tool_inibakery", "tool_inibakery", config['Main_Branch'], ["modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", config['Main_Branch'], ["PyQt5"], True),
+    (config['Main_Author'], "modorganizer-fnistool", "fnistool", config['Main_Branch'], ["PyQt5"], True),
     (config['Main_Author'], "modorganizer-preview_base", "preview_base", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
@@ -130,24 +131,22 @@ for author, git_path, path, branch, dependencies, Build in [
                        .set_destination(path))
 
 
-def python_zip_collect(context):
-    from unibuild.libpatterns import patterns
-    import glob
-    from zipfile import ZipFile
-
+def python_core_collect(context):
     ip = os.path.join(config["paths"]["install"], "bin")
     bp = python.python['build_path']
 
-    with ZipFile(os.path.join(ip, "python27.zip"), "w") as pyzip:
-        for pattern in patterns:
-            for f in glob.iglob(os.path.join(bp, pattern)):
-                pyzip.write(f, f[len(bp):])
+    try:
+        shutil.rmtree(os.path.join(ip, "pythoncore"))
+    except OSError:
+        pass
+
+    shutil.copytree(os.path.join(bp, "Lib"), os.path.join(ip, "pythoncore"), ignore=shutil.ignore_patterns("site-packages", '__pycache__'))
 
     return True
 
 
-Project("python_zip") \
-    .depend(build.Execute(python_zip_collect)
+Project("python_core") \
+    .depend(build.Execute(python_core_collect)
             .depend("Python"))
 
 
@@ -158,7 +157,7 @@ if config['transifex_Enable']:
 
 def copy_licenses(context):
     boost_version = config['boost_version']
-    boost_tag_version = ".".join(filter(None, [boost_version, config['boost_version_tag']]))
+    boost_tag_version = ".".join([_f for _f in [boost_version, config['boost_version_tag']] if _f])
     license_path = os.path.join(config["paths"]["install"], "bin", "licenses")
     build_path = config["paths"]["build"]
     try:
@@ -180,7 +179,7 @@ def copy_licenses(context):
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "License.txt"), os.path.join(license_path, "7zip.txt"))
     shutil.copy(os.path.join(build_path, "7zip-{}".format(config['7zip_version']), "DOC", "copying.txt"), os.path.join(license_path, "GNU-LGPL-v2.1.txt"))
     shutil.copy(os.path.join(build_path, "NexusClientCli", "NexusClientCLI", "Castle_License.txt"), os.path.join(license_path, "Castle.txt"))
-    shutil.copy(os.path.join(build_path, "Nexus-Mod-Manager", "AntlrBuildTask", "LICENSE.txt"), os.path.join(license_path, "AntlrBuildTask.txt"))
+    shutil.copy(os.path.join(build_path, "Nexus-Mod-Manager", "lib", "Antlr", "LICENSE.txt"), os.path.join(license_path, "AntlrBuildTask.txt"))
     shutil.copy(os.path.join(config["paths"]["download"], "LICENSE"), os.path.join(license_path, "DXTex.txt"))
     return True
 
@@ -193,9 +192,11 @@ Project("licenses") \
         .depend("modorganizer"))
 
 if config['Installer']:
-    # build_installer = cmake.CMake().arguments(cmake_parameters
-    # +["-DCMAKE_INSTALL_PREFIX:PATH={}/installer".format(config["__build_base_path"])]).install()
-    wixinstaller = Project("WixInstaller") \
-        .depend(github.Source(config['Main_Author'], "modorganizer-WixInstaller", "master", super_repository=tl_repo)
-            .set_destination("WixInstaller")) \
-                .depend("modorganizer").depend("usvfs").depend("usvfs_32").depend("WixToolkit")
+    build_installer =  build.Run(r'"{}" {}'.format(config["paths"]["InnoSetup"],"dist/MO2-Installer.iss"),
+              name="Build MO2 Installer")
+
+    installer = Project("Installer") \
+        .depend(build_installer
+            .depend(github.Source(config['Main_Author'], "modorganizer-Installer", "Develop", super_repository=tl_repo)
+                .set_destination("Installer")) \
+                    .depend("modorganizer").depend("usvfs").depend("usvfs_32").depend("translationsBuild").depend("modorganizer-fnistool"))

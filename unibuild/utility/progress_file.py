@@ -16,9 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import os
+import io
 
 
-class ProgressFile(file):
+class ProgressFile(io.FileIO):
     def __init__(self, filename, progress_cb):
         super(ProgressFile, self).__init__(filename, "rb")
 

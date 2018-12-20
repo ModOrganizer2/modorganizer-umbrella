@@ -32,16 +32,36 @@ class CIDict(dict):
         return self.__class__(super(CIDict, self).copy())
 
     def __getitem__(self, key):
-        return super(CIDict, self).__getitem__(self.__class__.__key(key))
+        try:
+            new_key = key.decode("utf-8")
+        except AttributeError:
+            new_key = key
+        return super(CIDict, self).__getitem__(self.__class__.__key(new_key))
 
     def __setitem__(self, key, value):
-        super(CIDict, self).__setitem__(self.__class__.__key(key), value)
+        try:
+            new_value = value.decode("utf-8")
+        except AttributeError:
+            new_value = value
+        try:
+            new_key = key.decode("utf-8")
+        except AttributeError:
+            new_key = key
+        super(CIDict, self).__setitem__(self.__class__.__key(new_key), new_value)
 
     def __delitem__(self, key):
-        return super(CIDict, self).__delitem__(self.__class__.__key(key))
+        try:
+            new_key = key.decode("utf-8")
+        except AttributeError:
+            new_key = key
+        return super(CIDict, self).__delitem__(self.__class__.__key(new_key))
 
     def __contains__(self, key):
-        return super(CIDict, self).__contains__(self.__class__.__key(key))
+        try:
+            new_key = key.decode("utf-8")
+        except AttributeError:
+            new_key = key
+        return super(CIDict, self).__contains__(self.__class__.__key(new_key))
 
     def has_key(self, key):
         return super(CIDict, self).__contains__(self.__class__.__key(key))
@@ -61,7 +81,7 @@ class CIDict(dict):
 
     @classmethod
     def __key(cls, key):
-        return key.lower() if isinstance(key, basestring) else key
+        return key.lower() if isinstance(key, str) else key
 
     def __convert_keys(self):
         for k in list(self.keys()):

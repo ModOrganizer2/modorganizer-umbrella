@@ -62,11 +62,14 @@ def install(context):
     path_segments = [context['build_path'], "PCbuild"]
     if config['architecture'] == "x86_64":
         path_segments.append("amd64")
-    path_segments.append("*.lib")
     shutil.copy(os.path.join(python['build_path'], "PC", "pyconfig.h"),
                 os.path.join(python['build_path'], "Include", "pyconfig.h"))
-    for f in glob(os.path.join(*path_segments)):
+    for f in glob(os.path.join(*path_segments,"*.lib")):
         shutil.copy(f, os.path.join(path_install, "libs"))
+    for f in glob(os.path.join(*path_segments,"*.dll")):
+        shutil.copy(f, os.path.join(path_install, "bin"))
+    shutil.copy(os.path.join(path_install, "libs", "python{}.lib".format(python_version.replace(".", ""))),
+                os.path.join(path_install, "libs", "python3.lib"))
     return True
 
 def download(context):
@@ -78,5 +81,5 @@ python = Project("Python") \
             .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
                                     project_PlatformToolset=config['vc_platformtoolset'])
                     .depend(build.Run(upgrade_args, name="upgrade python project")
-                            .depend(github.Source("LePresidente", "cpython-1", config.get('python_version', "2.7"), shallowclone=True) \
+                            .depend(github.Source("python", "cpython", "v{}{}".format(config['python_version'], config['python_version_minor']), shallowclone=True)
                                     .set_destination("python-{}".format(python_version + python_version_minor))))))

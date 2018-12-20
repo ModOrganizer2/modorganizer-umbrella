@@ -15,12 +15,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+import os
+
 from config import config
 from unibuild import Project
-from unibuild.modules import github
+from unibuild.modules import cmake, urldownload
 
-WixToolset_version = config['WixToolset_version']
+nuget_version = config['nuget_version']
 
-Project("WixToolkit") \
-    .depend(github.Release("wixtoolset", "wix3", "wix{}rtm".format(WixToolset_version), "wix{}-binaries".format(WixToolset_version))
-                  .set_destination("WixToolkit-{}".format(WixToolset_version)))
+Project("nuget").depend(urldownload.URLDownload("https://dist.nuget.org/win-x86-commandline/v{}/nuget.exe"
+											   .format(nuget_version))
+								  .set_destination("NuGet"))

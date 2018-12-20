@@ -27,7 +27,7 @@ from unibuild.utility.lazy import Evaluate, Lazy
 
 
 def get_from_hklm(hkey ,path, name, wow64=False):
-    from _winreg import QueryValueEx, OpenKey, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, KEY_READ, KEY_WOW64_32KEY
+    from winreg import QueryValueEx, OpenKey, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, KEY_READ, KEY_WOW64_32KEY
     flags = KEY_READ
     if wow64:
         flags |= KEY_WOW64_32KEY
@@ -44,7 +44,7 @@ def init_config(args):
     # some tools gets confused onto what constitutes .  (OpenSSL and maybe CMake)
     args.destination = os.path.realpath(args.destination)
 
-    for d in config['paths'].keys():
+    for d in list(config['paths'].keys()):
         if isinstance(config['paths'][d], str):
             config['paths'][d] = config['paths'][d].format(base_dir=os.path.abspath(args.destination),
                                                            build_dir=args.builddir,
@@ -110,8 +110,9 @@ def check_config():
             return False
         if not config['paths']['perl']:
             return False
-        #if not config['paths']['ruby']:
-        #   return False
+        if config["Installer"]:
+            if not config['paths']['InnoSetup']:
+                return False
         #if not config['paths']['svn']:
         #   return False
         if not config['paths']['7z']:

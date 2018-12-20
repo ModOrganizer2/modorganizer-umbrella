@@ -25,12 +25,12 @@ from unibuild import Task
 
 def Popen(cmd, **kwargs):
     pc = ''
-    if kwargs.has_key('cwd'):
+    if 'cwd' in kwargs:
         pc += os.path.relpath(kwargs['cwd'],os.path.abspath('..'))
     pc += '>'
     for arg in cmd:
         pc += ' ' + arg
-    print pc
+    print(pc)
     return subprocess.Popen(cmd,**kwargs)
 
 class SuperRepository(Task):

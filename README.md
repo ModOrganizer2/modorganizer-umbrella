@@ -17,13 +17,14 @@ Open there a console and copy in: ``git clone https://github.com/Modorganizer2/m
 Now you need to install all required software to build Mod Organizer.
 * If you want to install everything by hand you need all this stuff:
   * 7zip (Latest 64Bit) Link: http://www.7-zip.org/a/7z1700-x64.exe
+  * Inno (Only required to build Installer) Setup Link: http://www.jrsoftware.org/download.php/is.exe
   * CMake (latest 64bit)  Link: https://cmake.org/files/v3.10/cmake-3.10.2-win64-x64.msi
   * Git Link: https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe
-  * Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi
-  * Qt 5.10.0 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+  * ~~Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi~~ *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.*
+  * Python 3.7 (64Bit) Link: https://www.python.org/downloads/windows/
+  * Qt 5.11.2 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
     #### Qt Packages required:
     * msvc2017-64
-    * qtscript
     * qtwebengine
 
   Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error.
@@ -36,8 +37,8 @@ Now you need to install all required software to build Mod Organizer.
 
       Additionally you need to activate under Individual components:
 
-      * "Windows Universal CRT SDK" (Under Compilers, build tools, and runtimes)
-      * "Windows 8.1 SDK" (near the bottom)
+      * "Windows 8.1 SDK and UCRT SDK" (Under Compilers, build tools, and runtimes)
+      * "Windows 10 SDK (10.0.16299.0) for Desktop c++" (near the bottom)
 
 Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
 
@@ -52,7 +53,7 @@ This umbrella project can optionally produce IDE projects for developers.
 
 ## Notes
 * While mostly functional this project is work in progress and should only be used by those with the will to spend some time.
-* Currently all dependencies are built from source, including monsters like Qt and python. This is necessary to produce releasable bundles (pre-built python would introduce additional run-time dependencies, pre-built Qt doesn't provide debug symbols (pdbs)) but it is overkill if all you want to do is contribute to a plugin.
+* Currently all dependencies (except, optionally, Qt) are built from source, including monsters like Boost and Python. This is necessary to produce releasable bundles (pre-built python would introduce additional run-time dependencies, pre-built Qt doesn't provide debug symbols (pdbs)) but it is overkill if all you want to do is contribute to a plugin.
 
 ## Concept
 At its base this is actually a fairly simple program. Arbitrary command calls are wrapped inside Task objects (grouped as projects) and put into a dependency graph.

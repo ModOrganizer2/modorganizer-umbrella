@@ -46,7 +46,7 @@ class Bootstrap(Builder):
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
         with open(soutpath, "a") as sout:
             with open(serrpath, "a") as serr:
-                print "{}> {}".format(self._context["build_path"], "bootstrap.bat")
+                print("{}> {}".format(self._context["build_path"], "bootstrap.bat"))
                 proc = Popen(["cmd.exe", "/C", "bootstrap.bat"], cwd=self._context["build_path"],
                              stdout=sout, stderr=serr, env=config['__environment'])
                 proc.communicate()
@@ -98,7 +98,7 @@ class B2(Builder):
                 if self.__arguments:
                     cmdline.extend(self.__arguments)
 
-                print "{}> {}".format(build_path, ' '.join(cmdline))
+                print("{}> {}".format(build_path, ' '.join(cmdline)))
                 proc = Popen(cmdline, cwd=build_path, stdout=sout, stderr=serr, shell=True, env=config['__environment'])
                 proc.communicate()
                 if proc.returncode != 0:

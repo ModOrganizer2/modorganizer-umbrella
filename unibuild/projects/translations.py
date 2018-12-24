@@ -143,7 +143,7 @@ class PullTranslations(build.Builder):
                 proc.communicate()
                 if proc.returncode != 0:
                     logging.error("failed to run %s (returncode %s), see %s and %s",
-                                  self.__command(), proc.returncode, soutpath, serrpath)
+                                  command, proc.returncode, soutpath, serrpath)
                     return False
 
                 command = "{} pull -a -f --parallel --minimum-perc={}"\
@@ -157,7 +157,7 @@ class PullTranslations(build.Builder):
                 proc.communicate()
                 if proc.returncode != 0:
                     logging.error("failed to run %s (returncode %s), see %s and %s",
-                                  self.__command(), proc.returncode, soutpath, serrpath)
+                                  command, proc.returncode, soutpath, serrpath)
                     return False
 
         return True

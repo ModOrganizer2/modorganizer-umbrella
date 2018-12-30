@@ -58,7 +58,7 @@ config = {
                             #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
                                  # eg.  'E:\Microsoft Visual Studio 14.0'
-    'qt_CustomInstallPath': r'F:\QT',  # If you installed QT to a custom location put the full path here
+    'qt_CustomInstallPath': r'',  # If you installed QT to a custom location put the full path here
                                   # eg.  r'Z:\Dev\QT' if you have Z:\Dev\QT\5.10.0\msvc2017_64\bin\qmake.exe
                                   # The r before the start of the string prevents backslashes being treated as special characters
     'build_type': "RelWithDebInfo", # build type.  other possible types could be Debug.  not tested
@@ -117,7 +117,7 @@ config = {
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code
-    'Installer': True, # Used to create installer at end of build, Forces everything to be built
+    'Installer': False, # Used to create installer at end of build, Forces everything to be built
     'show_only': False,
     'retrieve_only': False,                 # download everything as a reference (to keep track of local edits).  Do modorganizer_super first :)
     'tools_only': False,                    # Build dependencies except modorganizer targets
@@ -125,8 +125,8 @@ config = {
     'architecture': 'x86_64',  # Don't change this as we spawn the usvfs x86 build later on.
 
     # Transifex Translation configuration
-    'transifex_Enable': True, # this should only be changed to true when doing a release
-    'transifex_API': '1/808e1057cbada2db95a94f81315e25e5a5475d54', # you can generate an api at https://www.transifex.com/user/settings/api/
+    'transifex_Enable': False, # this should only be changed to true when doing a release
+    'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
     'transifex-client_version': '0.13.4',
     'transifex_minimum_percentage': '60'
 }

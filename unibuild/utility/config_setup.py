@@ -102,21 +102,6 @@ def check_config():
             return False
         if not config['__build_base_path']:
             return False
-        #if not config['paths']['graphviz']:
-        #   return False
-        if not config['paths']['cmake']:
-            return False
-        if not config['paths']['git']:
-            return False
-        if not config['paths']['perl']:
-            return False
-        if config["Installer"]:
-            if not config['paths']['InnoSetup']:
-                return False
-        #if not config['paths']['svn']:
-        #   return False
-        if not config['paths']['7z']:
-            return False
         if not config['paths']['python']:
             return False
         if not config['paths']['visual_studio']:

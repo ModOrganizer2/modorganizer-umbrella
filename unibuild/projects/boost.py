@@ -101,8 +101,10 @@ else:
     boost = Project("boost")
 
     if config['architecture'] == 'x86_64':
-        boost_stage = Patch.Copy(os.path.join("{}/stage/lib/boost_python{}-vc{}-mt-{}-{}.dll"
+        boost_stage = Patch.Copy(os.path.join("{}/lib{}-msvc-{}/lib/boost_python{}-vc{}-mt-{}-{}.dll"
                                               .format(boost_path,
+                                                      "64" if config['architecture'] == 'x86_64' else "32",
+                                                      vc_version,
                                                       config["python_version"].replace(".", ""),
                                                       vc_version.replace(".", ""),
                                                       "x64" if config['architecture'] == "x86_64" else "x86",

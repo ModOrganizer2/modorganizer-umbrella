@@ -47,7 +47,7 @@ def cmake_parameters():
                         "-DDEPENDENCIES_DIR={}".format(paths_build),
                         "-DBOOST_ROOT={}\\boost_{}".format(paths_build, boost_tag_version.replace(".", "_")),
                         "-DBoost_LIBRARY_DIRS={}\\boost_{}\\lib{}-msvc-{}\\lib".format(paths_build, boost_tag_version.replace(".", "_"),"64" if config['architecture'] == 'x86_64' else "32",vc_version),
-                        "-DLOOT_API_PATH={}\\lootapi-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
+                        "-DLOOT_PATH={}\\libloot-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
                         "-DLZ4_ROOT={}\\lz4-v{}".format(paths_build, ".".join([_f for _f in [config["lz4_version"], config['lz4_version_minor']] if _f])),
                         "-DQT_ROOT={}".format(qt_inst_path()),
                         "-DZLIB_ROOT={}\\\zlib-{}".format(paths_build, config["zlib_version"])]

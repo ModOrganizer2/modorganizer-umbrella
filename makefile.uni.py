@@ -44,7 +44,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_features", "game_features", config['Main_Branch'], [], False),
     (config['Main_Author'], "modorganizer-archive", "archive", config['Main_Branch'], ["7zip", "Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-uibase", "uibase", config['Main_Branch'], ["Qt5", "boost"], True),
-    (config['Main_Author'], "modorganizer-lootcli", "lootcli", config['Main_Branch'], ["lootapi", "boost"], True),
+    (config['Main_Author'], "modorganizer-lootcli", "lootcli", config['Main_Branch'], ["libloot", "boost"], True),
     (config['Main_Author'], "modorganizer-esptk", "esptk", config['Main_Branch'], ["boost"], True),
     (config['Main_Author'], "modorganizer-bsatk", "bsatk", config['Main_Branch'], ["zlib", "boost", "lz4"], True),
     (config['Main_Author'], "modorganizer-nxmhandler", "nxmhandler", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),

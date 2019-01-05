@@ -54,6 +54,7 @@ def check_prerequisites_config():
 
 config = {
 
+    'Appveyor_Build': False, #Should only be used for the AppVeyor build as it will use as many prebuilt binaries as possible
     'Release_Build': False,  #Used to override certain versions in umbrella when doing an officail release
                             #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here

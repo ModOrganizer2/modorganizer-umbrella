@@ -129,7 +129,10 @@ config = {
     'transifex_Enable': False, # this should only be changed to true when doing a release
     'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
     'transifex-client_version': '0.13.4',
-    'transifex_minimum_percentage': '60'
+    'transifex_minimum_percentage': '60',
+
+    #url used for all prebuilt downloads
+    'prebuilt_url': "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/"
 }
 config['paths'] = {
     'download': "{base_dir}\\downloads",

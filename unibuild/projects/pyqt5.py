@@ -25,7 +25,7 @@ from subprocess import Popen
 
 from config import config
 from unibuild import Project
-from unibuild.modules import  build, sourceforge, Patch
+from unibuild.modules import  build, sourceforge, Patch, urldownload
 from unibuild.projects import python, sip, qt5
 from unibuild.utility import lazy
 from unibuild.utility.config_utility import qt_inst_path
@@ -33,6 +33,7 @@ from unibuild.utility.lazy import doclambda
 
 icu_version = config['icu_version']
 pyqt_version = config['pyqt_version']
+python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
 qt_binary_install = config["paths"]["qt_binary_install"]
 __build_base_path = config["__build_base_path"]
 
@@ -49,7 +50,7 @@ def make_sure_path_exists(path):
 def pyqt5_env():
     res = config['__environment'].copy()
     res['path'] = ";".join([os.path.join(qt_binary_install, "bin"),
-        os.path.join(config['paths']['build'], "sip-{}".format(sip.sip_version), "sipgen"),]) + ";" + res['path']
+        os.path.join(python.python['build_path'])]) + ";" + res['path']
     res['LIB'] = os.path.join(__build_base_path, "install", "libs") + ";" + res['LIB']
     res['CL'] = "/MP"
     res['PYTHONHOME'] = python.python['build_path']
@@ -89,9 +90,10 @@ class PyQt5Configure(build.Builder):
                 proc = Popen([os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",
                      "--confirm-license",
                      "-b", bp,
+                     "--verbose",
                      "-d", os.path.join(bp, "Lib", "site-packages"),
                      "-v", os.path.join(bp, "sip", "PyQt5"),
-                     "--sip-incdir", os.path.join(bp, "Include")] \
+                     "--sip-incdir", os.path.join(bp, "Include")]
                      + list(itertools.chain(*[("--enable", s) for s in enabled_modules])),
                     env=pyqt5_env(),
                     cwd=self._context["build_path"],
@@ -105,9 +107,21 @@ class PyQt5Configure(build.Builder):
 
         return True
 
+if config.get('Appveyor_Build', True):
+    Project("PyQt5") \
+        .depend(build.Execute(copy_pyd)
+                .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
+                                    os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
+                        doclambda(lambda: python.python['build_path'], "python path"))
+                        .depend(urldownload.URLDownload(config.get('prebuilt_url') + "PyQt5_gpl-prebuilt-{0}.7z"
+                                .format(pyqt_version), name="PyQt5-prebuilt", clean=False)
+                                .set_destination("python-{}".format(python_version))
+                                .depend("sip")
+                                .depend("Qt5"))))
 
-Project("PyQt5") \
-    .depend(build.Execute(copy_pyd)
+else:
+    Project("PyQt5") \
+        .depend(build.Execute(copy_pyd)
             .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
                                 os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
                                doclambda(lambda: python.python['build_path'], "python path"))

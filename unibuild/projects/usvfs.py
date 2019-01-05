@@ -54,7 +54,7 @@ for (project32, dependencies) in [("boost", ["boost_prepare"]),
       ("usvfs", [])]:
   if config['architecture'] == 'x86_64':
     unimake32 = \
-      build.Run_With_Output(r'"{0}" unimake.py -d "{1}" --set architecture="x86" -b "build" -p "progress" -i "install" "{2}"'.format(sys.executable, config['__build_base_path'], project32),
+      build.Run_With_Output(r'"{0}" unimake.py --set architecture="x86" -b "build" -p "progress" -i "install" {1} "{2}"'.format(sys.executable, ' '.join(sys.argv[1:]), project32),
         name="unimake_x86_{}".format(project32),
         environment=config['__Default_environment'],
         working_directory=os.path.join(os.getcwd()))

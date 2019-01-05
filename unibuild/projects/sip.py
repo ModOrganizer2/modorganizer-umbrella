@@ -96,7 +96,7 @@ if config.get('Appveyor_Build', True):
     Project('sip') \
         .depend(build.Execute(copy_pyd)
                 .depend(urldownload.URLDownload(
-                    "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/sip-prebuilt-{}.7z"
+                    config.get('prebuilt_url') + "sip-prebuilt-{}.7z"
                     .format(sip_version), name="Sip-Prebuilt", clean=False)
                         .set_destination("python-{}".format(python_version))
                             .depend("Python")))

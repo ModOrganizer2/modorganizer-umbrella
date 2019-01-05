@@ -83,7 +83,7 @@ if config.get('Appveyor_Build', True):
     python = Project("Python") \
         .depend(build.Execute(install)
                 .depend(urldownload.URLDownload(
-                    "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/python-prebuilt-{}.7z"
+                    config.get('prebuilt_url') + "python-prebuilt-{}.7z"
                     .format(python_version + python_version_minor)).
                         set_destination("python-{}".format(python_version + python_version_minor))))
 else:

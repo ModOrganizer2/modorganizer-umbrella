@@ -21,7 +21,7 @@ import shutil
 from glob import glob
 
 from config import config
-from unibuild.modules import build, github, msbuild
+from unibuild.modules import build, github, msbuild, urldownload
 from unibuild.project import Project
 from unibuild.utility.visualstudio import get_visual_studio_2017
 
@@ -47,7 +47,8 @@ def python_environment():
 def upgrade_args():
     env = config['__environment']
     devenv_path = os.path.join(config['paths']['visual_studio_base'], "Common7", "IDE")
-    # MSVC2017 supports building with the MSVC2015 toolset though this will break here, Small work around to make sure devenv.exe exists
+    # MSVC2017 supports building with the MSVC2015 toolset though this will break here,
+    # Small work around to make sure devenv.exe exists
     # If not try MSVC2017 instead
     res = os.path.isfile(os.path.join(devenv_path, "devenv.exe"))
     if res:
@@ -57,13 +58,18 @@ def upgrade_args():
     return [os.path.join(get_visual_studio_2017('15.0'), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
             "PCBuild/pcbuild.sln", "/upgrade"]
 
+
+def python_prepare(context):
+    shutil.copy(os.path.join(python['build_path'], "PC", "pyconfig.h"),
+                os.path.join(python['build_path'], "Include", "pyconfig.h"))
+    return True
+
+
 def install(context):
     make_sure_path_exists(os.path.join(path_install, "libs"))
     path_segments = [context['build_path'], "PCbuild"]
     if config['architecture'] == "x86_64":
         path_segments.append("amd64")
-    shutil.copy(os.path.join(python['build_path'], "PC", "pyconfig.h"),
-                os.path.join(python['build_path'], "Include", "pyconfig.h"))
     for f in glob(os.path.join(*path_segments,"*.lib")):
         shutil.copy(f, os.path.join(path_install, "libs"))
     for f in glob(os.path.join(*path_segments,"*.dll")):
@@ -72,14 +78,23 @@ def install(context):
                 os.path.join(path_install, "libs", "python3.lib"))
     return True
 
-def download(context):
-    return True
 
-
-python = Project("Python") \
-    .depend(build.Execute(install)
-            .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
-                                    project_PlatformToolset=config['vc_platformtoolset'])
-                    .depend(build.Run(upgrade_args, name="upgrade python project")
-                            .depend(github.Source("python", "cpython", "v{}{}".format(config['python_version'], config['python_version_minor']), shallowclone=True)
-                                    .set_destination("python-{}".format(python_version + python_version_minor))))))
+if config.get('Appveyor_Build', True):
+    python = Project("Python") \
+        .depend(build.Execute(install)
+                .depend(urldownload.URLDownload(
+                    "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/python-prebuilt-{}.7z"
+                    .format(python_version + python_version_minor)).
+                        set_destination("python-{}".format(python_version + python_version_minor))))
+else:
+    python = Project("Python") \
+        .depend(build.Execute(install)
+                .depend(build.Execute(python_prepare)
+                        .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
+                                                project_PlatformToolset=config['vc_platformtoolset'])
+                                .depend(build.Run(upgrade_args, name="upgrade python project")
+                                        .depend(github.Source("python", "cpython", "v{}{}"
+                                                              .format(config['python_version'],
+                                                                      config['python_version_minor'])
+                                                              , shallowclone=True)
+                                        .set_destination("python-{}".format(python_version + python_version_minor)))))))

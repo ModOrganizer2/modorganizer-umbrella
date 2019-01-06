@@ -170,8 +170,12 @@ def copy_licenses(context):
     shutil.copy(os.path.join(build_path, "usvfs", "udis86", "LICENSE"), os.path.join(license_path, "udis86.txt"))
     shutil.copy(os.path.join(build_path, "usvfs", "spdlog", "LICENSE"), os.path.join(license_path, "spdlog.txt"))
     shutil.copy(os.path.join(build_path, "usvfs", "fmt", "LICENSE.rst"), os.path.join(license_path, "fmt.txt"))
-    shutil.copy(os.path.join(build_path, "sip-{}".format(config['sip_version']), "LICENSE"), os.path.join(license_path, "sip.txt"))
-    shutil.copy(os.path.join(build_path, "sip-{}".format(config['sip_version']), "LICENSE-GPL2"), os.path.join(license_path, "GPL-v2.0.txt"))
+    if config['sip_dev_version']:
+        sip_path = os.path.join(build_path, "sip-{}.dev{}".format(config['sip_version'], config['sip_dev_version']))
+    else:
+        sip_path = os.path.join(build_path, "sip-{}".format(config['sip_version']))
+    shutil.copy(os.path.join(sip_path, "LICENSE"), os.path.join(license_path, "sip.txt"))
+    shutil.copy(os.path.join(sip_path, "LICENSE-GPL2"), os.path.join(license_path, "GPL-v2.0.txt"))
     shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']), "LICENSE"), os.path.join(license_path, "python.txt"))
     shutil.copy(os.path.join(build_path, "openssl-{}".format(config['openssl_version']), "LICENSE"), os.path.join(license_path, "openssl.txt"))
     shutil.copy(os.path.join(build_path, "modorganizer_super", "lootcli", "vsbuild", "src", "external", "src", "cpptoml", "LICENSE"), os.path.join(license_path, "cpptoml.txt"))

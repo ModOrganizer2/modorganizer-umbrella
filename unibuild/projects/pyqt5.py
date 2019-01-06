@@ -25,7 +25,7 @@ from subprocess import Popen
 
 from config import config
 from unibuild import Project
-from unibuild.modules import  build, sourceforge, Patch, urldownload
+from unibuild.modules import  build, sourceforge, urldownload, Patch
 from unibuild.projects import python, sip, qt5
 from unibuild.utility import lazy
 from unibuild.utility.config_utility import qt_inst_path
@@ -34,6 +34,10 @@ from unibuild.utility.lazy import doclambda
 icu_version = config['icu_version']
 pyqt_version = config['pyqt_version']
 python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
+pyqt_dev = False
+if config['pyqt_dev_version']:
+    pyqt_version += ".dev" + config['pyqt_dev_version']
+    pyqt_dev = True
 qt_binary_install = config["paths"]["qt_binary_install"]
 __build_base_path = config["__build_base_path"]
 
@@ -118,16 +122,20 @@ if config.get('Appveyor_Build', True):
                                 .set_destination("python-{}".format(python_version))
                                 .depend("sip")
                                 .depend("Qt5"))))
-
 else:
+    if pyqt_dev:
+        pyqt_source = urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/PyQt5_gpl-{0}.zip"
+                                          .format(pyqt_version), tree_depth=1)
+    else:
+        pyqt_source = sourceforge.Release("pyqt", "PyQt5/PyQt-{0}/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1)
+
     Project("PyQt5") \
         .depend(build.Execute(copy_pyd)
-            .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
-                                os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
-                               doclambda(lambda: python.python['build_path'], "python path"))
-                    .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
-                            .depend(PyQt5Configure()
-                                    .depend("sip")
-                                    .depend("Qt5")
-                                    .depend(sourceforge.Release("pyqt", "PyQt5/PyQt-{0}/PyQt5_gpl-{0}.zip"
-                                                                .format(pyqt_version), tree_depth=1))))))
+                .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
+                                    os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
+                                   doclambda(lambda: python.python['build_path'], "python path"))
+                        .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
+                                .depend(PyQt5Configure()
+                                        .depend("sip")
+                                        .depend("Qt5")
+                                        .depend(pyqt_source)))))

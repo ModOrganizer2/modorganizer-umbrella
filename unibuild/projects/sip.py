@@ -28,9 +28,23 @@ from unibuild.modules import build, sourceforge, urldownload
 from unibuild.projects import python
 
 sip_version = config['sip_version']
+sip_dev = False
+
+
+if config['sip_dev_version']:
+    sip_version += ".dev" + config['sip_dev_version']
+    sip_dev = True
+
+
 python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
 python_path = os.path.join(config['paths']['build'], "python-{}".format(config['python_version'] + config['python_version_minor']))
-sip_url = sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)
+
+if sip_dev:
+    sip_url = urldownload\
+        .URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/sip-{0}.zip"
+                     .format(sip_version), 1)
+else:
+    sip_url = sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)
 
 
 def sip_environment():

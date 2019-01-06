@@ -99,12 +99,14 @@ config = {
     'nuget_version': '4.7.1',
     'nmm_version': '0.65.10',
     'openssl_version': '1.0.2q',
-    'pyqt_version': '5.11.3',
+    'pyqt_version': '5.12',
+    'pyqt_dev_version': '1901040954', # leave empty for a standard release
     'python_version': '3.7',
     'python_version_minor': '.1',
-    'sip_version': '4.19.13',
-    'qt_version': '5.11',
-    'qt_version_minor': '2',
+    'sip_version': '4.19.14',
+    'sip_dev_version': '1901041429', # leave empty for a standard release
+    'qt_version': '5.12',
+    'qt_version_minor': '0',
     'vc_platformtoolset': 'v141',
     'vc_version': '15.0',
     'vc_version_for_boost': '14.1',

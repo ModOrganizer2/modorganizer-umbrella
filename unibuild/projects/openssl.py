@@ -100,7 +100,7 @@ Configure_openssl = build.Run(r"{} Configure --openssldir={} VC-WIN{}A".format(c
                       working_directory=lambda: os.path.join(openssl_path))
 
 
-if not config.get('Appveyor_Build', True):
+if config.get('Appveyor_Build', True):
     openssl = Project("openssl") \
         .depend(build.Execute(openssl_stage)
                 .depend(urldownload.URLDownload(config.get('prebuilt_url') + "openssl-prebuilt-{}.7z"

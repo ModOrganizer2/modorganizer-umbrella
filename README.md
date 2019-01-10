@@ -38,9 +38,9 @@ Now you need to install all required software to build Mod Organizer.
       Additionally you need to activate under Individual components:
       * "Windows Universal CRT SDK" (Under Compilers, build tools, and runtimes)
       * "Windows 8.1 SDK" (Under SDKs, libraries, and frameworks)
-      * "Windows 10 SDK (10.0.16299.0) for Desktop C++ [x86 and x64]" (Under SDKs, libraries, and frameworks)
-      * "Windows 10 SDK (10.0.17134.0)" (Under SDKs, libraries, and frameworks)
-
+      * "Windows 10 SDK (10.0.16299.0) for Desktop C++ [x86 and x64]" (Under SDKs, libraries, and frameworks
+        * Note: If you have problems building Python due to a "missing SDK version", edit the registry key [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0] to point to the the 10.0.16299.0 SDK.
+      
 Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
 
 If you wish to rebuild only one target once everything is complete, you simply delete the relevant txt file in the progress folder, e.g C:\modorganizer-umbrella\progress\modorganizer_complete_cmake modorganizer.txt

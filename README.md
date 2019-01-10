@@ -36,9 +36,9 @@ Now you need to install all required software to build Mod Organizer.
       * Desktop development for C++
 
       Additionally you need to activate under Individual components:
-
-      * "Windows 8.1 SDK and UCRT SDK" (Under Compilers, build tools, and runtimes)
-      * "Windows 10 SDK (10.0.16299.0) for Desktop c++" (near the bottom)
+      * "Windows Universal CRT SDK" (Under Compilers, build tools, and runtimes)
+      * "Windows 8.1 SDK" (Under SDKs, libraries, and frameworks)
+      * "Windows 10 SDK (10.0.16299.0) for Desktop C++ [x86 and x64]" (Under SDKs, libraries, and frameworks)
 
 Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
 

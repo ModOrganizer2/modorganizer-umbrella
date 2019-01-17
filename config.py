@@ -84,7 +84,7 @@ config = {
     'Work_Author': '',  # yourself
 
     # manualy set all versions
-    '7zip_version': '18.05',
+    '7zip_version': '18.06',
     'boost_version': '1.69.0',
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source

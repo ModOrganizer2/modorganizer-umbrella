@@ -78,7 +78,7 @@ config = {
                                # flat:    All files in one folder, <project>_complete_<task>.txt (default)
                                # folders: <project>\<task>_complete.txt
 
-    'Main_Author': 'Modorganizer2',  # the current maintainer
+    'Main_Author': 'ModOrganizer2',  # the current maintainer
     'Main_Branch': "Develop",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
@@ -91,8 +91,8 @@ config = {
     'grep_version': '2.5.4',
     'icu_version': '63',
     'icu_version_minor': '1',
-    'loot_version': '0.14.1',
-    'loot_commit': 'gc8090fe',
+    'loot_version': '0.14.2',
+    'loot_commit': 'g4f01487',
     'lz4_version': '1.8.3',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.13.03',

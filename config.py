@@ -104,7 +104,7 @@ config = {
     'python_version': '3.7',
     'python_version_minor': '.1',
     'sip_version': '4.19.14',
-    'sip_dev_version': '1901071741', # leave empty for a standard release
+    'sip_dev_version': '1901281040', # leave empty for a standard release
     'qt_version': '5.12',
     'qt_version_minor': '0',
     'vc_platformtoolset': 'v141',

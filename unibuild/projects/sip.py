@@ -24,7 +24,7 @@ from subprocess import Popen
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build, sourceforge, urldownload
+from unibuild.modules import build, sourceforge, urldownload, urldownloadany
 from unibuild.projects import python
 
 sip_version = config['sip_version']
@@ -39,13 +39,9 @@ if config['sip_dev_version']:
 python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
 python_path = os.path.join(config['paths']['build'], "python-{}".format(config['python_version'] + config['python_version_minor']))
 
-if sip_dev:
-    sip_url = urldownload\
-        .URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/sip-{0}.zip"
-                     .format(sip_version), 1)
-else:
-    sip_url = sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)
-
+sip_url = urldownloadany.URLDownloadAny((
+            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/sip-{0}.zip".format(sip_version), 1),
+            sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)))
 
 def sip_environment():
     result = config['__environment'].copy()

@@ -100,13 +100,13 @@ config = {
     'nmm_version': '0.65.10',
     'openssl_version': '1.0.2q',
     'pyqt_version': '5.12',
-    'pyqt_dev_version': '1901251614', # leave empty for a standard release
+    'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
     'python_version_minor': '.1',
     'sip_version': '4.19.14',
-    'sip_dev_version': '1901281040', # leave empty for a standard release
+    'sip_dev_version': '', # leave empty for a standard release
     'qt_version': '5.12',
-    'qt_version_minor': '0',
+    'qt_version_minor': '1',
     'vc_platformtoolset': 'v141',
     'vc_version': '15.0',
     'vc_version_for_boost': '14.1',

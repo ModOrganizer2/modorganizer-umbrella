@@ -96,7 +96,7 @@ config = {
     'loot_commit': 'g4f01487',
     'lz4_version': '1.8.3',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
-    'nasm_version': '2.13.03',
+    'nasm_version': '2.14.02',
     'nuget_version': '4.7.1',
     'nmm_version': '0.65.10',
     'openssl_version': '1.0.2q',

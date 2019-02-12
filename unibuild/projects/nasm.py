@@ -19,12 +19,17 @@ import os
 
 from config import config
 from unibuild import Project
-from unibuild.modules import cmake, urldownload
+from unibuild.modules import cmake, urldownload, urldownloadany
 
 nasm_version = config['nasm_version']
 
 def bitness():
     return "64" if config['architecture'] == "x86_64" else "32"
 
-Project("nasm").depend(urldownload.URLDownload("http://www.nasm.us/pub/nasm/releasebuilds/{}/win{}/nasm-{}-win{}.zip"
-                                               .format(nasm_version, bitness(), nasm_version, bitness()),tree_depth=1))
+
+Project("nasm").depend(urldownloadany.URLDownloadAny((
+    urldownload.URLDownload("http://www.nasm.us/pub/nasm/releasebuilds/{}/win{}/nasm-{}-win{}.zip"
+                            .format(nasm_version, bitness(), nasm_version, bitness()), tree_depth=1),
+    urldownload.URLDownload("https://fossies.org/windows/misc/nasm-{}-win{}.zip"
+                            .format(nasm_version, bitness(), nasm_version, bitness()), tree_depth=1))))
+

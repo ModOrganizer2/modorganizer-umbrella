@@ -96,7 +96,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-installer_fomod", "installer_fomod", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-installer_ncc", "installer_ncc", config['Main_Branch'], ["Qt5", "modorganizer-uibase", "ncc"], True),
     (config['Main_Author'], "modorganizer-bsa_extractor", "bsa_extractor", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-plugin_python", "plugin_python", config['Main_Branch'], ["Qt5", "boost", "Python",
+    (config['Main_Author'], "modorganizer-plugin_python", "plugin_python", "Appveyor", ["Qt5", "boost", "Python",
                                                                                                    "modorganizer-uibase", "sip"], True),
     (config['Main_Author'], "githubpp", "githubpp", config['Main_Branch'], ["Qt5"], True),
     (config['Main_Author'], "modorganizer", "modorganizer", config['Main_Branch'], ["Qt5", "boost", "usvfs_32",

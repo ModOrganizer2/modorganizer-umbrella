@@ -79,21 +79,21 @@ config = {
                                # flat:    All files in one folder, <project>_complete_<task>.txt (default)
                                # folders: <project>\<task>_complete.txt
 
-    'Main_Author': 'Modorganizer2',  # the current maintainer
+    'Main_Author': 'ModOrganizer2',  # the current maintainer
     'Main_Branch': "Develop",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
     # manualy set all versions
-    '7zip_version': '18.05',
+    '7zip_version': '18.06',
     'boost_version': '1.69.0',
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
     'icu_version': '63',
     'icu_version_minor': '1',
-    'loot_version': '0.14.0',
-    'loot_commit': 'g2e074a4',
+    'loot_version': '0.14.2',
+    'loot_commit': 'g4f01487',
     'lz4_version': '1.8.3',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.13.03',
@@ -101,13 +101,13 @@ config = {
     'nmm_version': '0.65.10',
     'openssl_version': '1.0.2q',
     'pyqt_version': '5.12',
-    'pyqt_dev_version': '1901040954', # leave empty for a standard release
+    'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
     'python_version_minor': '.1',
     'sip_version': '4.19.14',
-    'sip_dev_version': '1901041429', # leave empty for a standard release
+    'sip_dev_version': '', # leave empty for a standard release
     'qt_version': '5.12',
-    'qt_version_minor': '0',
+    'qt_version_minor': '1',
     'vc_platformtoolset': 'v141',
     'vc_version': '15.0',
     'vc_version_for_boost': '14.1',

@@ -25,7 +25,7 @@ from subprocess import Popen
 
 from config import config
 from unibuild import Project
-from unibuild.modules import  build, sourceforge, urldownload, Patch
+from unibuild.modules import  build, sourceforge, urldownload, urldownloadany, Patch
 from unibuild.projects import python, sip, qt5
 from unibuild.utility import lazy
 from unibuild.utility.config_utility import qt_inst_path
@@ -123,19 +123,18 @@ if config.get('Appveyor_Build', True):
                                 .depend("sip")
                                 .depend("Qt5"))))
 else:
-    if pyqt_dev:
-        pyqt_source = urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/PyQt5_gpl-{0}.zip"
-                                          .format(pyqt_version), tree_depth=1)
-    else:
-        pyqt_source = sourceforge.Release("pyqt", "PyQt5/PyQt-{0}/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1)
+    pyqt_source = urldownloadany.URLDownloadAny((
+                    urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1),
+                    sourceforge.Release("pyqt", "PyQt5/PyQt-{0}/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1)))
 
     Project("PyQt5") \
         .depend(build.Execute(copy_pyd)
-                .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
-                                    os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
-                                   doclambda(lambda: python.python['build_path'], "python path"))
-                        .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
-                                .depend(PyQt5Configure()
-                                        .depend("sip")
-                                        .depend("Qt5")
-                                        .depend(pyqt_source)))))
+            .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
+                                os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
+                               doclambda(lambda: python.python['build_path'], "python path"))
+                    .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
+                            .depend(PyQt5Configure()
+                                    .depend("sip")
+                                    .depend("Qt5")
+                                    .depend(pyqt_source)))))
+

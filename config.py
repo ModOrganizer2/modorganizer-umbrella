@@ -109,6 +109,7 @@ config = {
     'qt_version': '5.12',
     'qt_version_minor': '1',
     'vc_platformtoolset': 'v141',
+    'vc_TargetPlatformVersion': '10.0.17763.0',
     'vc_version': '15.0',
     'vc_version_for_boost': '14.1',
     'WixToolset_version': '311',

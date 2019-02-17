@@ -77,6 +77,7 @@ def init_config(args):
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = os.path.abspath(args.destination)
     config['__Umbrella_path'] = os.getcwd()
+    config['__Arguments'] = args
 
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable

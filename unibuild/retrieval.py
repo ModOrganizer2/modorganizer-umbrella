@@ -27,7 +27,7 @@ class Retrieval(Task):
         super(Retrieval, self).__init__()
         try:
             os.makedirs(config["paths"]["download"])
-        except Exception as e:
+        except Exception:
             # ignore error, probably means the path already exists
             pass
 

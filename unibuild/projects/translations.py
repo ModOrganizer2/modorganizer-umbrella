@@ -71,7 +71,6 @@ def GenerateFiles(path,data, c = 1):
                     if filename.endswith(".ts"):
                         data.update({os.path.join(filepath,filename):os.path.join(install_path, "bin", "translations",os.path.basename(filepath).split(".")[-1] + "_" +  os.path.splitext(filename)[0] + ".qm")})
                 elif os.path.isdir(i):
-                    dirname = os.path.basename(i)
                     c+=1
                     GenerateFiles(i,data,c)
                     c-=1

@@ -45,7 +45,6 @@ def python_environment():
 
 
 def upgrade_args():
-    env = config['__environment']
     devenv_path = os.path.join(config['paths']['visual_studio_base'], "Common7", "IDE")
     # MSVC2017 supports building with the MSVC2015 toolset though this will break here,
     # Small work around to make sure devenv.exe exists

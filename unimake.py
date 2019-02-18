@@ -31,8 +31,6 @@ import os.path
 import argparse
 from networkx.drawing.nx_pydot import write_dot
 
-exitcode = 0
-
 
 def progress_callback(job, percentage):
     if not percentage and not job:
@@ -169,7 +167,6 @@ def main():
                             else:
                                 if task.fail_behaviour == Task.FailBehaviour.FAIL:
                                     logging.critical("task %s failed", node)
-                                    exitcode = 1
                                     return 1
                                 elif task.fail_behaviour == Task.FailBehaviour.SKIP_PROJECT:
                                     recursive_remove(build_graph, node)
@@ -198,6 +195,6 @@ if __name__ == "__main__":
         else:
             logging.error("You started unimake with Python 2 but we only support Python 3!")
             sys.exit(1)
-    except Exception as e:
+    except Exception:
         traceback.print_exc(file=sys.stdout)
         sys.exit(1)

@@ -51,13 +51,13 @@ class URLDownloadAny(Retrieval):
       try:
         if url.process(progress):
           return True
-      except urllib.error.HTTPError:
-        continue
+      except (urllib.error.HTTPError, urllib.error.URLError):
+          continue
     return False
 
   def download(self, output_file_path, progress):
     for url in self.__url_list:
       try:
         url.download(output_file_path, progress)
-      except urllib.error.HTTPError:
+      except (urllib.error.HTTPError, urllib.error.URLError):
         continue

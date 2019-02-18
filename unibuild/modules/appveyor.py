@@ -15,21 +15,28 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+import logging
 import os
 
-from config import config
-from unibuild import Project
-from unibuild.modules import cmake, urldownload, urldownloadany
-
-nasm_version = config['nasm_version']
-
-def bitness():
-    return "64" if config['architecture'] == "x86_64" else "32"
+from unibuild import Task
 
 
-Project("nasm").depend(urldownloadany.URLDownloadAny((
-    urldownload.URLDownload("http://www.nasm.us/pub/nasm/releasebuilds/{}/win{}/nasm-{}-win{}.zip"
-                            .format(nasm_version, bitness(), nasm_version, bitness()), tree_depth=1),
-    urldownload.URLDownload("https://fossies.org/windows/misc/nasm-{}-win{}.zip"
-                            .format(nasm_version, bitness(), nasm_version, bitness()), tree_depth=1))))
+class SetProjectFolder(Task):
+    def __init__(self, projectpath):
+        super(SetProjectFolder, self).__init__()
+        self.__projectpath = projectpath
 
+    def prepare(self):
+        if 'build_path' not in self._context:
+            output_file_path = os.path.join(self.__projectpath)
+            self._context['build_path'] = output_file_path
+
+    @property
+    def name(self):
+        return "setting appveyor project path to {}".format(self.__projectpath)
+
+    def process(self, progress):
+        if not os.path.isdir(self.__projectpath):
+            logging.error("failed to set appveyor project dir to  %s, doesn't exist", self.__projectpath)
+            return False
+        return True

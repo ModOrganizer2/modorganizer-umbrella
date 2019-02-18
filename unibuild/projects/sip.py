@@ -102,9 +102,18 @@ class SipConfigure(build.Builder):
         return True
 
 
-Project('sip') \
-    .depend(build.Execute(copy_pyd)
-            .depend(build.Make(environment=sip_environment()).install()
-                    .depend(SipConfigure()
-                            .depend("Python")
-                            .depend(sip_url))))
+if config.get('Appveyor_Build', True):
+    Project('sip') \
+        .depend(build.Execute(copy_pyd)
+                .depend(urldownload.URLDownload(
+                    config.get('prebuilt_url') + "sip-prebuilt-{}.7z"
+                    .format(sip_version), name="Sip-Prebuilt", clean=False)
+                        .set_destination("python-{}".format(python_version))
+                            .depend("Python")))
+else:
+    Project('sip') \
+        .depend(build.Execute(copy_pyd)
+                .depend(build.Make(environment=sip_environment()).install()
+                        .depend(SipConfigure()
+                                .depend("Python")
+                                .depend(sip_url))))

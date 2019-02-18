@@ -34,10 +34,12 @@ from unibuild.utility.context_objects import on_failure
 class URLDownload(Retrieval):
     BLOCK_SIZE = 8192
 
-    def __init__(self, url, tree_depth=0):
+    def __init__(self, url, tree_depth=0, name=None, clean=True):
         super(URLDownload, self).__init__()
         self.__url = url
         self.__tree_depth = tree_depth
+        self.__name = name
+        self.__clean = clean
         # strip trailing slashes from urlparse().path that are generated if they url ends with questionmark
         # eg: github blobs (file.zip?taw=true) otherwise os.path.basename return no file extension
         self.__file_name = os.path.basename(urlparse(self.__url).path.rstrip("/"))
@@ -45,7 +47,9 @@ class URLDownload(Retrieval):
 
     @property
     def name(self):
-        return "download {0}".format(self.__file_name)
+        if self.__name is None:
+            return "download {0}".format(self.__file_name)
+        return "download {0}".format(self.__name)
 
     def set_destination(self, destination_name):
         name, ext = os.path.splitext(self.__file_name)
@@ -118,7 +122,7 @@ class URLDownload(Retrieval):
             # it does matter if the directory already exists otherwise downloads with tree_depth will fail if the are
             # extracted a second time on a dirty build environment
             sub_dirs = os.listdir(output_file_path)
-            if not len(sub_dirs) == 0:
+            if not len(sub_dirs) == 0 and self.__clean:
                 logging.info("Cleaning {}".format(output_file_path))
                 for ls in sub_dirs:
                     try:

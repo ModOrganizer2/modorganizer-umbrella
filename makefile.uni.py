@@ -21,7 +21,7 @@ import shutil
 from config import config
 from string import Formatter
 from unibuild import Project
-from unibuild.modules import build, cmake, git, github, urldownload, msbuild
+from unibuild.modules import build, cmake, git, github, urldownload, msbuild, appveyor
 from unibuild.projects import boost, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, zlib, nuget
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
@@ -88,7 +88,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-tool_inieditor", "tool_inieditor", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-tool_inibakery", "tool_inibakery", config['Main_Branch'], ["modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", config['Main_Branch'], ["PyQt5"], True),
-    (config['Main_Author'], "modorganizer-fnistool", "fnistool", config['Main_Branch'], ["PyQt5"], True),
+    (config['Main_Author'], "modorganizer-fnistool", "fnistool", config['Main_Branch'],  ["PyQt5"], True),
     (config['Main_Author'], "modorganizer-preview_base", "preview_base", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", config['Main_Branch'], ["Qt5", "modorganizer-uibase"], True),
@@ -119,6 +119,7 @@ for author, git_path, path, branch, dependencies, Build in [
     project = Project(git_path)
 
     if Build:
+
         vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
 
         for dep in dependencies:
@@ -126,9 +127,14 @@ for author, git_path, path, branch, dependencies, Build in [
 
         build_path = config["paths"]["build"]
         vs_target = "Clean;Build" if config['rebuild'] else "Build"
-        vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None, "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"), "RelWithDebInfo")
+        vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
+                                          "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
+                                          "RelWithDebInfo")
 
-        project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path))))
+        if config['Appveyor_Build'] and os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
+            project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER","")))))
+        else:
+            project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path))))
     else:
         project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                        .set_destination(path))
@@ -177,9 +183,14 @@ def copy_licenses(context):
         sip_path = os.path.join(build_path, "sip-{}.dev{}".format(config['sip_version'], config['sip_dev_version']))
     else:
         sip_path = os.path.join(build_path, "sip-{}".format(config['sip_version']))
-    shutil.copy(os.path.join(sip_path, "LICENSE"), os.path.join(license_path, "sip.txt"))
-    shutil.copy(os.path.join(sip_path, "LICENSE-GPL2"), os.path.join(license_path, "GPL-v2.0.txt"))
-    shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']), "LICENSE"), os.path.join(license_path, "python.txt"))
+    if config['Appveyor_Build']:
+        shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']),"Licenses","Sip", "LICENSE"), os.path.join(license_path, "sip.txt"))
+        shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']),"Licenses","Sip", "LICENSE-GPL2"), os.path.join(license_path, "GPL-v2.0.txt"))
+        shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']),"Licenses","Python","LICENSE"), os.path.join(license_path, "python.txt"))
+    else:
+        shutil.copy(os.path.join(sip_path, "LICENSE"), os.path.join(license_path, "sip.txt"))
+        shutil.copy(os.path.join(sip_path, "LICENSE-GPL2"), os.path.join(license_path, "GPL-v2.0.txt"))
+        shutil.copy(os.path.join(build_path, "python-{}{}".format(config['python_version'], config['python_version_minor']),"LICENSE"), os.path.join(license_path, "python.txt"))
     shutil.copy(os.path.join(build_path, "openssl-{}".format(config['openssl_version']), "LICENSE"), os.path.join(license_path, "openssl.txt"))
     shutil.copy(os.path.join(build_path, "modorganizer_super", "lootcli", "vsbuild", "src", "external", "src", "cpptoml", "LICENSE"), os.path.join(license_path, "cpptoml.txt"))
     shutil.copy(os.path.join(build_path, "boost_{}".format(boost_tag_version.replace(".", "_")), "LICENSE_1_0.txt"), os.path.join(license_path, "boost.txt"))

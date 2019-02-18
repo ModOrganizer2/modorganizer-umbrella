@@ -50,7 +50,8 @@ def cmake_parameters():
                         "-DLOOT_PATH={}\\libloot-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
                         "-DLZ4_ROOT={}\\lz4-v{}".format(paths_build, ".".join([_f for _f in [config["lz4_version"], config['lz4_version_minor']] if _f])),
                         "-DQT_ROOT={}".format(qt_inst_path()),
-                        "-DZLIB_ROOT={}\\\zlib-{}".format(paths_build, config["zlib_version"])]
+                        "-DZLIB_ROOT={}\\\zlib-{}".format(paths_build, config["zlib_version"]),
+                        "-DPYTHON_ROOT={}\\\python-{}".format(paths_build, config["python_version"] + config["python_version_minor"])]
 
     if config.get('optimize', False):
         cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")

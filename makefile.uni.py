@@ -21,7 +21,7 @@ import shutil
 from config import config
 from string import Formatter
 from unibuild import Project
-from unibuild.modules import build, cmake, git, github, urldownload, msbuild
+from unibuild.modules import build, cmake, git, github, urldownload, msbuild, appveyor
 from unibuild.projects import boost, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, zlib, nuget
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
@@ -116,6 +116,7 @@ for author, git_path, path, branch, dependencies, Build in [
     project = Project(git_path)
 
     if Build:
+
         vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
 
         for dep in dependencies:
@@ -123,9 +124,14 @@ for author, git_path, path, branch, dependencies, Build in [
 
         build_path = config["paths"]["build"]
         vs_target = "Clean;Build" if config['rebuild'] else "Build"
-        vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None, "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"), "RelWithDebInfo")
+        vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
+                                          "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
+                                          "RelWithDebInfo")
 
-        project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path))))
+        if config['Appveyor_Build'] and os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
+            project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER","")))))
+        else:
+            project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path))))
     else:
         project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                        .set_destination(path))

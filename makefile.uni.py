@@ -209,6 +209,20 @@ Project("licenses") \
         .depend(urldownload.URLDownload("https://raw.githubusercontent.com/Microsoft/DirectXTex/master/LICENSE", 0).set_destination("DXTex.txt"))
         .depend("modorganizer"))
 
+
+def copy_explorerpp(context):
+    target_path = os.path.join(config["paths"]["install"], "bin", "explorer++")
+    build_path = os.path.join(config["paths"]["build"], "explorer++")
+    shutil.copytree(build_path, target_path)
+    return True
+
+
+Project("explorerpp") \
+    .depend(build.Execute(copy_explorerpp)
+        .depend(urldownload.URLDownload("https://ci.appveyor.com/api/projects/derceg/explorerplusplus/artifacts/explorer++_x64.zip?branch=master&job=Platform%3A%20x64", 0)
+            .set_destination("explorer++")))
+
+
 if config['Installer']:
     build_installer =  build.Run(r'"{}" {}'.format(config["paths"]["InnoSetup"],"dist/MO2-Installer.iss"),
               name="Build MO2 Installer")

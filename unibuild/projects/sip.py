@@ -40,7 +40,7 @@ python_version = config.get('python_version', "3.7") + config.get('python_versio
 python_path = os.path.join(config['paths']['build'], "python-{}".format(config['python_version'] + config['python_version_minor']))
 
 sip_url = urldownloadany.URLDownloadAny((
-            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/sip-{0}.zip".format(sip_version), 1),
+            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/{0}/sip-{0}.zip".format(sip_version), 1),
             sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)))
 
 def sip_environment():

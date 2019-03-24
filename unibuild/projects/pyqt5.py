@@ -124,7 +124,7 @@ if config.get('Appveyor_Build', True):
                                 .depend("Qt5"))))
 else:
     pyqt_source = urldownloadany.URLDownloadAny((
-                    urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1),
+                    urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/{0}/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1),
                     sourceforge.Release("pyqt", "PyQt5/PyQt-{0}/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1)))
 
     Project("PyQt5") \

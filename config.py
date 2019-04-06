@@ -107,7 +107,7 @@ config = {
     'sip_version': '4.19.14',
     'sip_dev_version': '', # leave empty for a standard release
     'qt_version': '5.12',
-    'qt_version_minor': '2',
+    'qt_version_minor': '1',
     'vc_platformtoolset': 'v141',
     'vc_TargetPlatformVersion': '10.0.17763.0',
     'vc_version': '15.0',

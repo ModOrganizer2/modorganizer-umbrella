@@ -85,21 +85,21 @@ config = {
     'Work_Author': '',  # yourself
 
     # manualy set all versions
-    '7zip_version': '18.06',
+    '7zip_version': '19.00',
     'boost_version': '1.69.0',
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
     'icu_version': '63',
     'icu_version_minor': '1',
-    'loot_version': '0.14.2',
-    'loot_commit': 'g4f01487',
+    'loot_version': '0.14.5',
+    'loot_commit': 'g68ecc02',
     'lz4_version': '1.8.3',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.14.02',
-    'nuget_version': '4.7.1',
-    'nmm_version': '0.65.10',
-    'openssl_version': '1.0.2q',
+    'nuget_version': '4.9.3',
+    'nmm_version': '0.65.11',
+    'openssl_version': '1.0.2r',
     'pyqt_version': '5.12',
     'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
@@ -107,7 +107,7 @@ config = {
     'sip_version': '4.19.14',
     'sip_dev_version': '', # leave empty for a standard release
     'qt_version': '5.12',
-    'qt_version_minor': '1',
+    'qt_version_minor': '2',
     'vc_platformtoolset': 'v141',
     'vc_TargetPlatformVersion': '10.0.17763.0',
     'vc_version': '15.0',
@@ -131,7 +131,7 @@ config = {
     # Transifex Translation configuration
     'transifex_Enable': False, # this should only be changed to true when doing a release
     'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
-    'transifex-client_version': '0.13.4',
+    'transifex-client_version': '0.13.6',
     'transifex_minimum_percentage': '60',
 
     #url used for all prebuilt downloads

@@ -70,6 +70,8 @@ def get_visual_studio_2017(vc_version):
 def vc_year(vc_version):
     if vc_version == "15.0":
         return "2017"
+    elif vc_version == "16.0":
+        return "2019"
     else:
         logging.error("Visual Studio %s is not supported", vc_version)
 

@@ -32,7 +32,9 @@ python_version_minor = config['python_version_minor']
 
 def make_sure_path_exists(path):
     try:
-        os.makedirs(path)
+        from pathlib import Path
+        path = Path(path)
+        path.mkdir(parents=True, exist_ok=True)
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
@@ -66,6 +68,7 @@ def python_prepare(context):
 
 def install(context):
     make_sure_path_exists(os.path.join(path_install, "libs"))
+    make_sure_path_exists(os.path.join(path_install, "bin"))
     path_segments = [context['build_path'], "PCbuild"]
     if config['architecture'] == "x86_64":
         path_segments.append("amd64")

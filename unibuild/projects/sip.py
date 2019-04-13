@@ -52,15 +52,16 @@ def sip_environment():
 
 def make_sure_path_exists(path):
     try:
-        os.makedirs(path)
+        from pathlib import Path
+        path = Path(path)
+        path.mkdir(parents=True, exist_ok=True)
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
 
 
 def copy_pyd(context):
-    make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
-    os.makedirs(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
+    make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
     for f in glob(os.path.join(python_path, "Lib", "site-packages", "PyQt5", "sip.pyd")):
         shutil.copy(f, os.path.join(config["__build_base_path"],
                                     "install", "bin", "plugins", "data", "PyQt5", "sip.pyd"))

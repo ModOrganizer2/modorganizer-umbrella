@@ -56,7 +56,7 @@ config = {
 
 
     'Appveyor_Build': False, #Should only be used for the AppVeyor build as it will use as many prebuilt binaries as possible
-    'Release_Build': True,  #Used to override certain versions in umbrella when doing an officail release
+    'Release_Build': False,  #Used to override certain versions in umbrella when doing an officail release
 
                             #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
@@ -82,7 +82,7 @@ config = {
                                # folders: <project>\<task>_complete.txt
   
     'Main_Author': 'Modorganizer2',  # the current maintainer
-    'Main_Branch': "master",
+    'Main_Branch': "Develop",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 

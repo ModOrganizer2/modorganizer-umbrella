@@ -54,8 +54,10 @@ def check_prerequisites_config():
 
 config = {
 
+
     'Appveyor_Build': False, #Should only be used for the AppVeyor build as it will use as many prebuilt binaries as possible
-    'Release_Build': False,  #Used to override certain versions in umbrella when doing an officail release
+    'Release_Build': True,  #Used to override certain versions in umbrella when doing an officail release
+
                             #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
                                  # eg.  'E:\Microsoft Visual Studio 14.0'
@@ -78,9 +80,9 @@ config = {
     'progress_method': 'folders', # Changes how the progress files are generated
                                # flat:    All files in one folder, <project>_complete_<task>.txt (default)
                                # folders: <project>\<task>_complete.txt
-
-    'Main_Author': 'ModOrganizer2',  # the current maintainer
-    'Main_Branch': "Develop",
+  
+    'Main_Author': 'Modorganizer2',  # the current maintainer
+    'Main_Branch': "master",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
@@ -116,7 +118,7 @@ config = {
     'zlib_version': '1.2.11',
 
     #the usvfs version below will only be used if
-    'usvfs_version': 'v0.4.2',
+    'usvfs_version': 'v0.4.3',
 
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but

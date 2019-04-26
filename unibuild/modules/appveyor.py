@@ -15,21 +15,28 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+import logging
 import os
 
-from config import config
-from unibuild import Project
-from unibuild.modules import github, Patch
+from unibuild import Task
 
-loot_version = config['loot_version']
-loot_commit = config['loot_commit']
 
-def bitnessLoot():
-    return "64" if config['architecture'] == "x86_64" else "32"
+class SetProjectFolder(Task):
+    def __init__(self, projectpath):
+        super(SetProjectFolder, self).__init__()
+        self.__projectpath = projectpath
 
-# TODO modorganizer-lootcli needs an overhaul as the api has changed alot
-Project("lootapi") \
-    .depend(Patch.Copy("loot_api.dll", os.path.join(config["paths"]["install"], "bin", "loot"))
-            .depend(github.Release("loot", "loot-api", loot_version,
-                               "loot_api-{}-0-{}_dev-win{}".format(loot_version, loot_commit, bitnessLoot()), "7z", tree_depth=1)
-                          .set_destination("lootapi-{}-{}".format(loot_version, loot_commit))))
+    def prepare(self):
+        if 'build_path' not in self._context:
+            output_file_path = os.path.join(self.__projectpath)
+            self._context['build_path'] = output_file_path
+
+    @property
+    def name(self):
+        return "setting appveyor project path to {}".format(self.__projectpath)
+
+    def process(self, progress):
+        if not os.path.isdir(self.__projectpath):
+            logging.error("failed to set appveyor project dir to  %s, doesn't exist", self.__projectpath)
+            return False
+        return True

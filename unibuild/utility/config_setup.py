@@ -77,6 +77,7 @@ def init_config(args):
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = os.path.abspath(args.destination)
     config['__Umbrella_path'] = os.getcwd()
+    config['__Arguments'] = args
 
     if 'PYTHON' not in config['__environment']:
         config['__environment']['PYTHON'] = sys.executable
@@ -101,21 +102,6 @@ def check_config():
         if not config['__environment']:
             return False
         if not config['__build_base_path']:
-            return False
-        #if not config['paths']['graphviz']:
-        #   return False
-        if not config['paths']['cmake']:
-            return False
-        if not config['paths']['git']:
-            return False
-        if not config['paths']['perl']:
-            return False
-        if config["Installer"]:
-            if not config['paths']['InnoSetup']:
-                return False
-        #if not config['paths']['svn']:
-        #   return False
-        if not config['paths']['7z']:
             return False
         if not config['paths']['python']:
             return False

@@ -28,7 +28,7 @@ from config import config
 
 class MSBuild(Builder):
     def __init__(self, solution, project=None, working_directory=None, project_platform=None,
-                 reltarget=None, project_PlatformToolset=None, verbosity=None, environment=None):
+                 reltarget=None, project_PlatformToolset=None, verbosity=None, environment=None, project_WindowsTargetPlatformVersion=None):
         super(MSBuild, self).__init__()
         self.__solution = solution
         self.__project = project
@@ -36,6 +36,7 @@ class MSBuild(Builder):
         self.__project_platform = project_platform
         self.__reltarget = reltarget
         self.__project_platformtoolset = project_PlatformToolset
+        self.__project_WindowsTargetPlatformVersion = project_WindowsTargetPlatformVersion
         self.__verbosity = verbosity
         self.__environment = Lazy(environment)
 
@@ -87,6 +88,7 @@ class MSBuild(Builder):
                           "/fileLogger",
                           "/fileloggerparameters:Summary;Verbosity=" + lverbosity]
 
+
                         if self.__project_platform is None:
                             args.append("/property:Platform={}"
                                         .format("x64" if config['architecture'] == 'x86_64' else "win32"))
@@ -99,6 +101,11 @@ class MSBuild(Builder):
 
                         if self.__project:
                             args.append("/target:{}".format(self.__project))
+
+                        if self.__project_WindowsTargetPlatformVersion is None:
+                            args.append("/p:WindowsTargetPlatformVersion={}".format(config['vc_TargetPlatformVersion']))
+                        else:
+                            args.append("/p:WindowsTargetPlatformVersion={}".format(self.__project_WindowsTargetPlatformVersion))
 
                         wdir = str(self.__working_directory or self._context["build_path"])
                         print("{}> {}".format(wdir, ' '.join(args)))

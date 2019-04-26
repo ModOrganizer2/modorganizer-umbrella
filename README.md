@@ -1,3 +1,5 @@
+[![Python Check status](https://ci.appveyor.com/api/projects/status/ev4wj7qmscr5b09d?svg=true)](https://ci.appveyor.com/project/Modorganizer2/modorganizer-umbrella)
+
 # modorganizer-umbrella
 An umbrella- (super-) project for [modorganizer](https://github.com/Modorganizer2/modorganizer).
 
@@ -21,8 +23,8 @@ Now you need to install all required software to build Mod Organizer.
   * CMake (latest 64bit)  Link: https://cmake.org/files/v3.10/cmake-3.10.2-win64-x64.msi
   * Git Link: https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe
   * ~~Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi~~ *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.*
-  * Python 3.7 (64Bit) Link: https://www.python.org/downloads/windows/
-  * Qt 5.11.2 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+  * Python 3.7.1 (64Bit) Link: https://www.python.org/downloads/windows/
+  * Qt 5.12.0 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
     #### Qt Packages required:
     * msvc2017-64
     * qtwebengine
@@ -36,10 +38,11 @@ Now you need to install all required software to build Mod Organizer.
       * Desktop development for C++
 
       Additionally you need to activate under Individual components:
-
-      * "Windows 8.1 SDK and UCRT SDK" (Under Compilers, build tools, and runtimes)
-      * "Windows 10 SDK (10.0.16299.0) for Desktop c++" (near the bottom)
-
+      * "Windows Universal CRT SDK" (Under Compilers, build tools, and runtimes)
+      * "Windows 8.1 SDK" (Under SDKs, libraries, and frameworks)
+      * "Windows 10 SDK (10.0.16299.0) for Desktop C++ [x86 and x64]" (Under SDKs, libraries, and frameworks
+        * Note: If you have problems building Python due to a "missing SDK version", edit the registry key [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0] to point to the the 10.0.16299.0 SDK.
+      
 Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
 
 If you wish to rebuild only one target once everything is complete, you simply delete the relevant txt file in the progress folder, e.g C:\modorganizer-umbrella\progress\modorganizer_complete_cmake modorganizer.txt

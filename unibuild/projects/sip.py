@@ -24,14 +24,24 @@ from subprocess import Popen
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build, sourceforge, urldownload
+from unibuild.modules import build, sourceforge, urldownload, urldownloadany
 from unibuild.projects import python
 
 sip_version = config['sip_version']
+sip_dev = False
+
+
+if config['sip_dev_version']:
+    sip_version += ".dev" + config['sip_dev_version']
+    sip_dev = True
+
+
 python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
 python_path = os.path.join(config['paths']['build'], "python-{}".format(config['python_version'] + config['python_version_minor']))
-sip_url = sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)
 
+sip_url = urldownloadany.URLDownloadAny((
+            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/{0}/sip-{0}.zip".format(sip_version), 1),
+            sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)))
 
 def sip_environment():
     result = config['__environment'].copy()
@@ -42,15 +52,16 @@ def sip_environment():
 
 def make_sure_path_exists(path):
     try:
-        os.makedirs(path)
+        from pathlib import Path
+        path = Path(path)
+        path.mkdir(parents=True, exist_ok=True)
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
 
 
 def copy_pyd(context):
-    make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data"))
-    os.makedirs(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
+    make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
     for f in glob(os.path.join(python_path, "Lib", "site-packages", "PyQt5", "sip.pyd")):
         shutil.copy(f, os.path.join(config["__build_base_path"],
                                     "install", "bin", "plugins", "data", "PyQt5", "sip.pyd"))
@@ -92,9 +103,18 @@ class SipConfigure(build.Builder):
         return True
 
 
-Project('sip') \
-    .depend(build.Execute(copy_pyd)
-            .depend(build.Make(environment=sip_environment()).install()
-                    .depend(SipConfigure()
-                            .depend("Python")
-                            .depend(sip_url))))
+if config.get('Appveyor_Build', True):
+    Project('sip') \
+        .depend(build.Execute(copy_pyd)
+                .depend(urldownload.URLDownload(
+                    config.get('prebuilt_url') + "sip-prebuilt-{}.7z"
+                    .format(sip_version), name="Sip-Prebuilt", clean=False)
+                        .set_destination("python-{}".format(python_version))
+                            .depend("Python")))
+else:
+    Project('sip') \
+        .depend(build.Execute(copy_pyd)
+                .depend(build.Make(environment=sip_environment()).install()
+                        .depend(SipConfigure()
+                                .depend("Python")
+                                .depend(sip_url))))

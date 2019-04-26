@@ -19,17 +19,17 @@ import os
 
 from config import config
 from unibuild import Project
-from unibuild.modules import cmake, urldownload, urldownloadany
+from unibuild.modules import github, Patch
 
-nasm_version = config['nasm_version']
+loot_version = config['loot_version']
+loot_commit = config['loot_commit']
 
-def bitness():
+def bitnessLoot():
     return "64" if config['architecture'] == "x86_64" else "32"
 
-
-Project("nasm").depend(urldownloadany.URLDownloadAny((
-    urldownload.URLDownload("http://www.nasm.us/pub/nasm/releasebuilds/{}/win{}/nasm-{}-win{}.zip"
-                            .format(nasm_version, bitness(), nasm_version, bitness()), tree_depth=1),
-    urldownload.URLDownload("https://fossies.org/windows/misc/nasm-{}-win{}.zip"
-                            .format(nasm_version, bitness(), nasm_version, bitness()), tree_depth=1))))
-
+# TODO modorganizer-lootcli needs an overhaul as the api has changed alot
+Project("libloot") \
+    .depend(Patch.Copy("loot.dll", os.path.join(config["paths"]["install"], "bin", "loot"))
+            .depend(github.Release("loot", "libloot", loot_version,
+                               "libloot-{}-0-{}_dev-win{}".format(loot_version, loot_commit, bitnessLoot()), "7z", tree_depth=1)
+                          .set_destination("libloot-{}-{}".format(loot_version, loot_commit))))

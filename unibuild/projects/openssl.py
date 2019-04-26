@@ -100,11 +100,18 @@ Configure_openssl = build.Run(r"{} Configure --openssldir={} VC-WIN{}A".format(c
                       working_directory=lambda: os.path.join(openssl_path))
 
 
-openssl = Project("openssl") \
-    .depend(build.Execute(openssl_stage)
-        .depend(OpenSSL_Install
-            .depend(OpenSSL_Build
-                .depend(OpenSSL_Prep
-                    .depend(Configure_openssl
-                        .depend(urldownload.URLDownload(url, tree_depth=1)
-                            .depend("nasm")))))))
+if config.get('Appveyor_Build', True):
+    openssl = Project("openssl") \
+        .depend(build.Execute(openssl_stage)
+                .depend(urldownload.URLDownload(config.get('prebuilt_url') + "openssl-prebuilt-{}.7z"
+                                                .format(openssl_version))
+                .set_destination("openssl-{}".format(openssl_version))))
+else:
+    openssl = Project("openssl") \
+        .depend(build.Execute(openssl_stage)
+            .depend(OpenSSL_Install
+                .depend(OpenSSL_Build
+                    .depend(OpenSSL_Prep
+                        .depend(Configure_openssl
+                            .depend(urldownload.URLDownload(url, tree_depth=1)
+                                .depend("nasm")))))))

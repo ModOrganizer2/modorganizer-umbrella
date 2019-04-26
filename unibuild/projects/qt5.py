@@ -54,6 +54,9 @@ else:
     # import source packages only if we build from source
     from unibuild.projects.icu import icu
 
+    #We should probably nuke this section as it is not being used, this is to git rid of the error from flake8.
+    qt_inst_path = ""
+
     skip_list = ["qtactiveqt", "qtandroidextras", "qtenginio",
                  "qtserialport", "qtsvg",
                  "qtwayland", "qtdoc", "qtconnectivity"]

@@ -250,14 +250,16 @@ class CMakeVS(Builder):
         serrpath = os.path.join(self._context["build_path"], "vs_stderr.log")
 
         vs_generator = "Visual Studio {0} {1}".format(config['vc_version'].split(".", 1)[0],vc_year(config['vc_version']))
-        if config["architecture"] == "x86_64":
-            vs_generator += " Win64"
+        # Updated for latest versions of CMake > 3.1 - VS 2019 does not allow use of the deprecated method
+        vs_generator_arch = "x64"
+        if config["architecture"] == "x86":
+            vs_generator_arch = "Win32"
 
         try:
             with on_exit(lambda: progress.finish()):
                 with open(soutpath, "w") as sout:
                     with open(serrpath, "w") as serr:
-                        proc = Popen([config["paths"]["cmake"], "-G", vs_generator, ".."] + self.__arguments,
+                        proc = Popen([config["paths"]["cmake"], "-G", vs_generator, "-A", vs_generator_arch, ".."] + self.__arguments,
                             cwd=build_path,
                             env=config["__environment"],
                             stdout=sout, stderr=serr)

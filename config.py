@@ -21,9 +21,6 @@ import os
 from unibuild.utility import config_utility
 from unibuild.utility.lazy import Lazy
 
-global missing_prerequisites
-missing_prerequisites = False
-
 
 def path_or_default(filename, *default):
     from distutils.spawn import find_executable
@@ -31,8 +28,6 @@ def path_or_default(filename, *default):
     res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
     if res is None:
         print('Cannot find', filename, 'on your path or in', os.path.join('', *default))
-        global missing_prerequisites
-        missing_prerequisites = True
     return res
 
 
@@ -42,10 +37,27 @@ def gen_search_folders(*subpath):
         for search_folder in config_utility.program_files_folders
     ]
 
+def check_prerequisites_config():
+    if not config['paths']['cmake']:
+        return False
+    if not config['paths']['git']:
+        return False
+    if not config['paths']['perl']:
+        return False
+    if config["Installer"]:
+        if not config['paths']['InnoSetup']:
+            return False
+    if not config['paths']['7z']:
+        return False
+    return True
+
 
 config = {
 
+
+    'Appveyor_Build': False, #Should only be used for the AppVeyor build as it will use as many prebuilt binaries as possible
     'Release_Build': True,  #Used to override certain versions in umbrella when doing an officail release
+
                             #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
                                  # eg.  'E:\Microsoft Visual Studio 14.0'
@@ -65,45 +77,48 @@ config = {
     'repo_update_frequency': 60 * 60 * 12,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
 
-    'progress_method': 'flat', # Changes how the progress files are generated
+    'progress_method': 'folders', # Changes how the progress files are generated
                                # flat:    All files in one folder, <project>_complete_<task>.txt (default)
                                # folders: <project>\<task>_complete.txt
-
+  
     'Main_Author': 'Modorganizer2',  # the current maintainer
     'Main_Branch': "master",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
     # manualy set all versions
-    '7zip_version': '18.05',
-    'boost_version': '1.68.0',
+    '7zip_version': '19.00',
+    'boost_version': '1.69.0',
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
-    'icu_version': '62',
+    'icu_version': '63',
     'icu_version_minor': '1',
-    'loot_version': '0.13.7',
-    'loot_commit': 'g3a747b8',
+    'loot_version': '0.14.5',
+    'loot_commit': 'g68ecc02',
     'lz4_version': '1.8.3',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
-    'nasm_version': '2.13.03',
-    'nuget_version': '4.7.1',
-    'nmm_version': '0.65.10',
-    'openssl_version': '1.0.2p',
-    'pyqt_version': '5.11.3',
+    'nasm_version': '2.14.02',
+    'nuget_version': '4.9.3',
+    'nmm_version': '0.65.11',
+    'openssl_version': '1.0.2r',
+    'pyqt_version': '5.12.1',
+    'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
-    'python_version_minor': '.0',
-    'sip_version': '4.19.13',
-    'qt_version': '5.11',
+    'python_version_minor': '.1',
+    'sip_version': '4.19.15',
+    'sip_dev_version': '', # leave empty for a standard release
+    'qt_version': '5.12',
     'qt_version_minor': '2',
     'vc_platformtoolset': 'v141',
+    'vc_TargetPlatformVersion': '10.0.17763.0',
     'vc_version': '15.0',
     'vc_version_for_boost': '14.1',
     'WixToolset_version': '311',
     'zlib_version': '1.2.11',
 
     #the usvfs version below will only be used if
-    'usvfs_version': 'v0.4.2',
+    'usvfs_version': 'v0.4.3',
 
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
@@ -118,8 +133,11 @@ config = {
     # Transifex Translation configuration
     'transifex_Enable': False, # this should only be changed to true when doing a release
     'transifex_API': '', # you can generate an api at https://www.transifex.com/user/settings/api/
-    'transifex-client_version': '0.13.4',
-    'transifex_minimum_percentage': '60'
+    'transifex-client_version': '0.13.6',
+    'transifex_minimum_percentage': '60',
+
+    #url used for all prebuilt downloads
+    'prebuilt_url': "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/"
 }
 config['paths'] = {
     'download': "{base_dir}\\downloads",
@@ -139,6 +157,7 @@ config['paths'] = {
     'qt_binary_install': "",
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
-if missing_prerequisites:
+
+if not check_prerequisites_config():
     print('\nMissing prerequisites listed above - cannot continue')
     exit(1)

@@ -72,7 +72,7 @@ def init_config(args):
 
     visual_studio(config["vc_version"])  # forced set after args are evaluated
     if config['prefer_binary_dependencies']:
-        qt_install(config["qt_version"], config["qt_version_minor"], config["vc_version"])
+        qt_install(config["qt_version"], config["qt_version_minor"], config["qt_vc_version"])
     config['__Default_environment'] = os.environ
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = os.path.abspath(args.destination)

@@ -72,7 +72,7 @@ config = {
     'prefer_binary_dependencies': True,  # Try to use official binary package/SDKs.  Won't work for all stuff
     # works for: 7z, CMake, Git, Perl, Python, Visual Studio
     'binary_qt': True, # use binary Qt5 from the offical website
-    'binary_boost': True, # Custom prebuilt boost compiled by MO2 team and uploaded to https://github.com/Modorganizer2/3rdParty_Dependencies
+    'binary_boost': False, # Custom prebuilt boost compiled by MO2 team and uploaded to https://github.com/Modorganizer2/3rdParty_Dependencies
     'shallowclone': True, # reduces size of repos drastically
     'repo_update_frequency': 60 * 60 * 12,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
@@ -80,15 +80,15 @@ config = {
     'progress_method': 'folders', # Changes how the progress files are generated
                                # flat:    All files in one folder, <project>_complete_<task>.txt (default)
                                # folders: <project>\<task>_complete.txt
-  
-    'Main_Author': 'Modorganizer2',  # the current maintainer
+
+    'Main_Author': 'ModOrganizer2',  # the current maintainer
     'Main_Branch': "Develop",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
     # manualy set all versions
     '7zip_version': '19.00',
-    'boost_version': '1.69.0',
+    'boost_version': '1.70.0',
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
@@ -96,7 +96,7 @@ config = {
     'icu_version_minor': '1',
     'loot_version': '0.14.5',
     'loot_commit': 'g68ecc02',
-    'lz4_version': '1.8.3',
+    'lz4_version': '1.9.1',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.14.02',
     'nuget_version': '4.9.3',
@@ -105,15 +105,16 @@ config = {
     'pyqt_version': '5.12.1',
     'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
-    'python_version_minor': '.1',
+    'python_version_minor': '.3',
     'sip_version': '4.19.15',
     'sip_dev_version': '', # leave empty for a standard release
     'qt_version': '5.12',
-    'qt_version_minor': '2',
-    'vc_platformtoolset': 'v141',
+    'qt_version_minor': '3',
+    'qt_vc_version': '15.0',
+    'vc_platformtoolset': 'v142',
     'vc_TargetPlatformVersion': '10.0.17763.0',
-    'vc_version': '15.0',
-    'vc_version_for_boost': '14.1',
+    'vc_version': '16.0',
+    'vc_version_for_boost': '14.2',
     'WixToolset_version': '311',
     'zlib_version': '1.2.11',
 

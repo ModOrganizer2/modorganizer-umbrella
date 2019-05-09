@@ -33,6 +33,7 @@ qt_version = config['qt_version']
 qt_version_minor = config['qt_version_minor']
 
 if os.environ.get('APPVEYOR') is not None:
+    qt_version = config['qt_version_appveyor']
     qt_version_minor = config['qt_version_minor_appveyor']
 
 

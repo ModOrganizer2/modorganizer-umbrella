@@ -88,7 +88,7 @@ class SipConfigure(build.Builder):
                      "-b", bp,
                      "-d", os.path.join(bp, "Lib", "site-packages"),
                      "-v", os.path.join(bp, "sip"),
-                     "-e", os.path.join(bp, "include"),
+                     "-e", os.path.join(bp, "Include"),
                      "--sip-module=PyQt5.sip"],
                     env=config["__environment"],
                     cwd=self._context["build_path"],

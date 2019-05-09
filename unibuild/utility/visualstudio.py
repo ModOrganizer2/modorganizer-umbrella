@@ -27,7 +27,8 @@ from subprocess import Popen, PIPE
 # To detect the editon of VS installed as of VS 2017
 vs_editions = ["enterprise",
     "professional",
-    "community",]
+    "community",
+    "preview",]
 
 
 # No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir

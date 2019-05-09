@@ -32,6 +32,9 @@ openssl_version = config['openssl_version']
 qt_version = config['qt_version']
 qt_version_minor = config['qt_version_minor']
 
+if config['__environment']['APPVEYOR'] == "True":
+    qt_version_minor = config['qt_version_minor_appveyor']
+
 def bitnessQt():
     return "64" if config['architecture'] == "x86_64" else "32"
 

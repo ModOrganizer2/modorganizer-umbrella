@@ -23,7 +23,7 @@ from glob import glob
 from config import config
 from unibuild.modules import build, github, msbuild, urldownload
 from unibuild.project import Project
-from unibuild.utility.visualstudio import get_visual_studio_2017
+from unibuild.utility.visualstudio import get_visual_studio
 
 path_install = config["paths"]["install"]
 python_version = config['python_version']
@@ -56,7 +56,7 @@ def upgrade_args():
         return [os.path.join(devenv_path, "devenv.exe"),
                 "PCBuild/pcbuild.sln",
                 "/upgrade"]
-    return [os.path.join(get_visual_studio_2017('15.0'), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
+    return [os.path.join(get_visual_studio(config["vc_version"]), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
             "PCBuild/pcbuild.sln", "/upgrade"]
 
 

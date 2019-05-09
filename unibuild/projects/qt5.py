@@ -32,14 +32,16 @@ openssl_version = config['openssl_version']
 qt_version = config['qt_version']
 qt_version_minor = config['qt_version_minor']
 
-if config['__environment']['APPVEYOR'] == "True":
+if os.environ.get('APPVEYOR') is not None:
     qt_version_minor = config['qt_version_minor_appveyor']
+
 
 def bitnessQt():
     return "64" if config['architecture'] == "x86_64" else "32"
 
+
 def variant():
-    return "msvc2013" if config['vc_version'] == "12.0" else "msvc2015" if config['vc_version'] == "14.0" else "msvc2017"
+    return "msvc2013" if config['qt_vc_version'] == "12.0" else "msvc2015" if config['qt_vc_version'] == "14.0" else "msvc2017" if config['qt_vc_version'] == "15.0" else "msvc2019"
 
 qt_bin_variant = variant()
 platform = "win32-{0}".format(variant())

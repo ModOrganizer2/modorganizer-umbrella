@@ -97,6 +97,7 @@ def dump_config():
     logging.debug("  Config: config['paths']['7z']=%s", config['paths']['7z'])
     logging.debug("  Config: config['paths']['python']=%s", Evaluate(config['paths']['python']))
     logging.debug("  Config: config['paths']['visual_studio']=%s", config['paths']['visual_studio'])
+    logging.debug("  Config: config['paths']['qt_binary_install']=%s", config['paths']['qt_binary_install'])
     logging.debug("  Config: config['vc_version']=%s", config['vc_version'])
 
 

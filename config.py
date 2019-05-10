@@ -22,9 +22,10 @@ from unibuild.utility import config_utility
 from unibuild.utility.lazy import Lazy
 
 
-def path_or_default(filename, *default):
+def path_or_default(filename, default):
     from distutils.spawn import find_executable
-    defaults = gen_search_folders(*default)
+    for path in default:
+        defaults = gen_search_folders(path)
     res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
     if res is None:
         print('Cannot find', filename, 'on your path or in', os.path.join('', *default))
@@ -36,6 +37,7 @@ def gen_search_folders(*subpath):
         os.path.join(search_folder, *subpath)
         for search_folder in config_utility.program_files_folders
     ]
+
 
 def check_prerequisites_config():
     if not config['paths']['cmake']:
@@ -53,7 +55,6 @@ def check_prerequisites_config():
 
 
 config = {
-
 
     'Appveyor_Build': False, #Should only be used for the AppVeyor build as it will use as many prebuilt binaries as possible
     'Release_Build': False,  #Used to override certain versions in umbrella when doing an officail release
@@ -142,18 +143,20 @@ config = {
     #url used for all prebuilt downloads
     'prebuilt_url': "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/"
 }
+
+
 config['paths'] = {
     'download': "{base_dir}\\downloads",
     'build': "{base_dir}\\{build_dir}",
     'progress': "{base_dir}\\{progress_dir}",
     'install': "{base_dir}\\{install_dir}",
     # 'graphviz': path_or_default("dot.exe", "Graphviz2.38", "bin"),
-    'cmake': path_or_default("cmake.exe", "CMake", "bin"),
-    'git': path_or_default("git.exe", "Git", "bin"),
-    'perl': path_or_default("perl.exe", "StrawberryPerl", "perl", "bin"),
-    'InnoSetup': path_or_default("ISCC.exe", "Inno Setup 5"),
+    'cmake': path_or_default("cmake.exe", [ os.path.join("CMake", "bin")]),
+    'git': path_or_default("git.exe", [os.path.join("Git", "bin")]),
+    'perl': path_or_default("perl.exe", [os.path.join("StrawberryPerl", "perl", "bin"), os.path.join("Strawberry", "perl", "bin")]),
+    'InnoSetup': path_or_default("ISCC.exe", ["Inno Setup 5" , "Inno Setup 6"]),
     #'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
-    '7z': path_or_default("7z.exe", "7-Zip"),
+    '7z': path_or_default("7z.exe", [ "7-Zip" ]),
     # we need a python that matches the build architecture
     'python': "", # Registry Key can be in multiple places. set in config_setup.py
     'visual_studio_base': "",

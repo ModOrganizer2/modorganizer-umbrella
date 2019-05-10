@@ -47,12 +47,6 @@ def variant():
 qt_bin_variant = variant()
 platform = "win32-{0}".format(variant())
 
-def make_sure_path_exists(path):
-    try:
-        os.makedirs(path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
 if config.get('binary_qt', True):
     qt5 = Project("Qt5")

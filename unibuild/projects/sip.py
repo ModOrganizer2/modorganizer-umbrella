@@ -26,6 +26,7 @@ from config import config
 from unibuild import Project
 from unibuild.modules import build, sourceforge, urldownload, urldownloadany
 from unibuild.projects import python
+from unibuild.utility.config_utility import make_sure_path_exists
 
 sip_version = config['sip_version']
 sip_dev = False
@@ -48,16 +49,6 @@ def sip_environment():
     result['LIB'] += os.path.join(python_path, "PCbuild", "amd64")
     logging.debug(os.path.join(os.path.join(config['paths']['build'], "Python-{}".format(config['python_version'] + config['python_version_minor'])), "PCbuild", "amd64"))
     return result
-
-
-def make_sure_path_exists(path):
-    try:
-        from pathlib import Path
-        path = Path(path)
-        path.mkdir(parents=True, exist_ok=True)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
 
 def copy_pyd(context):

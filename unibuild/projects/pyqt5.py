@@ -28,7 +28,7 @@ from unibuild import Project
 from unibuild.modules import  build, sourceforge, urldownload, urldownloadany, Patch
 from unibuild.projects import python, sip, qt5
 from unibuild.utility import lazy
-from unibuild.utility.config_utility import qt_inst_path
+from unibuild.utility.config_utility import qt_inst_path, make_sure_path_exists
 from unibuild.utility.lazy import doclambda
 
 icu_version = config['icu_version']
@@ -42,13 +42,6 @@ qt_binary_install = config["paths"]["qt_binary_install"]
 __build_base_path = config["__build_base_path"]
 
 enabled_modules = ["QtCore", "QtGui", "QtWidgets"]
-
-def make_sure_path_exists(path):
-    try:
-        os.makedirs(path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
 
 def pyqt5_env():
@@ -110,6 +103,7 @@ class PyQt5Configure(build.Builder):
                     return False
 
         return True
+
 
 if config.get('Appveyor_Build', True):
     Project("PyQt5") \

@@ -24,20 +24,11 @@ from config import config
 from unibuild.modules import build, github, msbuild, urldownload
 from unibuild.project import Project
 from unibuild.utility.visualstudio import get_visual_studio
+from unibuild.utility.config_utility import make_sure_path_exists
 
 path_install = config["paths"]["install"]
 python_version = config['python_version']
 python_version_minor = config['python_version_minor']
-
-
-def make_sure_path_exists(path):
-    try:
-        from pathlib import Path
-        path = Path(path)
-        path.mkdir(parents=True, exist_ok=True)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
 
 def python_environment():

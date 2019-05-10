@@ -28,11 +28,11 @@ from unibuild.utility import lazy
 build_path = config['paths']['build']
 download_path = config['paths']['download']
 
+
 def ncc_environment():
     result = config['__environment'].copy()
     result['Path'] += ";" + os.path.join(download_path)
     return result
-
 
 
 def prepare_nmm(context):

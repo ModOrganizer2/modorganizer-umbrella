@@ -17,6 +17,7 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 import os.path
+import errno
 import sys
 
 
@@ -26,6 +27,7 @@ program_files_folders = [os.environ['ProgramFiles(x86)'],
     "C:\\",
     "D:\\"]
 
+
 def qt_inst_path():
     from config import config
     if config['binary_qt']:
@@ -33,6 +35,7 @@ def qt_inst_path():
     else:
         qt_inst_path = "{}/qt5".format(config['paths']['build']).replace("/", os.path.sep)
     return qt_inst_path
+
 
 def cmake_parameters():
     from config import config
@@ -57,6 +60,17 @@ def cmake_parameters():
         cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")
     return cmake_parameters
 
+
 def bitness():
     from config import config
     return "x64" if config['architecture'] == "x86_64" else "Win32"
+
+
+def make_sure_path_exists(path):
+    try:
+        from pathlib import Path
+        path = Path(path)
+        path.mkdir(parents=True, exist_ok=True)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise

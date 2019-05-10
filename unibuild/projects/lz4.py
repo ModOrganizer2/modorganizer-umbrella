@@ -54,9 +54,10 @@ def upgrade_args():
 
 
 def copy_binaries(context):
-    shutil.rmtree(
-        os.path.join(lz_path, "bin")
-    )
+    if os.path.isdir(os.path.join(lz_path, "bin")):
+        shutil.rmtree(
+            os.path.join(lz_path, "bin")
+        )
     shutil.copytree(
         os.path.join(lz_path, "visual", "VS2017", "bin", "{}_Release".format(bitness())),
         os.path.join(lz_path, "bin")

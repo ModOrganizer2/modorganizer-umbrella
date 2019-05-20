@@ -32,7 +32,7 @@ Now you need to install all required software to build Mod Organizer.
   Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error.
 
   * Strawberry Perl Link: http://strawberryperl.com/download/5.26.1.1/strawberry-perl-5.26.1.1-64bit.msi
-  * Visual Studio Community 2017 Link: https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15
+  * Visual Studio Community 2019 Link: https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community
     #### Visual Studio Packages required:
       * .NET desktop development
       * Desktop development for C++

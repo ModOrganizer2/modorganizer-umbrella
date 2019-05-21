@@ -17,6 +17,7 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 import os.path
+import multiprocessing
 import re
 import shutil
 from subprocess import PIPE, Popen
@@ -166,6 +167,10 @@ class CMakeEdit(Builder):
             return "2013"
         elif version == "14.0":
             return "2015"
+        elif version == "15.0":
+            return "2017"
+        elif version == "16.0":
+            return "2019"
 
     def __generator_name(self):
         if self.__type == CMakeEdit.Type.VC:
@@ -271,4 +276,112 @@ class CMakeVS(Builder):
             logging.exception(e)
             return False
 
+        return True
+
+
+class CMakeJOM(Builder):
+    def __init__(self):
+        super(CMake, self).__init__()
+        self.__arguments = []
+        self.__install = False
+
+    @property
+    def name(self):
+        if config['architecture'] == 'x86_64':
+          suffix = ""
+        else:
+          suffix = "_32"
+
+        if self._context is None:
+            return "cmake" + suffix
+        return "cmake{} {}".format(suffix, self._context.name)
+
+    def applies(self, parameters):
+        return True
+
+    def fulfilled(self):
+        return False
+
+    def arguments(self, arguments):
+        self.__arguments = arguments
+        return self
+
+    def install(self):
+        self.__install = True
+        return self
+
+    def process(self, progress):
+        if "build_path" not in self._context:
+            logging.error("source path not known for {},"
+                          " are you missing a matching retrieval script?".format(self._context.name))
+            return False
+
+        if config['architecture'] == 'x86_64':
+          suffix = ""
+        else:
+          suffix = "_32"
+
+        # prepare for out-of-source build
+        build_path = os.path.join(self._context["build_path"], "build" + suffix)
+        # if os.path.exists(build_path):
+        #    shutil.rmtree(build_path)
+        try:
+            os.mkdir(build_path)
+        except Exception:
+            pass
+        soutpath = os.path.join(self._context["build_path"], "stdout" + suffix + ".log")
+        serrpath = os.path.join(self._context["build_path"], "stderr" + suffix + ".log")
+
+        try:
+            with on_exit(lambda: progress.finish()):
+                with open(soutpath, "w") as sout:
+                    with open(serrpath, "w") as serr:
+                        cmdline = [config["paths"]["cmake"], "-G", "NMake Makefiles JOM", ".."] + self.__arguments
+                        print("{}> {}".format(build_path, ' '.join(cmdline)))
+                        proc = Popen(cmdline,
+                            cwd=build_path,
+                            env=config["__environment"],
+                            stdout=sout, stderr=serr)
+                        proc.communicate()
+                        if proc.returncode != 0:
+                            raise Exception("failed to generate makefile (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
+
+                        cmdline = [config['paths']['jom'], "/D", "/J", multiprocessing.cpu_count()]
+                        print("{}> {}".format(build_path, ' '.join(cmdline)))
+                        proc = Popen(cmdline,
+                                     shell=True,
+                                     env=config["__environment"],
+                                     cwd=build_path,
+                                     stdout=PIPE, stderr=serr)
+                        progress.job = "Compiling"
+                        progress.maximum = 100
+                        while proc.poll() is None:
+                            while True:
+                                line = proc.stdout.readline().decode("utf-8")
+                                if line != '':
+                                    match = re.search("^\\[([0-9 ][0-9 ][0-9])%\\]", line)
+                                    if match is not None:
+                                        progress.value = int(match.group(1))
+                                    sout.write(line)
+                                else:
+                                    break
+
+                        if proc.returncode != 0:
+                            raise Exception("failed to build (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
+
+                        if self.__install:
+                            cmdline = [config['paths']['jom'], "install", "/D", "/J", multiprocessing.cpu_count()]
+                            print("{}> {}".format(build_path, ' '.join(cmdline)))
+                            proc = Popen(cmdline,
+                                         shell=True,
+                                         env=config["__environment"],
+                                         cwd=build_path,
+                                         stdout=sout, stderr=serr)
+                            proc.communicate()
+                            if proc.returncode != 0:
+                                raise Exception("failed to install (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
+
+        except Exception as e:
+            logging.exception(e)
+            return False
         return True

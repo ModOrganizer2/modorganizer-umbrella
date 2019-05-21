@@ -120,21 +120,23 @@ for author, git_path, path, branch, dependencies, Build in [
     project = Project(git_path)
 
     if Build:
-
-        vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
-
-        for dep in dependencies:
-            vs_cmake_step.depend(dep)
-
-        build_path = config["paths"]["build"]
-        vs_target = "Clean;Build" if config['rebuild'] else "Build"
-        vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
-                                          "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
-                                          "RelWithDebInfo")
-
         if config['Appveyor_Build'] and os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
-            project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER","")))))
+            jom_cmake_step = cmake.CMakeJOM().arguments(cmake_param).install()
+
+            for dep in dependencies:
+                jom_cmake_step.depend(dep)
+
+            project.depend(jom_cmake_step.depend(appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER",""))))
         else:
+            vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
+
+            for dep in dependencies:
+                vs_cmake_step.depend(dep)
+
+            vs_target = "Clean;Build" if config['rebuild'] else "Build"
+            vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
+                                              "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
+                                              "RelWithDebInfo")
             project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path))))
     else:
         project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)

@@ -152,6 +152,7 @@ config['paths'] = {
     'install': "{base_dir}\\{install_dir}",
     # 'graphviz': path_or_default("dot.exe", "Graphviz2.38", "bin"),
     'cmake': path_or_default("cmake.exe", [ os.path.join("CMake", "bin")]),
+    'jom': path_or_default("jom.exe", [os.path.join("Qt", "Tools", "QtCreator", "bin")]),
     'git': path_or_default("git.exe", [os.path.join("Git", "bin")]),
     'perl': path_or_default("perl.exe", [os.path.join("StrawberryPerl", "perl", "bin"), os.path.join("Strawberry", "perl", "bin")]),
     'InnoSetup': path_or_default("ISCC.exe", ["Inno Setup 5" , "Inno Setup 6"]),

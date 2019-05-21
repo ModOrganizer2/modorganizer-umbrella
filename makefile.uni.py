@@ -120,19 +120,25 @@ for author, git_path, path, branch, dependencies, Build in [
     project = Project(git_path)
 
     if Build:
-        if config['Appveyor_Build'] and os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
+        if config['Appveyor_Build']:
             jom_cmake_step = cmake.CMakeJOM().arguments(cmake_param).install()
 
             for dep in dependencies:
                 jom_cmake_step.depend(dep)
-
-            project.depend(
-                jom_cmake_step.depend(
-                    github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path).depend(
-                        appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
+            if os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
+                project.depend(
+                    jom_cmake_step.depend(
+                        github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path).depend(
+                            appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
+                        )
                     )
                 )
-            )
+            else:
+                project.depend(
+                    jom_cmake_step.depend(
+                        github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path)
+                    )
+                )
         else:
             vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
 

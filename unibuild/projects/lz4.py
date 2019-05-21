@@ -21,7 +21,7 @@ import shutil
 from config import config
 from unibuild import Project
 from unibuild.utility import lazy
-from unibuild.modules import github, msbuild, build, Patch
+from unibuild.modules import github, msbuild, build, Patch, urldownload
 from unibuild.utility.visualstudio import get_visual_studio
 
 lz4_version = 'v' + config['lz4_version']
@@ -65,35 +65,54 @@ def copy_binaries(context):
     return True
 
 
-Project("lz4").depend(
-    Patch.Copy(
+if config.get('binary_lz4', True):
+    Project("lz4").depend(
+        Patch.Copy(
             os.path.join(lz_path, "bin", "liblz4.pdb"),
             os.path.join(config["paths"]["install"], "pdb")
-    ).depend(
-        Patch.Copy(
-            os.path.join(lz_path, "bin", "liblz4.dll"),
-            os.path.join(config["paths"]["install"], "bin", "dlls")
         ).depend(
-            build.Execute(
-                copy_binaries
+            Patch.Copy(
+                os.path.join(lz_path, "bin", "liblz4.dll"),
+                os.path.join(config["paths"]["install"], "bin", "dlls")
+            )
+        ).depend(
+        urldownload.URLDownload(
+            "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/lz4_prebuilt_{}.7z"
+            .format(lz4_version_minor)).set_destination(lz_path)
+        )
+    )
+
+
+else:
+    Project("lz4").depend(
+        Patch.Copy(
+            os.path.join(lz_path, "bin", "liblz4.pdb"),
+            os.path.join(config["paths"]["install"], "pdb")
+        ).depend(
+            Patch.Copy(
+                os.path.join(lz_path, "bin", "liblz4.dll"),
+                os.path.join(config["paths"]["install"], "bin", "dlls")
             ).depend(
-                msbuild.MSBuild(
-                    os.path.join(lz_path, "visual", "VS2017", 'lz4.sln'),
-                    project="liblz4-dll",
-                    working_directory=lazy.Evaluate(lambda: os.path.join(lz_path)),
-                    project_platform=bitness(),
-                    reltarget="Release"
+                build.Execute(
+                    copy_binaries
                 ).depend(
-                    build.Run(
-                        upgrade_args,
-                        name="upgrade lz4 project"
+                    msbuild.MSBuild(
+                        os.path.join(lz_path, "visual", "VS2017", 'lz4.sln'),
+                        project="liblz4-dll",
+                        working_directory=lazy.Evaluate(lambda: os.path.join(lz_path)),
+                        project_platform=bitness(),
+                        reltarget="Release"
                     ).depend(
-                        github.Source(
-                            "lz4", "lz4", lz4_version_minor
-                        ).set_destination(lz_path)
+                        build.Run(
+                            upgrade_args,
+                            name="upgrade lz4 project"
+                        ).depend(
+                            github.Source(
+                                "lz4", "lz4", lz4_version_minor
+                            ).set_destination(lz_path)
+                        )
                     )
                 )
             )
         )
     )
-)

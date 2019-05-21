@@ -310,6 +310,11 @@ class CMakeJOM(Builder):
         self.__install = True
         return self
 
+    def jom_environment(self):
+        result = config["__environment"].copy()
+        result["PATH"] += ";{}".format(os.path.dirname(os.path.abspath(config["paths"]["jom"])))
+        return result
+
     def process(self, progress):
         if "build_path" not in self._context:
             logging.error("source path not known for {},"
@@ -340,13 +345,13 @@ class CMakeJOM(Builder):
                         print("{}> {}".format(build_path, ' '.join(cmdline)))
                         proc = Popen(cmdline,
                             cwd=build_path,
-                            env=config["__environment"],
+                            env=self.jom_environment(),
                             stdout=sout, stderr=serr)
                         proc.communicate()
                         if proc.returncode != 0:
                             raise Exception("failed to generate makefile (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
 
-                        cmdline = [config['paths']['jom'], "/D", "/J", multiprocessing.cpu_count()]
+                        cmdline = [config['paths']['jom'], "/D", "/J", multiprocessing.cpu_count().__str__()]
                         print("{}> {}".format(build_path, ' '.join(cmdline)))
                         proc = Popen(cmdline,
                                      shell=True,
@@ -370,7 +375,7 @@ class CMakeJOM(Builder):
                             raise Exception("failed to build (returncode %s), see %s and %s" % (proc.returncode, soutpath, serrpath))
 
                         if self.__install:
-                            cmdline = [config['paths']['jom'], "install", "/D", "/J", multiprocessing.cpu_count()]
+                            cmdline = [config['paths']['jom'], "install", "/D", "/J", multiprocessing.cpu_count().__str__()]
                             print("{}> {}".format(build_path, ' '.join(cmdline)))
                             proc = Popen(cmdline,
                                          shell=True,

@@ -90,6 +90,7 @@ def dump_config():
     logging.debug("  Config: config['__build_base_path']=%s", config['__build_base_path'])
     #logging.debug(" Config: config['paths']['graphviz']=%s", config['paths']['graphviz'])
     logging.debug("  Config: config['paths']['cmake']=%s", config['paths']['cmake'])
+    logging.debug("  Config: config['paths']['jom']=%s", config['paths']['jom'])
     logging.debug("  Config: config['paths']['git']=%s", config['paths']['git'])
     logging.debug("  Config: config['paths']['perl']=%s", config['paths']['perl'])
     #logging.debug(" Config: config['paths']['ruby']=%s", config['paths']['ruby'])

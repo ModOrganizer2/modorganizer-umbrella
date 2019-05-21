@@ -281,7 +281,7 @@ class CMakeVS(Builder):
 
 class CMakeJOM(Builder):
     def __init__(self):
-        super(CMake, self).__init__()
+        super(CMakeJOM, self).__init__()
         self.__arguments = []
         self.__install = False
 

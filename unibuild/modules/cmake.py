@@ -86,7 +86,7 @@ class CMake(Builder):
             with on_exit(lambda: progress.finish()):
                 with open(soutpath, "w") as sout:
                     with open(serrpath, "w") as serr:
-                        cmdline = [config["paths"]["cmake"], "-G", "NMake Makefiles", "-DCMAKE_BUILD_TYPE=RelWithDebInfo", ".."] + self.__arguments
+                        cmdline = [config["paths"]["cmake"], "-G", "NMake Makefiles", ".."] + self.__arguments
                         print("{}> {}".format(build_path, ' '.join(cmdline)))
                         proc = Popen(cmdline,
                             cwd=build_path,
@@ -341,7 +341,7 @@ class CMakeJOM(Builder):
             with on_exit(lambda: progress.finish()):
                 with open(soutpath, "w") as sout:
                     with open(serrpath, "w") as serr:
-                        cmdline = [config["paths"]["cmake"], "-G", "NMake Makefiles JOM", "-DCMAKE_BUILD_TYPE=RelWithDebInfo", ".."] + self.__arguments
+                        cmdline = [config["paths"]["cmake"], "-G", "NMake Makefiles JOM", ".."] + self.__arguments
                         print("{}> {}".format(build_path, ' '.join(cmdline)))
                         proc = Popen(cmdline,
                             cwd=build_path,

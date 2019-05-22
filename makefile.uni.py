@@ -146,7 +146,7 @@ for author, git_path, path, branch, dependencies, Build in [
             vs_target = "Clean;Build" if config['rebuild'] else "Build"
             vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
                                               "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
-                                              "RelWithDebInfo")
+                                              config['build_type'])
 
             project.depend(
                 vs_msbuild_step.depend(

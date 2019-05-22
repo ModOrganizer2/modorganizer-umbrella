@@ -28,7 +28,7 @@ def path_or_default(filename, default):
         defaults = gen_search_folders(*path)
     res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
     if res is None:
-        print('Cannot find', filename, 'on your path or in', os.path.join('', *default))
+        print('Cannot find', filename, 'on your path or in', os.path.join('', *default[0]))
     return res
 
 

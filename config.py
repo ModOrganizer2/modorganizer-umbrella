@@ -94,16 +94,16 @@ config = {
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
-    'icu_version': '63',
-    'icu_version_minor': '1',
-    'loot_version': '0.14.6',
-    'loot_commit': 'g8fed4b0',
+    'icu_version': '64',
+    'icu_version_minor': '2',
+    'loot_version': '0.14.7',
+    'loot_commit': 'g1878d48',
     'lz4_version': '1.9.1',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.14.02',
     'nuget_version': '4.9.3',
     'nmm_version': '0.65.11',
-    'openssl_version': '1.0.2r',
+    'openssl_version': '1.0.2s',
     'pyqt_version': '5.12.1',
     'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',

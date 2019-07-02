@@ -105,14 +105,14 @@ config = {
     'nuget_version': '4.9.3',
     'nmm_version': '0.65.11',
     'openssl_version': '1.0.2s',
-    'pyqt_version': '5.12.3',
-    'pyqt_dev_version': '', # leave empty for a standard release
+    'pyqt_version': '5.13',
+    'pyqt_dev_version': '1907012225', # leave empty for a standard release
     'python_version': '3.7',
     'python_version_minor': '.3',
-    'sip_version': '4.19.17',
-    'sip_dev_version': '', # leave empty for a standard release
-    'qt_version': '5.12',
-    'qt_version_minor': '3',
+    'sip_version': '4.19.18',
+    'sip_dev_version': '1907011533', # leave empty for a standard release
+    'qt_version': '5.13',
+    'qt_version_minor': '0',
     'qt_version_appveyor': '5.11',
     'qt_version_minor_appveyor': '',
     'qt_vc_version': '15.0',

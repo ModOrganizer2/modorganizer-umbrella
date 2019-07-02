@@ -5,7 +5,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 --- configure.py	(date 1562041436573)
 +++ configure.py	(date 1562041436573)
-@@ -1545,26 +1545,32 @@
+@@ -1552,26 +1552,32 @@
      if target_config.py_platform == 'win32':
          inf.write("""
  

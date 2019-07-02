@@ -20,6 +20,7 @@ import itertools
 import logging
 import os
 import shutil
+import patch
 from glob import glob
 from subprocess import Popen
 
@@ -80,6 +81,26 @@ def copy_pyd(context):
     return True
 
 
+def copy_init_patch(context):
+    shutil.copy2(
+        os.path.join(config['__Umbrella_path'], "patches", "PyQt5_init.py"),
+        os.path.join(context['build_path'], "__init__.py")
+    )
+    return True
+
+
+def init_patch(context):
+    try:
+        savedpath = os.getcwd()
+        os.chdir(context["build_path"])
+        pset = patch.fromfile(os.path.join(config['__Umbrella_path'], "patches", "pyqt5_configure_init.patch"))
+        pset.apply()
+        os.chdir(savedpath)
+        return True
+    except OSError:
+        return False
+
+
 class PyQt5Configure(build.Builder):
     def __init__(self):
         super(PyQt5Configure, self).__init__()
@@ -117,15 +138,22 @@ class PyQt5Configure(build.Builder):
 
 if config.get('Appveyor_Build', True):
     Project("PyQt5") \
-        .depend(build.Execute(copy_pyd)
-                .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
-                                    os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
-                        doclambda(lambda: python.python['build_path'], "python path"))
-                        .depend(urldownload.URLDownload(config.get('prebuilt_url') + "PyQt5_gpl-prebuilt-{0}.7z"
-                                .format(pyqt_version), name="PyQt5-prebuilt", clean=False)
-                                .set_destination("python-{}".format(python_version))
-                                .depend("sip")
-                                .depend("Qt5"))))
+            .depend(build.Execute(copy_pyd)
+                    .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
+                                        os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
+                            doclambda(lambda: python.python['build_path'], "python path"))
+                            .depend(build.Execute(copy_init_patch)
+                                    .depend(urldownload.URLDownload(
+                                                config.get('prebuilt_url') + "PyQt5_gpl-prebuilt-{0}.7z"
+                                                .format(pyqt_version), name="PyQt5-prebuilt", clean=False
+                                            )
+                                            .set_destination("python-{}".format(python_version))
+                                            .depend("sip")
+                                            .depend("Qt5")
+                                            )
+                                    )
+                            )
+                    )
 else:
     pyqt_source = urldownloadany.URLDownloadAny((
                     urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/{0}/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1),
@@ -134,12 +162,17 @@ else:
 
     Project("PyQt5") \
         .depend(build.Execute(copy_pyd)
-            .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
-                                os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
-                               doclambda(lambda: python.python['build_path'], "python path"))
-                    .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
-                            .depend(PyQt5Configure()
-                                    .depend("sip")
-                                    .depend("Qt5")
-                                    .depend(pyqt_source)))))
-
+                .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
+                                    os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
+                                   doclambda(lambda: python.python['build_path'], "python path"))
+                        .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
+                                .depend(PyQt5Configure()
+                                        .depend("sip")
+                                        .depend("Qt5")
+                                        .depend(build.Execute(init_patch)
+                                                .depend(pyqt_source)
+                                                )
+                                        )
+                                )
+                        )
+                )

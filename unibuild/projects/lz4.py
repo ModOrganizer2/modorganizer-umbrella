@@ -74,11 +74,11 @@ if config.get('binary_lz4', True):
             Patch.Copy(
                 os.path.join(lz_path, "bin", "liblz4.dll"),
                 os.path.join(config["paths"]["install"], "bin", "dlls")
+            ).depend(
+                urldownload.URLDownload(
+                    "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/lz4_prebuilt_{}.7z"
+                        .format(lz4_version_minor)).set_destination(lz_path)
             )
-        ).depend(
-        urldownload.URLDownload(
-            "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/lz4_prebuilt_{}.7z"
-            .format(lz4_version_minor)).set_destination(lz_path)
         )
     )
 

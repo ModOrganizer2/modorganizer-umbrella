@@ -20,6 +20,7 @@ import shutil
 
 from config import config
 from string import Formatter
+from glob import glob
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github, urldownload, msbuild, appveyor
 from unibuild.projects import boost, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, zlib, nuget
@@ -170,6 +171,12 @@ def python_core_collect(context):
         pass
 
     shutil.copytree(os.path.join(bp, "Lib"), os.path.join(ip, "pythoncore"), ignore=shutil.ignore_patterns("site-packages", '__pycache__'))
+
+    path_segments = [bp, "PCbuild"]
+    if config['architecture'] == "x86_64":
+        path_segments.append("amd64")
+    for f in glob(os.path.join(*path_segments,"*.pyd")):
+        shutil.copy(f, os.path.join(ip, "pythoncore"))
 
     return True
 

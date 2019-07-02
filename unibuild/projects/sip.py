@@ -42,6 +42,7 @@ python_path = os.path.join(config['paths']['build'], "python-{}".format(config['
 
 sip_url = urldownloadany.URLDownloadAny((
             urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/{0}/sip-{0}.zip".format(sip_version), 1),
+            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/sip-{0}.zip".format(sip_version), 1),
             sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)))
 
 def sip_environment():

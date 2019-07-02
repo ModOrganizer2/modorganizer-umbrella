@@ -57,7 +57,7 @@ def copy_pyd(context):
     for f in glob(os.path.join(python_path, "Lib", "site-packages", "PyQt5", "sip.pyd")):
         shutil.copy(f, os.path.join(config["__build_base_path"],
                                     "install", "bin", "plugins", "data", "PyQt5", "sip.pyd"))
-    for f in glob(os.path.join(context["build_path"], "sip.pyi")):
+    for f in glob(os.path.join(python_path, "Lib", "site-packages", "PyQt5", "sip.pyi")):
         shutil.copy(f, os.path.join(config["__build_base_path"],
                                     "install", "bin", "plugins", "data", "PyQt5", "sip.pyi"))
     return True

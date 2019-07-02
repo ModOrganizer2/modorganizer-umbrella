@@ -72,7 +72,7 @@ def copy_pyd(context):
         )
         try:
             shutil.copy(
-                os.path.join(context['build_path'], module + ".pyi"),
+                os.path.join(srcdir, module + ".pyi"),
                 os.path.join(dstdir, module + ".pyi")
             )
         except FileNotFoundError:

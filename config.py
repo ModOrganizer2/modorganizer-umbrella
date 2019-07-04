@@ -104,7 +104,7 @@ config = {
     'nasm_version': '2.14.02',
     'nuget_version': '4.9.3',
     'nmm_version': '0.65.11',
-    'openssl_version': '1.1.1b',
+    'openssl_version': '1.1.1c',
     'pyqt_version': '5.12.3',
     'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',

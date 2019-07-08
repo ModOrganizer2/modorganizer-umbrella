@@ -166,7 +166,7 @@ config['paths'] = {
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
 
-if config["Release_Build"]:
+if config["Installer"]:
     config['paths']["InnoSetup"] = path_or_default("ISCC.exe", [["Inno Setup 5"], ["Inno Setup 6"]])
 
 if not check_prerequisites_config():

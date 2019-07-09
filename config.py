@@ -108,7 +108,7 @@ config = {
     'pyqt_version': '5.12.3',
     'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
-    'python_version_minor': '.3',
+    'python_version_minor': '.4',
     'sip_version': '4.19.17',
     'sip_dev_version': '', # leave empty for a standard release
     'qt_version': '5.12',
@@ -129,7 +129,7 @@ config = {
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code
-    'Installer': False, # Used to create installer at end of build, Forces everything to be built
+    'Installer': True, # Used to create installer at end of build, Forces everything to be built
     'show_only': False,
     'retrieve_only': False,                 # download everything as a reference (to keep track of local edits).  Do modorganizer_super first :)
     'tools_only': False,                    # Build dependencies except modorganizer targets

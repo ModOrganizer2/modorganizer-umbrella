@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
-# Copyright (C) 2016 - 2018 Mod Organizer contributors.
+# Copyright (C) 2016 - 2019 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -32,21 +32,21 @@ openssl_version = config['openssl_version']
 qt_version = config['qt_version']
 qt_version_minor = config['qt_version_minor']
 
+if os.environ.get('APPVEYOR') is not None:
+    qt_version = config['qt_version_appveyor']
+    qt_version_minor = config['qt_version_minor_appveyor']
+
+
 def bitnessQt():
     return "64" if config['architecture'] == "x86_64" else "32"
 
+
 def variant():
-    return "msvc2013" if config['vc_version'] == "12.0" else "msvc2015" if config['vc_version'] == "14.0" else "msvc2017"
+    return "msvc2013" if config['qt_vc_version'] == "12.0" else "msvc2015" if config['qt_vc_version'] == "14.0" else "msvc2017" if config['qt_vc_version'] == "15.0" else "msvc2019"
 
 qt_bin_variant = variant()
 platform = "win32-{0}".format(variant())
 
-def make_sure_path_exists(path):
-    try:
-        os.makedirs(path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
 if config.get('binary_qt', True):
     qt5 = Project("Qt5")

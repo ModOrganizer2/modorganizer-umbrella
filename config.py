@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
-# Copyright (C) 2016 - 2018 Mod Organizer contributors.
+# Copyright (C) 2016 - 2019 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -22,12 +22,13 @@ from unibuild.utility import config_utility
 from unibuild.utility.lazy import Lazy
 
 
-def path_or_default(filename, *default):
+def path_or_default(filename, default):
     from distutils.spawn import find_executable
-    defaults = gen_search_folders(*default)
+    for path in default:
+        defaults = gen_search_folders(*path)
     res = find_executable(filename, os.environ['PATH'] + ";" + ";".join(defaults))
     if res is None:
-        print('Cannot find', filename, 'on your path or in', os.path.join('', *default))
+        print('Cannot find', filename, 'on your path or in', os.path.join('', *default[0]))
     return res
 
 
@@ -36,6 +37,7 @@ def gen_search_folders(*subpath):
         os.path.join(search_folder, *subpath)
         for search_folder in config_utility.program_files_folders
     ]
+
 
 def check_prerequisites_config():
     if not config['paths']['cmake']:
@@ -54,9 +56,8 @@ def check_prerequisites_config():
 
 config = {
 
-
     'Appveyor_Build': False, #Should only be used for the AppVeyor build as it will use as many prebuilt binaries as possible
-    'Release_Build': True,  #Used to override certain versions in umbrella when doing an officail release
+    'Release_Build': False,  #Used to override certain versions in umbrella when doing an officail release
 
                             #eg. Using the usvfs_version below instead of the Main_Branch config
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
@@ -72,7 +73,8 @@ config = {
     'prefer_binary_dependencies': True,  # Try to use official binary package/SDKs.  Won't work for all stuff
     # works for: 7z, CMake, Git, Perl, Python, Visual Studio
     'binary_qt': True, # use binary Qt5 from the offical website
-    'binary_boost': True, # Custom prebuilt boost compiled by MO2 team and uploaded to https://github.com/Modorganizer2/3rdParty_Dependencies
+    'binary_boost': True, # Custom prebuilt boost compiled by MO2 team and uploaded to https://github.com/ModOrganizer2/3rdParty_Dependencies
+    'binary_lz4': True, # Custom prebuilt lz4 to get around issues with latest releases uploaded to https://github.com/ModOrganizer2/3rdParty_Dependencies
     'shallowclone': True, # reduces size of repos drastically
     'repo_update_frequency': 60 * 60 * 12,  # in seconds
     'num_jobs': multiprocessing.cpu_count() + 1,
@@ -80,40 +82,44 @@ config = {
     'progress_method': 'folders', # Changes how the progress files are generated
                                # flat:    All files in one folder, <project>_complete_<task>.txt (default)
                                # folders: <project>\<task>_complete.txt
-  
-    'Main_Author': 'Modorganizer2',  # the current maintainer
-    'Main_Branch': "master",
+
+    'Main_Author': 'ModOrganizer2',  # the current maintainer
+    'Main_Branch': "Develop",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
     # manualy set all versions
     '7zip_version': '19.00',
-    'boost_version': '1.69.0',
+    'boost_version': '1.70.0',
     'boost_version_tag': '',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
-    'icu_version': '63',
-    'icu_version_minor': '1',
-    'loot_version': '0.14.5',
-    'loot_commit': 'g68ecc02',
-    'lz4_version': '1.8.3',
+    'icu_version': '64',
+    'icu_version_minor': '2',
+    'loot_version': '0.14.8',
+    'loot_commit': 'gb0d0f3e',
+    'loot_branch': 'master',
+    'lz4_version': '1.9.1',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.14.02',
     'nuget_version': '4.9.3',
     'nmm_version': '0.65.11',
-    'openssl_version': '1.0.2r',
-    'pyqt_version': '5.12.1',
+    'openssl_version': '1.1.1c',
+    'pyqt_version': '5.12.3',
     'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
-    'python_version_minor': '.1',
-    'sip_version': '4.19.15',
+    'python_version_minor': '.4',
+    'sip_version': '4.19.17',
     'sip_dev_version': '', # leave empty for a standard release
     'qt_version': '5.12',
-    'qt_version_minor': '2',
-    'vc_platformtoolset': 'v141',
+    'qt_version_minor': '4',
+    'qt_version_appveyor': '5.11',
+    'qt_version_minor_appveyor': '',
+    'qt_vc_version': '15.0',
+    'vc_platformtoolset': 'v142',
     'vc_TargetPlatformVersion': '10.0.17763.0',
-    'vc_version': '15.0',
-    'vc_version_for_boost': '14.1',
+    'vc_version': '16.0',
+    'vc_version_for_boost': '14.2',
     'WixToolset_version': '311',
     'zlib_version': '1.2.11',
 
@@ -139,24 +145,29 @@ config = {
     #url used for all prebuilt downloads
     'prebuilt_url': "https://github.com/ModOrganizer2/modorganizer-umbrella/releases/download/1.1/"
 }
+
+
 config['paths'] = {
     'download': "{base_dir}\\downloads",
     'build': "{base_dir}\\{build_dir}",
     'progress': "{base_dir}\\{progress_dir}",
     'install': "{base_dir}\\{install_dir}",
-    # 'graphviz': path_or_default("dot.exe", "Graphviz2.38", "bin"),
-    'cmake': path_or_default("cmake.exe", "CMake", "bin"),
-    'git': path_or_default("git.exe", "Git", "bin"),
-    'perl': path_or_default("perl.exe", "StrawberryPerl", "perl", "bin"),
-    'InnoSetup': path_or_default("ISCC.exe", "Inno Setup 5"),
-    #'svn': path_or_default("svn.exe", "SlikSvn", "bin"),
-    '7z': path_or_default("7z.exe", "7-Zip"),
+    # 'graphviz': path_or_default("dot.exe", [["Graphviz2.38", "bin"]]),
+    'cmake': path_or_default("cmake.exe", [["CMake", "bin"]]),
+    'jom': path_or_default("jom.exe", [["Qt", "Tools", "QtCreator", "bin"]]),
+    'git': path_or_default("git.exe", [["Git", "bin"]]),
+    'perl': path_or_default("perl.exe", [["StrawberryPerl", "perl", "bin"], ["Strawberry", "perl", "bin"]]),
+    #'svn': path_or_default("svn.exe", [["SlikSvn", "bin"]]),
+    '7z': path_or_default("7z.exe", [["7-Zip"]]),
     # we need a python that matches the build architecture
     'python': "", # Registry Key can be in multiple places. set in config_setup.py
     'visual_studio_base': "",
     'qt_binary_install': "",
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
+
+if config["Installer"]:
+    config['paths']["InnoSetup"] = path_or_default("ISCC.exe", [["Inno Setup 5"], ["Inno Setup 6"]])
 
 if not check_prerequisites_config():
     print('\nMissing prerequisites listed above - cannot continue')

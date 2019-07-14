@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
-# Copyright (C) 2016 - 2018 Mod Organizer contributors.
+# Copyright (C) 2016 - 2019 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -20,6 +20,7 @@ import shutil
 
 from config import config
 from string import Formatter
+from glob import glob
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github, urldownload, msbuild, appveyor
 from unibuild.projects import boost, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, zlib, nuget
@@ -120,22 +121,41 @@ for author, git_path, path, branch, dependencies, Build in [
     project = Project(git_path)
 
     if Build:
+        if config['Appveyor_Build']:
+            jom_cmake_step = cmake.CMakeJOM().arguments(cmake_param).install()
 
-        vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
-
-        for dep in dependencies:
-            vs_cmake_step.depend(dep)
-
-        build_path = config["paths"]["build"]
-        vs_target = "Clean;Build" if config['rebuild'] else "Build"
-        vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
-                                          "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
-                                          "RelWithDebInfo")
-
-        if config['Appveyor_Build'] and os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
-            project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER","")))))
+            for dep in dependencies:
+                jom_cmake_step.depend(dep)
+            if os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
+                project.depend(
+                    jom_cmake_step.depend(
+                        appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
+                    )
+                )
+            else:
+                project.depend(
+                    jom_cmake_step.depend(
+                        github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path)
+                    )
+                )
         else:
-            project.depend(vs_msbuild_step.depend(vs_cmake_step.depend(github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path))))
+            vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
+
+            for dep in dependencies:
+                vs_cmake_step.depend(dep)
+
+            vs_target = "Clean;Build" if config['rebuild'] else "Build"
+            vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
+                                              "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
+                                              config['build_type'])
+
+            project.depend(
+                vs_msbuild_step.depend(
+                    vs_cmake_step.depend(
+                        github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path)
+                    )
+                )
+            )
     else:
         project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
                        .set_destination(path))
@@ -151,6 +171,12 @@ def python_core_collect(context):
         pass
 
     shutil.copytree(os.path.join(bp, "Lib"), os.path.join(ip, "pythoncore"), ignore=shutil.ignore_patterns("site-packages", '__pycache__'))
+
+    path_segments = [bp, "PCbuild"]
+    if config['architecture'] == "x86_64":
+        path_segments.append("amd64")
+    for f in glob(os.path.join(*path_segments,"*.pyd")):
+        shutil.copy(f, os.path.join(ip, "pythoncore"))
 
     return True
 

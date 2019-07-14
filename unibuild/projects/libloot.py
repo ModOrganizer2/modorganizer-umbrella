@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
-# Copyright (C) 2016 - 2018 Mod Organizer contributors.
+# Copyright (C) 2016 - 2019 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -23,6 +23,7 @@ from unibuild.modules import github, Patch
 
 loot_version = config['loot_version']
 loot_commit = config['loot_commit']
+loot_branch = config['loot_branch']
 
 def bitnessLoot():
     return "64" if config['architecture'] == "x86_64" else "32"
@@ -31,5 +32,5 @@ def bitnessLoot():
 Project("libloot") \
     .depend(Patch.Copy("loot.dll", os.path.join(config["paths"]["install"], "bin", "loot"))
             .depend(github.Release("loot", "libloot", loot_version,
-                               "libloot-{}-0-{}_dev-win{}".format(loot_version, loot_commit, bitnessLoot()), "7z", tree_depth=1)
+                               "libloot-{}-0-{}_{}-win{}".format(loot_version, loot_commit, loot_branch, bitnessLoot()), "7z", tree_depth=1)
                           .set_destination("libloot-{}-{}".format(loot_version, loot_commit))))

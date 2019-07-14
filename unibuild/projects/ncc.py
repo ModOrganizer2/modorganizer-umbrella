@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
-# Copyright (C) 2016 - 2018 Mod Organizer contributors.
+# Copyright (C) 2016 - 2019 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -28,11 +28,11 @@ from unibuild.utility import lazy
 build_path = config['paths']['build']
 download_path = config['paths']['download']
 
+
 def ncc_environment():
     result = config['__environment'].copy()
     result['Path'] += ";" + os.path.join(download_path)
     return result
-
 
 
 def prepare_nmm(context):

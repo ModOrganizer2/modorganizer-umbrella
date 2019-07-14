@@ -15,37 +15,53 @@ First you need to clone the umbrella repository. We recommend that you clone it 
 Open there a console and copy in: ``git clone https://github.com/Modorganizer2/modorganizer-umbrella``
 
 ### Software Requirements
-
 Now you need to install all required software to build Mod Organizer.
-* If you want to install everything by hand you need all this stuff:
-  * 7zip (Latest 64Bit) Link: http://www.7-zip.org/a/7z1700-x64.exe
-  * Inno (Only required to build Installer) Setup Link: http://www.jrsoftware.org/download.php/is.exe
-  * CMake (latest 64bit)  Link: https://cmake.org/files/v3.10/cmake-3.10.2-win64-x64.msi
-  * Git Link: https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe
-  * ~~Python 2.7.14 (64Bit) Link: https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi~~ *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.*
-  * Python 3.7.1 (64Bit) Link: https://www.python.org/downloads/windows/
-  * Qt 5.12.0 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
-    #### Qt Packages required:
-    * msvc2017-64
-    * qtwebengine
 
+#### Manual Requirements
+* Qt 5.12.4 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+  #### Qt Packages required:
+  * msvc2017-64
+  * qtwebengine
+  * qtwebsockets
+  
   Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error.
+* Visual Studio Community 2019 Link: https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community
+  #### Visual Studio Packages required:
+  * .NET desktop development
+  * Desktop development for C++
+  
+  Additionally you need to activate under Individual components:
+  * "Windows Universal C Runtime" (Under Compilers, build tools, and runtimes)
+  * "Windows 8.1 SDK" (Under SDKs, libraries, and frameworks)
+  * "Windows 10 SDK (10.0.17763.0) for Desktop C++ [x86 and x64]" (Under SDKs, libraries, and frameworks)
+  * C++ ATL for v141/v142 build tools (x86 & x64) (Under SDKs, libraries, and frameworks)
+  * Ensure v141 build tools are selected for some dependencies that may not support v142 yet
+    * Note: If you have problems building Python due to a "missing SDK version", edit the registry key [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0] to point to the the 10.0.17763.0 SDK.
 
-  * Strawberry Perl Link: http://strawberryperl.com/download/5.26.1.1/strawberry-perl-5.26.1.1-64bit.msi
-  * Visual Studio Community 2017 Link: https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15
-    #### Visual Studio Packages required:
-      * .NET desktop development
-      * Desktop development for C++
+#### Additional Requirements
+##### Manual Install
+* 7zip (Latest 64Bit) Link: http://www.7-zip.org/a/7z1900-x64.exe
+* Inno 5 or 6(Only required to build Installer) Setup Link: http://www.jrsoftware.org/download.php/is.exe
+* CMake (latest 64bit)  Link: https://github.com/Kitware/CMake/releases/download/v3.14.5/cmake-3.14.5-win64-x64.msi
+* Git Link: https://github.com/git-for-windows/git/releases/download/v2.22.0.windows.1/Git-2.22.0-64-bit.exe
+* Python 3.7.4 (64Bit) Link: https://www.python.org/ftp/python/3.7.4/python-3.7.4-amd64.exe
+  * *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.*
+* Strawberry Perl Link: http://strawberryperl.com/download/5.30.0.1/strawberry-perl-5.30.0.1-64bit.msi
+##### Chocolatey
+Optionally, you can use [Chocolatey](https://chocolatey.org/install) to install these dependencies. The packages are:
+* 7zip
+* cmake
+* git
+* InnoSetup
+* python
+* strawberyperl
 
-      Additionally you need to activate under Individual components:
-      * "Windows Universal CRT SDK" (Under Compilers, build tools, and runtimes)
-      * "Windows 8.1 SDK" (Under SDKs, libraries, and frameworks)
-      * "Windows 10 SDK (10.0.16299.0) for Desktop C++ [x86 and x64]" (Under SDKs, libraries, and frameworks
-        * Note: If you have problems building Python due to a "missing SDK version", edit the registry key [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0] to point to the the 10.0.16299.0 SDK.
-      
+#### Build
 Now we  can finally start the build process. Just run the following command in the modorganizer-umbrella folder: ``python.exe unimake.py``
 
-If you wish to rebuild only one target once everything is complete, you simply delete the relevant txt file in the progress folder, e.g C:\modorganizer-umbrella\progress\modorganizer_complete_cmake modorganizer.txt
+You can specify a build location using ``-d <directory path>``
+
+If you wish to rebuild only one target once everything is complete, you simply delete the relevant txt file or directory in the progress folder, e.g C:\modorganizer-umbrella\progress\modorganizer
 Then rerun the build script and it will rebuild the relevant project.
 
 ## Purpose

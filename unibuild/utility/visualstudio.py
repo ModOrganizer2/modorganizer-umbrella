@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
-# Copyright (C) 2016 - 2018 Mod Organizer contributors.
+# Copyright (C) 2016 - 2019 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -27,11 +27,12 @@ from subprocess import Popen, PIPE
 # To detect the editon of VS installed as of VS 2017
 vs_editions = ["enterprise",
     "professional",
-    "community",]
+    "community",
+    "preview",]
 
 
 # No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir
-def get_visual_studio_2017(vc_version):
+def get_visual_studio(vc_version):
     try:
         if os.environ["VisualStudioVersion"] == vc_version:
             p = os.path.join(os.environ["VSINSTALLDIR"], "VC", "Auxiliary", "Build")
@@ -77,7 +78,7 @@ def vc_year(vc_version):
 
 
 def visual_studio(vc_version):
-    config["paths"]["visual_studio"] = get_visual_studio_2017(vc_version)
+    config["paths"]["visual_studio"] = get_visual_studio(vc_version)
     if not config["paths"]["visual_studio"]:
         logging.error("Unable to find vcvarsall.bat, please make sure you have 'Common C++ tools' Installed."
           " If you have changed the default installation folder for VS please set the 'vc_CustomInstallPath' in the config.py file"

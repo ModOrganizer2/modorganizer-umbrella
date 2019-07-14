@@ -1,6 +1,6 @@
 
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
-# Copyright (C) 2016 - 2018 Mod Organizer contributors.
+# Copyright (C) 2016 - 2019 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -72,7 +72,10 @@ def init_config(args):
 
     visual_studio(config["vc_version"])  # forced set after args are evaluated
     if config['prefer_binary_dependencies']:
-        qt_install(config["qt_version"], config["qt_version_minor"], config["vc_version"])
+        if os.environ.get('APPVEYOR') is not None:
+            qt_install(config["qt_version_appveyor"], config["qt_version_minor_appveyor"], config["qt_vc_version"])
+        else:
+            qt_install(config["qt_version"], config["qt_version_minor"], config["qt_vc_version"])
     config['__Default_environment'] = os.environ
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = os.path.abspath(args.destination)
@@ -87,6 +90,7 @@ def dump_config():
     logging.debug("  Config: config['__build_base_path']=%s", config['__build_base_path'])
     #logging.debug(" Config: config['paths']['graphviz']=%s", config['paths']['graphviz'])
     logging.debug("  Config: config['paths']['cmake']=%s", config['paths']['cmake'])
+    logging.debug("  Config: config['paths']['jom']=%s", config['paths']['jom'])
     logging.debug("  Config: config['paths']['git']=%s", config['paths']['git'])
     logging.debug("  Config: config['paths']['perl']=%s", config['paths']['perl'])
     #logging.debug(" Config: config['paths']['ruby']=%s", config['paths']['ruby'])
@@ -94,6 +98,7 @@ def dump_config():
     logging.debug("  Config: config['paths']['7z']=%s", config['paths']['7z'])
     logging.debug("  Config: config['paths']['python']=%s", Evaluate(config['paths']['python']))
     logging.debug("  Config: config['paths']['visual_studio']=%s", config['paths']['visual_studio'])
+    logging.debug("  Config: config['paths']['qt_binary_install']=%s", config['paths']['qt_binary_install'])
     logging.debug("  Config: config['vc_version']=%s", config['vc_version'])
 
 

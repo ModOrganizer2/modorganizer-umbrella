@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
-# Copyright (C) 2016 - 2018 Mod Organizer contributors.
+# Copyright (C) 2016 - 2019 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -26,6 +26,7 @@ from config import config
 from unibuild import Project
 from unibuild.modules import build, sourceforge, urldownload, urldownloadany
 from unibuild.projects import python
+from unibuild.utility.config_utility import make_sure_path_exists
 
 sip_version = config['sip_version']
 sip_dev = False
@@ -41,6 +42,7 @@ python_path = os.path.join(config['paths']['build'], "python-{}".format(config['
 
 sip_url = urldownloadany.URLDownloadAny((
             urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/{0}/sip-{0}.zip".format(sip_version), 1),
+            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/sip-{0}.zip".format(sip_version), 1),
             sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)))
 
 def sip_environment():
@@ -50,21 +52,14 @@ def sip_environment():
     return result
 
 
-def make_sure_path_exists(path):
-    try:
-        from pathlib import Path
-        path = Path(path)
-        path.mkdir(parents=True, exist_ok=True)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
-
-
 def copy_pyd(context):
     make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
     for f in glob(os.path.join(python_path, "Lib", "site-packages", "PyQt5", "sip.pyd")):
         shutil.copy(f, os.path.join(config["__build_base_path"],
                                     "install", "bin", "plugins", "data", "PyQt5", "sip.pyd"))
+    for f in glob(os.path.join(python_path, "Lib", "site-packages", "PyQt5", "sip.pyi")):
+        shutil.copy(f, os.path.join(config["__build_base_path"],
+                                    "install", "bin", "plugins", "data", "PyQt5", "sip.pyi"))
     return True
 
 
@@ -88,7 +83,7 @@ class SipConfigure(build.Builder):
                      "-b", bp,
                      "-d", os.path.join(bp, "Lib", "site-packages"),
                      "-v", os.path.join(bp, "sip"),
-                     "-e", os.path.join(bp, "include"),
+                     "-e", os.path.join(bp, "Include"),
                      "--sip-module=PyQt5.sip"],
                     env=config["__environment"],
                     cwd=self._context["build_path"],

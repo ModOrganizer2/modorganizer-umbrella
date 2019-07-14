@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Sebastian Herbord.  All rights reserved.
-# Copyright (C) 2016 - 2018 Mod Organizer contributors.
+# Copyright (C) 2016 - 2019 Mod Organizer contributors.
 #
 # This file is part of Mod Organizer.
 #
@@ -23,21 +23,12 @@ from glob import glob
 from config import config
 from unibuild.modules import build, github, msbuild, urldownload
 from unibuild.project import Project
-from unibuild.utility.visualstudio import get_visual_studio_2017
+from unibuild.utility.visualstudio import get_visual_studio
+from unibuild.utility.config_utility import make_sure_path_exists
 
 path_install = config["paths"]["install"]
 python_version = config['python_version']
 python_version_minor = config['python_version_minor']
-
-
-def make_sure_path_exists(path):
-    try:
-        from pathlib import Path
-        path = Path(path)
-        path.mkdir(parents=True, exist_ok=True)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
 
 def python_environment():
@@ -56,7 +47,7 @@ def upgrade_args():
         return [os.path.join(devenv_path, "devenv.exe"),
                 "PCBuild/pcbuild.sln",
                 "/upgrade"]
-    return [os.path.join(get_visual_studio_2017('15.0'), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
+    return [os.path.join(get_visual_studio(config["vc_version"]), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
             "PCBuild/pcbuild.sln", "/upgrade"]
 
 

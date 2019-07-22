@@ -31,7 +31,7 @@ vs_target = "Clean;Build" if config['rebuild'] else "Build"
 if config['Release_Build']:
     usvfs_version = config['usvfs_version']
 else:
-    usvfs_version = config['Main_Branch']
+    usvfs_version = config['Build_Branch']
 
 
 # TODO change dynamicaly

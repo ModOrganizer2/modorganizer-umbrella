@@ -84,7 +84,8 @@ config = {
                                # folders: <project>\<task>_complete.txt
 
     'Main_Author': 'ModOrganizer2',  # the current maintainer
-    'Main_Branch': "Develop",
+    'Dev_Branch': "Develop",
+    'Release_Branch': "master",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
@@ -168,6 +169,11 @@ config['paths'] = {
 
 if config["Installer"]:
     config['paths']["InnoSetup"] = path_or_default("ISCC.exe", [["Inno Setup 5"], ["Inno Setup 6"]])
+
+if config["Release_Build"]:
+    config["Build_Branch"] = config["Release_Branch"]
+else:
+    config["Build_Branch"] = config["Dev_Branch"]
 
 if not check_prerequisites_config():
     print('\nMissing prerequisites listed above - cannot continue')

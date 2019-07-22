@@ -93,6 +93,7 @@ config = {
     '7zip_version': '19.00',
     'boost_version': '1.70.0',
     'boost_version_tag': '',
+    'fmt_version': '5.3.0',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '2.5.4',
     'icu_version': '64',
@@ -112,6 +113,7 @@ config = {
     'python_version_minor': '.4',
     'sip_version': '4.19.17',
     'sip_dev_version': '', # leave empty for a standard release
+    'spdlog_version': 'v1.3.1',
     'qt_version': '5.12',
     'qt_version_minor': '4',
     'qt_version_appveyor': '5.11',

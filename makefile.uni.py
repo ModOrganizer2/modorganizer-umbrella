@@ -23,7 +23,7 @@ from string import Formatter
 from glob import glob
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github, urldownload, msbuild, appveyor
-from unibuild.projects import boost, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, zlib, nuget
+from unibuild.projects import boost, fmt, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, spdlog, zlib, nuget
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
 
@@ -44,7 +44,7 @@ def gen_userfile_content(project):
 for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_features", "game_features", config['Build_Branch'], [], False),
     (config['Main_Author'], "modorganizer-archive", "archive", config['Build_Branch'], ["7zip", "Qt5", "boost"], True),
-    (config['Main_Author'], "modorganizer-uibase", "uibase", config['Build_Branch'], ["Qt5", "boost"], True),
+    (config['Main_Author'], "modorganizer-uibase", "uibase", config['Build_Branch'], ["Qt5", "boost", "fmt", "spdlog"], True),
     (config['Main_Author'], "modorganizer-lootcli", "lootcli", config['Build_Branch'], ["libloot", "boost"], True),
     (config['Main_Author'], "modorganizer-esptk", "esptk", config['Build_Branch'], ["boost"], True),
     (config['Main_Author'], "modorganizer-bsatk", "bsatk", config['Build_Branch'], ["zlib", "boost", "lz4"], True),

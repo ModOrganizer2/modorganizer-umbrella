@@ -26,6 +26,17 @@ from unibuild.utility.visualstudio import vc_year
 
 
 def get_qt_install(qt_version, qt_version_minor, vc_version):
+    # Start with the custom Qt install path, overrides automatic detection
+    try:
+        p = os.path.join(config['qt_CustomInstallPath'], "{}".format(qt_version + "." + qt_version_minor
+                                                                    if qt_version_minor != '' else qt_version),
+                             "msvc{0}_64".format(vc_year(vc_version)))
+        f = os.path.join(p, "bin", "qmake.exe")
+        if os.path.isfile(f):
+            return os.path.realpath(p)
+    except Exception:
+        pass
+
     try:
         for baselocation in program_files_folders:
             # Offline installer default location
@@ -66,17 +77,6 @@ def get_qt_install(qt_version, qt_version_minor, vc_version):
             f = os.path.join(p, "bin", "qmake.exe")
             if os.path.isfile(f):
                 return os.path.realpath(p)
-    except Exception:
-        pass
-
-    # We should try the custom Qt install path as well
-    try:
-        p = os.path.join(config['qt_CustomInstallPath'], "{}".format(qt_version + "." + qt_version_minor
-                                                                    if qt_version_minor != '' else qt_version),
-                             "msvc{0}_64".format(vc_year(vc_version)))
-        f = os.path.join(p, "bin", "qmake.exe")
-        if os.path.isfile(f):
-            return os.path.realpath(p)
     except Exception:
         pass
 

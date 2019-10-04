@@ -1,0 +1,9 @@
+--- siputils.py	Sat Sep  7 20:22:30 2019
++++ siputils.py	Fri Oct  4 04:42:15 2019
+@@ -441,3 +441,5 @@
+         if self._python:
+-            incdir.append(self.config.py_inc_dir)
++            for inc_dir in self.config.py_inc_dir.split(";"):
++                incdir.append(inc_dir)
++
+             incdir.append(self.config.py_conf_inc_dir)

@@ -19,6 +19,8 @@ import errno
 import logging
 import os.path
 import shutil
+import patch
+
 from glob import glob
 from subprocess import Popen
 
@@ -74,6 +76,9 @@ class SipConfigure(build.Builder):
     def process(self, progress):
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
+
+        self.patch_siputils()
+
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
                 logging.debug("123 %s", python.python['build_path'])
@@ -97,6 +102,13 @@ class SipConfigure(build.Builder):
 
         return True
 
+    def patch_siputils(self):
+        patch_file = os.path.join(config['__Umbrella_path'], "patches", "siputils.py.patch")
+        savedpath = os.getcwd()
+        os.chdir(self._context["build_path"])
+        pset = patch.fromfile(patch_file)
+        pset.apply()
+        os.chdir(savedpath)
 
 if config.get('Appveyor_Build', True):
     Project('sip') \

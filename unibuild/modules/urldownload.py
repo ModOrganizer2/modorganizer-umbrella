@@ -51,6 +51,10 @@ class URLDownload(Retrieval):
             return "download {0}".format(self.__file_name)
         return "download {0}".format(self.__name)
 
+    def set_download_filename(self, name):
+        self.__file_path = os.path.join(config['paths']['download'], name)
+        return self
+
     def set_destination(self, destination_name):
         name, ext = os.path.splitext(self.__file_name)
         if name.lower().endswith(".tar"):
@@ -95,7 +99,8 @@ class URLDownload(Retrieval):
     def download(self, output_file_path, progress):
         logging.info("Downloading {} to {}".format(self.__url, output_file_path))
         progress.job = "Downloading"
-        data = urllib.request.urlopen(self.__url)
+        req = urllib.request.Request(self.__url, data=None, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0'})
+        data = urllib.request.urlopen(req)
         with open(output_file_path, 'wb') as outfile:
             length_str = data.getheader("Content-Length")
             if length_str:
@@ -164,11 +169,11 @@ class URLDownload(Retrieval):
             elif extension in [".exe", ".msi"]:
                 # installers need to be handled by the caller
                 return True
-            elif extension in [".md", ".txt"]:
+            elif extension in [".md", ".txt", ""]:
                 # we don't need todo anything
                 return True
             else:
-                logging.error("unsupported file extension %s", extension)
+                logging.error("unsupported file extension '%s', filename='%s'", extension, self.__file_name)
                 return False
 
             for i in range(self.__tree_depth):

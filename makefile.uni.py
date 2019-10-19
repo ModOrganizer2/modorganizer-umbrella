@@ -88,12 +88,12 @@ for author, git_path, path, branch, dependencies, Build, appveyor_compiler in [
                                                                                          "modorganizer-game_features"], True, "default"),
     (config['Main_Author'], "modorganizer-tool_inieditor", "tool_inieditor", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True, "default"),
     (config['Main_Author'], "modorganizer-tool_inibakery", "tool_inibakery", config['Build_Branch'], ["modorganizer-uibase", "modorganizer-game_features"], True, "default"),
-    (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", config['Build_Branch'], ["PyQt5"], True, "nmake"),
-    (config['Main_Author'], "modorganizer-fnistool", "fnistool", config['Build_Branch'],  ["PyQt5"], True, "nmake"),
+    (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", config['Build_Branch'], ["PyQt5"], True, "msbuild"),
+    (config['Main_Author'], "modorganizer-fnistool", "fnistool", config['Build_Branch'],  ["PyQt5"], True, "msbuild"),
     (config['Main_Author'], "modorganizer-preview_base", "preview_base", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True, "default"),
-    (config['Main_Author'], "modorganizer-preview_dds", "preview_dds", config['Build_Branch'],  ["PyQt5"], True, "nmake"),
+    (config['Main_Author'], "modorganizer-preview_dds", "preview_dds", config['Build_Branch'],  ["PyQt5"], True, "msbuild"),
     (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True, "default"),
-    (config['Main_Author'], "modorganizer-script_extender_plugin_checker", "script_extender_plugin_checker", config['Build_Branch'],  ["PyQt5"], True, "nmake"),
+    (config['Main_Author'], "modorganizer-script_extender_plugin_checker", "script_extender_plugin_checker", config['Build_Branch'],  ["PyQt5"], True, "msbuild"),
     (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True, "default"),
     (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True, "default"),
     (config['Main_Author'], "modorganizer-installer_manual", "installer_manual", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True, "default"),
@@ -126,30 +126,56 @@ for author, git_path, path, branch, dependencies, Build, appveyor_compiler in [
         if config['Appveyor_Build']:
             if appveyor_compiler == "nmake":
                 appveyor_cmake_step = cmake.CMake().arguments(cmake_param).install()
+            elif appveyor_compiler == "msbuild":
+                appveyor_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
             else:
                 appveyor_cmake_step = cmake.CMakeJOM().arguments(cmake_param).install()
 
             for dep in dependencies:
                 appveyor_cmake_step.depend(dep)
             if os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
-                project.depend(
-                    appveyor_cmake_step.depend(
-                        appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
+                if appveyor_compiler == "msbuild":
+                    vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
+                                                      "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
+                                                      config['build_type'])
+                    project.depend(
+                        vs_msbuild_step.depend(
+                            appveyor_cmake_step.depend(
+                                appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
+                            )
+                        )
                     )
-                )
+                else:
+                    project.depend(
+                        appveyor_cmake_step.depend(
+                            appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
+                        )
+                    )
             else:
-                project.depend(
-                    appveyor_cmake_step.depend(
-                        github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path)
+                if appveyor_compiler == "msbuild":
+                    vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
+                                                      "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
+                                                      config['build_type'])
+                    project.depend(
+                        vs_msbuild_step.depend(
+                            appveyor_cmake_step.depend(
+                                github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path)
+                            )
+                        )
                     )
-                )
+                else:
+                    project.depend(
+                        appveyor_cmake_step.depend(
+                            github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path)
+                        )
+                    )
         else:
             vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
 
             for dep in dependencies:
                 vs_cmake_step.depend(dep)
 
-            vs_target = "Clean;Build" if config['rebuild'] else "Build"
+            #vs_target = "Clean;Build" if config['rebuild'] else "Build"
             vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
                                               "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
                                               config['build_type'])

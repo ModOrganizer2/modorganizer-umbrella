@@ -76,7 +76,7 @@ def extract_independent(graph):
 
 
 def recursive_remove(graph, node):
-    if not isinstance(graph.node[node]["task"], Project):
+    if not isinstance(graph.nodes[node]["task"], Project):
         for ancestor in graph.predecessors(node):
             recursive_remove(graph, ancestor)
     graph.remove_node(node)
@@ -147,10 +147,10 @@ def main():
 
     while independent:
         for node in independent:
-            task = build_graph.node[node]['task']
+            task = build_graph.nodes[node]['task']
             try:
                 task.prepare()
-                if build_graph.node[node]['enable'] and not task.already_processed():
+                if build_graph.nodes[node]['enable'] and not task.already_processed():
                     progress = Progress()
                     progress.set_change_callback(progress_callback)
                     if isinstance(task, Project):

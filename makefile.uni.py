@@ -41,7 +41,7 @@ def gen_userfile_content(project):
         return res
 
 
-for author, git_path, path, branch, dependencies, Build in [
+for author, git_path, path, branch, dependencies, Build, appveyor_compiler in [
     (config['Main_Author'], "modorganizer-game_features", "game_features", config['Build_Branch'], [], False),
     (config['Main_Author'], "modorganizer-archive", "archive", config['Build_Branch'], ["7zip", "Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-uibase", "uibase", config['Build_Branch'], ["Qt5", "boost", "fmt", "spdlog"], True),
@@ -88,12 +88,12 @@ for author, git_path, path, branch, dependencies, Build in [
                                                                                          "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-tool_inieditor", "tool_inieditor", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-tool_inibakery", "tool_inibakery", config['Build_Branch'], ["modorganizer-uibase", "modorganizer-game_features"], True),
-    (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", config['Build_Branch'], ["PyQt5"], True),
-    (config['Main_Author'], "modorganizer-fnistool", "fnistool", config['Build_Branch'],  ["PyQt5"], True),
+    (config['Main_Author'], "modorganizer-tool_configurator", "tool_configurator", config['Build_Branch'], ["PyQt5"], True, "nmake"),
+    (config['Main_Author'], "modorganizer-fnistool", "fnistool", config['Build_Branch'],  ["PyQt5"], True, "nmake"),
     (config['Main_Author'], "modorganizer-preview_base", "preview_base", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-preview_dds", "preview_dds", config['Build_Branch'],  ["PyQt5"], True),
+    (config['Main_Author'], "modorganizer-preview_dds", "preview_dds", config['Build_Branch'],  ["PyQt5"], True, "nmake"),
     (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-script_extender_plugin_checker", "script_extender_plugin_checker", config['Build_Branch'],  ["PyQt5"], True),
+    (config['Main_Author'], "modorganizer-script_extender_plugin_checker", "script_extender_plugin_checker", config['Build_Branch'],  ["PyQt5"], True, "nmake"),
     (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-installer_manual", "installer_manual", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
@@ -123,19 +123,22 @@ for author, git_path, path, branch, dependencies, Build in [
 
     if Build:
         if config['Appveyor_Build']:
-            jom_cmake_step = cmake.CMakeJOM().arguments(cmake_param).install()
+            if appveyor_compiler == "nmake":
+                appveyor_cmake_step = cmake.CMake().arguments(cmake_param).install()
+            else:
+                appveyor_cmake_step = cmake.CMakeJOM().arguments(cmake_param).install()
 
             for dep in dependencies:
-                jom_cmake_step.depend(dep)
+                appveyor_cmake_step.depend(dep)
             if os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
                 project.depend(
-                    jom_cmake_step.depend(
+                    appveyor_cmake_step.depend(
                         appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
                     )
                 )
             else:
                 project.depend(
-                    jom_cmake_step.depend(
+                    appveyor_cmake_step.depend(
                         github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path)
                     )
                 )

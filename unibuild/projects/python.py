@@ -112,6 +112,10 @@ def install(context):
         shutil.copy(f, os.path.join(path_install, "libs"))
     for f in glob(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", "")))):
         shutil.copy(f, os.path.join(path_install, "bin"))
+    for f in glob(os.path.join(*path_segments, "python{}.pdb".format(python_version.replace(".", "")))):
+        shutil.copy(f, os.path.join(path_install, "pdb"))
+    for f in glob(os.path.join(*path_segments, "_*.pdb".format(python_version.replace(".", "")))):
+        shutil.copy(f, os.path.join(path_install, "pdb"))
     shutil.copy(os.path.join(path_install, "libs", "python{}.lib".format(python_version.replace(".", ""))),
                 os.path.join(path_install, "libs", "python3.lib"))
     return True

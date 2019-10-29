@@ -25,6 +25,7 @@ from glob import glob
 from config import config
 from unibuild import Project
 from unibuild.modules import build,  Patch, urldownload
+from unibuild.projects import nasm
 
 # currently binary installation only
 openssl_version = config['openssl_version']
@@ -57,6 +58,7 @@ def openssl_environment():
 
 
 def openssl_stage(context):
+        shutil.copy(os.path.join(openssl_path, "ms", "applink.c"), os.path.join(openssl_path, "include"))
         final_path = os.path.join(openssl_path, "build")
         dest_bin = os.path.join(install_path, "bin")
         dest_lib = os.path.join(install_path, "libs")

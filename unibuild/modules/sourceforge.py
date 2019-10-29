@@ -16,9 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 from unibuild.modules.urldownload import URLDownload
-
+import requests
+import re
 
 class Release(URLDownload):
     def __init__(self, project, path, tree_depth=0):
+        r = requests.get("https://sourceforge.net/projects/{project}/files/{path}/download".format(project=project, path=path), headers={'User-Agent': 'curl/7.37.0'}, allow_redirects=True)
+        final_path = r.url
+        d = r.headers.get('content-disposition', None)
+        fname = None
+        if d:
+            fname = re.findall("filename=(.+)", d)[0]
         super(Release, self) \
-            .__init__("https://sourceforge.net/projects/{project}/files/{path}".format(project=project, path=path), tree_depth)
+            .__init__(final_path, tree_depth, name=fname if fname else None)

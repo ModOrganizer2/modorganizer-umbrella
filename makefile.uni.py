@@ -167,28 +167,21 @@ for author, git_path, path, branch, dependencies, Build in [
 def python_core_collect(context):
     ip = os.path.join(config["paths"]["install"], "bin")
     bp = python.python['build_path']
+    path_segments = [bp, "PCbuild"]
+    if config['architecture'] == "x86_64":
+        path_segments.append("amd64")
+    path_segments.append("pythoncore")
 
     try:
         shutil.rmtree(os.path.join(ip, "pythoncore"))
     except OSError:
         pass
 
-    zf = zipfile.ZipFile(os.path.join(ip, "pythoncore.zip"), "w")
-    for dirname, subdirs, files in os.walk(os.path.join(bp, "Lib")):
-        if 'site-packages' in subdirs:
-            subdirs.remove('site-packages')
-        if '__pycache__' in subdirs:
-            subdirs.remove('__pycache__')
-        for filename in files:
-            zf.write(os.path.join(dirname, filename), os.path.relpath(os.path.join(dirname, filename), os.path.join(bp, "Lib")))
-    zf.close()
+    shutil.copyfile(os.path.join(*path_segments, "python{}.zip".format(config["python_version"].replace(".", ""))), os.path.join(ip, "pythoncore.zip"))
 
     #shutil.copytree(os.path.join(bp, "Lib"), os.path.join(ip, "pythoncore"), ignore=shutil.ignore_patterns("site-packages", '__pycache__'))
 
     os.mkdir(os.path.join(ip, "pythoncore"))
-    path_segments = [bp, "PCbuild"]
-    if config['architecture'] == "x86_64":
-        path_segments.append("amd64")
     for f in glob(os.path.join(*path_segments,"*.pyd")):
         shutil.copy(f, os.path.join(ip, "pythoncore"))
 

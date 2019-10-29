@@ -32,6 +32,7 @@ from unibuild.retrieval import Retrieval
 from unibuild.utility import ProgressFile
 from unibuild.utility.context_objects import on_failure
 
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 class URLDownload(Retrieval):
     BLOCK_SIZE = 8192
@@ -101,25 +102,20 @@ class URLDownload(Retrieval):
     def download(self, output_file_path, progress):
         logging.info("Downloading {} to {}".format(self.__url, output_file_path))
         progress.job = "Downloading"
-        with requests.get(self.__url, allow_redirects=True, headers={'User-Agent': 'curl/7.37.0'}, stream=True) as r:
-            with open(output_file_path, 'wb') as outfile:
-                progress.maximum = sys.maxsize
-                length_str = r.headers.get('content-length', 0)
-                if int(length_str) > 0:
-                    progress.maximum = int(length_str)
+        r = requests.get(self.__url, headers={'User-Agent': 'curl/7.37.0'}, allow_redirects=True, stream=True)
+        with open(output_file_path, 'wb') as outfile:
+            progress.maximum = sys.maxsize
+            length_str = r.headers.get('content-length', 0)
+            if int(length_str) > 0:
+                progress.maximum = int(length_str)
 
-                data = io.BytesIO(r.content)
-                bytes_read = 0
-                while True:
-                    block = data.read(URLDownload.BLOCK_SIZE)
-                    if not block:
-                        break
-                    bytes_read += len(block)
-                    outfile.write(block)
-                    progress.value = bytes_read
+            bytes_read = 0
+            progress.value = 0
+            for data in r.iter_content(chunk_size=URLDownload.BLOCK_SIZE):
+                bytes_read += len(data)
+                progress.value = bytes_read
+                outfile.write(data)
 
-        #d = r.headers['content-disposition']
-        #fname = re.findall("filename=(.+)", d)[0]
 
     def extract(self, archive_file_path, output_file_path, progress):
         def progress_func(pos, size):

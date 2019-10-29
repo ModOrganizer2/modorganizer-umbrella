@@ -110,7 +110,8 @@ class MSBuild(Builder):
                             args.append("/p:WindowsTargetPlatformVersion={}".format(self.__project_WindowsTargetPlatformVersion))
 
                         if self.__project_AdditionalParams:
-                            args.append(self.__project_AdditionalParams)
+                            for param in self.__project_AdditionalParams:
+                                args.append(param)
 
                         wdir = str(self.__working_directory or self._context["build_path"])
                         print("{}> {}".format(wdir, ' '.join(args)))

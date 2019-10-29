@@ -19,15 +19,26 @@
 
 import os
 
+import shutil
 from config import config
 from unibuild import Project
-from unibuild.modules import cmake, urldownload
+from unibuild.modules import cmake, urldownload, build
 
 zlib_version = config['zlib_version']
 
+
+def copy_header(context):
+    shutil.copy(
+        os.path.join(context["build_path"], "build", "zconf.h"),
+        os.path.join(context["build_path"], "zconf.h")
+    )
+    return True
+
+
 Project("zlib") \
-    .depend(cmake.CMake().arguments(["-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
+    .depend(build.Execute(copy_header)
+            .depend(cmake.CMake().arguments(["-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
                                      "-DCMAKE_INSTALL_PREFIX:PATH={}".format(
                                          os.path.join(config["paths"]["build"], "zlib-{}".format(zlib_version)))
                                      ]).install()
-            .depend(urldownload.URLDownload("http://zlib.net/zlib-{}.tar.gz".format(zlib_version), 1)))
+                    .depend(urldownload.URLDownload("http://zlib.net/zlib-{}.tar.gz".format(zlib_version), 1))))

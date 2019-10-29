@@ -17,6 +17,7 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import os.path
 import shutil
+import zipfile
 
 from config import config
 from string import Formatter
@@ -172,8 +173,19 @@ def python_core_collect(context):
     except OSError:
         pass
 
-    shutil.copytree(os.path.join(bp, "Lib"), os.path.join(ip, "pythoncore"), ignore=shutil.ignore_patterns("site-packages", '__pycache__'))
+    zf = zipfile.ZipFile(os.path.join(ip, "pythoncore.zip"), "w")
+    for dirname, subdirs, files in os.walk(os.path.join(bp, "Lib")):
+        if 'site-packages' in subdirs:
+            subdirs.remove('site-packages')
+        if '__pycache__' in subdirs:
+            subdirs.remove('__pycache__')
+        for filename in files:
+            zf.write(os.path.join(dirname, filename), os.path.relpath(os.path.join(dirname, filename), os.path.join(bp, "Lib")))
+    zf.close()
 
+    #shutil.copytree(os.path.join(bp, "Lib"), os.path.join(ip, "pythoncore"), ignore=shutil.ignore_patterns("site-packages", '__pycache__'))
+
+    os.mkdir(os.path.join(ip, "pythoncore"))
     path_segments = [bp, "PCbuild"]
     if config['architecture'] == "x86_64":
         path_segments.append("amd64")

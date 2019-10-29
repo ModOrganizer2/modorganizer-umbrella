@@ -96,8 +96,8 @@ config = {
     'fmt_version': '6.0.0',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '3.3',
-    'icu_version': '64',
-    'icu_version_minor': '2',
+    'icu_version': '65',
+    'icu_version_minor': '1',
     'loot_version': '0.14.10',
     'loot_commit': 'g848d1cc',
     'loot_branch': 'master',
@@ -110,10 +110,11 @@ config = {
     'pyqt_version': '5.13.1',
     'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
-    'python_version_minor': '.4',
+    'python_version_minor': '.5',
+    'bzip2_version': '1.0.6', # For python
     'sip_version': '4.19.19',
     'sip_dev_version': '', # leave empty for a standard release
-    'spdlog_version': 'v1.4.1',
+    'spdlog_version': 'v1.4.2',
     'qt_version': '5.13',
     'qt_version_minor': '1',
     'qt_version_appveyor': '5.13',

@@ -43,7 +43,7 @@ for dep in [
     download(dep, eggpath)
     sys.path.append(eggpath)
 
-for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "networkx", "pydot", "pydotplus", "colorama", "tqdm"]:
+for dep in ["decorator", "lxml", "PyYAML", "six", "jinja2", "psutil", "patch", "networkx", "pydot", "pydotplus", "colorama", "tqdm", "requests"]:
     destpath = "{0}/{1}".format(path, dep.split("==")[0])
     if not os.path.exists(destpath):
         subprocess.check_call(["python", "-m", "pip", "install", "--target={0}".format(destpath), dep])

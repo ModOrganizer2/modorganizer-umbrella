@@ -21,7 +21,7 @@ import shutil
 from glob import glob
 
 from config import config
-from unibuild.modules import build, github, msbuild, urldownload
+from unibuild.modules import build, github, msbuild, urldownload, sourceforge
 from unibuild.project import Project
 from unibuild.utility.visualstudio import get_visual_studio
 from unibuild.utility.config_utility import make_sure_path_exists
@@ -29,6 +29,7 @@ from unibuild.utility.config_utility import make_sure_path_exists
 path_install = config["paths"]["install"]
 python_version = config['python_version']
 python_version_minor = config['python_version_minor']
+bzip2_version = config['bzip2_version']
 
 
 def python_environment():
@@ -83,11 +84,15 @@ else:
     python = Project("Python") \
         .depend(build.Execute(install)
                 .depend(build.Execute(python_prepare)
-                        .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat",
-                                                project_PlatformToolset=config['vc_platformtoolset'])
+                        .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pyexpat,_bz2",
+                                                project_PlatformToolset=config['vc_platformtoolset'],
+                                                project_AdditionalParams="/p:bz2Dir={0}".format(os.path.join(config['paths']['build'], "bzip2")))
                                 .depend(build.Run(upgrade_args, name="upgrade python project")
                                         .depend(github.Source("python", "cpython", "v{}{}"
                                                               .format(config['python_version'],
                                                                       config['python_version_minor'])
                                                               , shallowclone=True)
-                                        .set_destination("python-{}".format(python_version + python_version_minor)))))))
+                                        .set_destination("python-{}".format(python_version + python_version_minor))
+                                                .depend(sourceforge.Release("bzip2","bzip2-{0}.tar.gz"
+                                                                    .format(bzip2_version),tree_depth=1)
+                                                                            .set_destination("bzip2")))))))

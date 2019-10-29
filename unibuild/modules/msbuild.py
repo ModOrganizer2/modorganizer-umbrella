@@ -28,7 +28,8 @@ from config import config
 
 class MSBuild(Builder):
     def __init__(self, solution, project=None, working_directory=None, project_platform=None,
-                 reltarget=None, project_PlatformToolset=None, verbosity=None, environment=None, project_WindowsTargetPlatformVersion=None):
+                 reltarget=None, project_PlatformToolset=None, verbosity=None, environment=None,
+                 project_WindowsTargetPlatformVersion=None, project_AdditionalParams=None):
         super(MSBuild, self).__init__()
         self.__solution = solution
         self.__project = project
@@ -37,6 +38,7 @@ class MSBuild(Builder):
         self.__reltarget = reltarget
         self.__project_platformtoolset = project_PlatformToolset
         self.__project_WindowsTargetPlatformVersion = project_WindowsTargetPlatformVersion
+        self.__project_AdditionalParams = project_AdditionalParams
         self.__verbosity = verbosity
         self.__environment = Lazy(environment)
 
@@ -106,6 +108,9 @@ class MSBuild(Builder):
                             args.append("/p:WindowsTargetPlatformVersion={}".format(config['vc_TargetPlatformVersion']))
                         else:
                             args.append("/p:WindowsTargetPlatformVersion={}".format(self.__project_WindowsTargetPlatformVersion))
+
+                        if self.__project_AdditionalParams:
+                            args.append(self.__project_AdditionalParams)
 
                         wdir = str(self.__working_directory or self._context["build_path"])
                         print("{}> {}".format(wdir, ' '.join(args)))

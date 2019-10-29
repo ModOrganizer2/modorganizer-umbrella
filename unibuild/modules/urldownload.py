@@ -17,11 +17,13 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 import os
+import io
 import shutil
 import subprocess
 import sys
 import tarfile
-import urllib.request, urllib.error, urllib.parse
+import re
+import requests
 import zipfile
 from urllib.parse import urlparse
 
@@ -99,23 +101,25 @@ class URLDownload(Retrieval):
     def download(self, output_file_path, progress):
         logging.info("Downloading {} to {}".format(self.__url, output_file_path))
         progress.job = "Downloading"
-        req = urllib.request.Request(self.__url, data=None, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0'})
-        data = urllib.request.urlopen(req)
-        with open(output_file_path, 'wb') as outfile:
-            length_str = data.getheader("Content-Length")
-            if length_str:
-                progress.maximum = int(length_str)
-            else:
+        with requests.get(self.__url, allow_redirects=True, headers={'User-Agent': 'curl/7.37.0'}, stream=True) as r:
+            with open(output_file_path, 'wb') as outfile:
                 progress.maximum = sys.maxsize
+                length_str = r.headers['content-length']
+                if int(length_str) > 0:
+                    progress.maximum = int(length_str)
 
-            bytes_read = 0
-            while True:
-                block = data.read(URLDownload.BLOCK_SIZE)
-                if not block:
-                    break
-                bytes_read += len(block)
-                outfile.write(block)
-                progress.value = bytes_read
+                data = io.BytesIO(r.content)
+                bytes_read = 0
+                while True:
+                    block = data.read(URLDownload.BLOCK_SIZE)
+                    if not block:
+                        break
+                    bytes_read += len(block)
+                    outfile.write(block)
+                    progress.value = bytes_read
+
+        #d = r.headers['content-disposition']
+        #fname = re.findall("filename=(.+)", d)[0]
 
     def extract(self, archive_file_path, output_file_path, progress):
         def progress_func(pos, size):

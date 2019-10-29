@@ -104,7 +104,7 @@ class URLDownload(Retrieval):
         with requests.get(self.__url, allow_redirects=True, headers={'User-Agent': 'curl/7.37.0'}, stream=True) as r:
             with open(output_file_path, 'wb') as outfile:
                 progress.maximum = sys.maxsize
-                length_str = r.headers['content-length']
+                length_str = r.headers.get('content-length', 0)
                 if int(length_str) > 0:
                     progress.maximum = int(length_str)
 

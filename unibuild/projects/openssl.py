@@ -66,10 +66,12 @@ def openssl_stage(context):
     dest_pdb = os.path.join(install_path, "pdb")
     if not os.path.exists(dest_bin):
         os.makedirs(dest_bin)
+    if not os.path.exists(os.path.join(dest_bin, "dlls")):
+        os.mkdir(os.path.join(dest_bin, "dlls"))
     if not os.path.exists(dest_lib):
         os.makedirs(dest_lib)
     if not os.path.exists(dest_pdb):
-         os.makedirs(dest_pdb)
+        os.makedirs(dest_pdb)
     for f in glob(os.path.join(final_path, "bin", "libcrypto-1_1{}.dll".format(bitness_suffix()))):
          shutil.copy(f, os.path.join(dest_bin, "libcrypto-1_1{}.dll".format(bitness_suffix())))
          shutil.copy(f, os.path.join(dest_bin, "dlls", "libcrypto-1_1{}.dll".format(bitness_suffix())))

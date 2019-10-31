@@ -58,32 +58,33 @@ def openssl_environment():
 
 
 def openssl_stage(context):
+    if not config['Appveyor_Build']:
         shutil.copy(os.path.join(openssl_path, "ms", "applink.c"), os.path.join(openssl_path, "include"))
-        final_path = os.path.join(openssl_path, "build")
-        dest_bin = os.path.join(install_path, "bin")
-        dest_lib = os.path.join(install_path, "libs")
-        dest_pdb = os.path.join(install_path, "pdb")
-        if not os.path.exists(dest_bin):
-            os.makedirs(dest_bin)
-        if not os.path.exists(dest_lib):
-            os.makedirs(dest_lib)
-        if not os.path.exists(dest_pdb):
-             os.makedirs(dest_pdb)
-        for f in glob(os.path.join(final_path, "bin", "libcrypto-1_1{}.dll".format(bitness_suffix()))):
-             shutil.copy(f, os.path.join(dest_bin, "libcrypto-1_1{}.dll".format(bitness_suffix())))
-             shutil.copy(f, os.path.join(dest_bin, "dlls", "libcrypto-1_1{}.dll".format(bitness_suffix())))
-        for f in glob(os.path.join(final_path, "bin", "libssl-1_1{}.dll".format(bitness_suffix()))):
-             shutil.copy(f, os.path.join(dest_bin, "libssl-1_1{}.dll".format(bitness_suffix())))
-             shutil.copy(f, os.path.join(dest_bin, "dlls", "libssl-1_1{}.dll".format(bitness_suffix())))
-        for f in glob(os.path.join(final_path,"bin", "libcrypto-1_1{}.pdb".format(bitness_suffix()))):
-            shutil.copy(f, os.path.join(dest_pdb, "libcrypto-1_1{}.pdb".format(bitness_suffix())))
-        for f in glob(os.path.join(final_path,"bin", "libssl-1_1{}.pdb".format(bitness_suffix()))):
-            shutil.copy(f, os.path.join(dest_pdb, "libssl-1_1{}.pdb".format(bitness_suffix())))
-        for f in glob(os.path.join(final_path, "lib", "libcrypto.lib")):
-            shutil.copy(f, os.path.join(dest_lib, "libcrypto.lib"))
-        for f in glob(os.path.join(final_path, "lib", "libssl.lib")):
-            shutil.copy(f, os.path.join(dest_lib, "libssl.lib"))
-        return True
+    final_path = os.path.join(openssl_path, "build")
+    dest_bin = os.path.join(install_path, "bin")
+    dest_lib = os.path.join(install_path, "libs")
+    dest_pdb = os.path.join(install_path, "pdb")
+    if not os.path.exists(dest_bin):
+        os.makedirs(dest_bin)
+    if not os.path.exists(dest_lib):
+        os.makedirs(dest_lib)
+    if not os.path.exists(dest_pdb):
+         os.makedirs(dest_pdb)
+    for f in glob(os.path.join(final_path, "bin", "libcrypto-1_1{}.dll".format(bitness_suffix()))):
+         shutil.copy(f, os.path.join(dest_bin, "libcrypto-1_1{}.dll".format(bitness_suffix())))
+         shutil.copy(f, os.path.join(dest_bin, "dlls", "libcrypto-1_1{}.dll".format(bitness_suffix())))
+    for f in glob(os.path.join(final_path, "bin", "libssl-1_1{}.dll".format(bitness_suffix()))):
+         shutil.copy(f, os.path.join(dest_bin, "libssl-1_1{}.dll".format(bitness_suffix())))
+         shutil.copy(f, os.path.join(dest_bin, "dlls", "libssl-1_1{}.dll".format(bitness_suffix())))
+    for f in glob(os.path.join(final_path,"bin", "libcrypto-1_1{}.pdb".format(bitness_suffix()))):
+        shutil.copy(f, os.path.join(dest_pdb, "libcrypto-1_1{}.pdb".format(bitness_suffix())))
+    for f in glob(os.path.join(final_path,"bin", "libssl-1_1{}.pdb".format(bitness_suffix()))):
+        shutil.copy(f, os.path.join(dest_pdb, "libssl-1_1{}.pdb".format(bitness_suffix())))
+    for f in glob(os.path.join(final_path, "lib", "libcrypto.lib")):
+        shutil.copy(f, os.path.join(dest_lib, "libcrypto.lib"))
+    for f in glob(os.path.join(final_path, "lib", "libssl.lib")):
+        shutil.copy(f, os.path.join(dest_lib, "libssl.lib"))
+    return True
 
 
 OpenSSL_Install = build.Run(r"nmake install",
@@ -106,7 +107,7 @@ Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} VC-WIN{
                       working_directory=lambda: os.path.join(openssl_path))
 
 
-if config.get('Appveyor_Build', True):
+if config['Appveyor_Build']:
     openssl = Project("openssl") \
         .depend(build.Execute(openssl_stage)
                 .depend(urldownload.URLDownload(config.get('prebuilt_url') + "openssl-prebuilt-{}.7z"

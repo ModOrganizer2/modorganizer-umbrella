@@ -24,7 +24,7 @@ Now you need to install all required software to build Mod Organizer.
   * qtwebengine
   
   Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error or other build errors.
-* Visual Studio Community 2019 Link: https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community
+* Visual Studio Community 2019 Link: https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16
   #### Visual Studio Packages required:
   * .NET desktop development
   * Desktop development for C++

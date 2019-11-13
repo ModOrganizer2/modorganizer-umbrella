@@ -93,3 +93,6 @@ def qt_install(qt_version, qt_version_minor, vc_version):
         logging.error("Unable to find qmake.exe, please make sure you have QT %s installed. If it is installed "
                       "please point the 'qt_CustomInstallPath' in the config.py to your Qt installation.", qt_v)
         sys.exit(1)
+
+def get_base_qt_path():
+    return os.path.join(config["paths"]["qt_binary_install"], "..", "..")

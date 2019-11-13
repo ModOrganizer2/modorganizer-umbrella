@@ -158,25 +158,17 @@ config['paths'] = {
     'install': "{base_dir}\\{install_dir}",
     # 'graphviz': path_or_default("dot.exe", [["Graphviz2.38", "bin"]]),
     'cmake': path_or_default("cmake.exe", [["CMake", "bin"]]),
-    'jom': path_or_default("jom.exe", [["Qt", "Tools", "QtCreator", "bin"]]),
     'git': path_or_default("git.exe", [["Git", "bin"]]),
     'perl': path_or_default("perl.exe", [["StrawberryPerl", "perl", "bin"], ["Strawberry", "perl", "bin"]]),
     #'svn': path_or_default("svn.exe", [["SlikSvn", "bin"]]),
     '7z': path_or_default("7z.exe", [["7-Zip"]]),
     # we need a python that matches the build architecture
     'python': "", # Registry Key can be in multiple places. set in config_setup.py
+    'jom': "",
     'visual_studio_base': "",
     'qt_binary_install': "",
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
-
-if config["Installer"]:
-    config['paths']["InnoSetup"] = path_or_default("ISCC.exe", [["Inno Setup 5"], ["Inno Setup 6"]])
-
-if config["Release_Build"]:
-    config["Build_Branch"] = config["Release_Branch"]
-else:
-    config["Build_Branch"] = config["Dev_Branch"]
 
 if not check_prerequisites_config():
     print('\nMissing prerequisites listed above - cannot continue')

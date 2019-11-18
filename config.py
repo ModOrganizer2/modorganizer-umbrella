@@ -126,6 +126,7 @@ config = {
     'vc_version_for_boost': '14.2',
     'WixToolset_version': '311',
     'zlib_version': '1.2.11',
+    'explorer++_version': '1.3.5',
 
     #the usvfs version below will only be used if
     'usvfs_version': 'v0.4.4',

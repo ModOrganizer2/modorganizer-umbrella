@@ -254,7 +254,7 @@ def copy_explorerpp(context):
 
 Project("explorerpp") \
     .depend(build.Execute(copy_explorerpp)
-        .depend(urldownload.URLDownload("https://ci.appveyor.com/api/projects/derceg/explorerplusplus/artifacts/explorer++_x64.zip?branch=master&job=Platform%3A%20x64", 0)
+        .depend(urldownload.URLDownload("https://explorerplusplus.com/software/explorer++_{}_x64.zip".format(config["explorer++_version"]), 0)
             .set_destination("explorer++")))
 
 

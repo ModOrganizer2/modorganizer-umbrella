@@ -106,15 +106,16 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-plugin_python", "plugin_python", config['Build_Branch'], ["Qt5", "boost", "Python",
                                                                                                    "modorganizer-uibase", "sip","modorganizer-game_features"], True),
     (config['Main_Author'], "githubpp", "githubpp", config['Build_Branch'], ["Qt5"], True),
+    (config['Main_Author'], "modorganizer-bsapacker", "bsapacker", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "libbsarch", "boost_di"], True),
     (config['Main_Author'], "modorganizer", "modorganizer", config['Build_Branch'], ["Qt5", "boost", "usvfs_32",
                                                                                     "modorganizer-uibase",
                                                                                     "modorganizer-archive",
                                                                                     "modorganizer-bsatk",
                                                                                     "modorganizer-esptk",
                                                                                     "modorganizer-game_features",
+                                                                                    "modorganizer-bsapacker",
                                                                                     "usvfs", "githubpp",
                                                                                     "ncc", "openssl"], True),
-    (config['Main_Author'], "modorganizer-bsapacker", "bsapacker", config['Build_Branch'], ["Qt5", "modorganizer", "libbsarch", "boost_di"], True),
 ]:
     cmake_param = cmake_parameters() + ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]
     # build_step = cmake.CMake().arguments(cmake_param).install()

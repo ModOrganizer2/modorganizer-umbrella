@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+
 import multiprocessing
 import os
 
@@ -116,7 +117,7 @@ config = {
     'sip_dev_version': '', # leave empty for a standard release
     'spdlog_version': 'v1.4.2',
     'qt_version': '5.13',
-    'qt_version_minor': '1',
+    'qt_version_minor': '2',
     'qt_version_appveyor': '5.13',
     'qt_version_minor_appveyor': '2',
     'qt_vc_version': '15.0',

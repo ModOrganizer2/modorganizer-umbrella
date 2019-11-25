@@ -114,6 +114,7 @@ for author, git_path, path, branch, dependencies, Build in [
                                                                                     "modorganizer-esptk",
                                                                                     "modorganizer-game_features",
                                                                                     "modorganizer-bsapacker",
+                                                                                    "modorganizer-lootcli",
                                                                                     "usvfs", "githubpp",
                                                                                     "ncc", "openssl"], True),
 ]:

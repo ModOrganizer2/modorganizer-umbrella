@@ -99,8 +99,8 @@ config = {
     'grep_version': '3.3',
     'icu_version': '65',
     'icu_version_minor': '1',
-    'loot_version': '0.14.10',
-    'loot_commit': 'g848d1cc',
+    'loot_version': '0.15.0',
+    'loot_commit': 'g629fdab',
     'loot_branch': 'master',
     'lz4_version': '1.9.2',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)

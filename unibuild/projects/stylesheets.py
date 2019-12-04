@@ -21,7 +21,7 @@ import shutil
 import logging
 from config import config
 from unibuild import Project
-from unibuild.modules import cmake, github, build, Patch
+from unibuild.modules import github, build
 
 build_path = os.path.join(config['paths']['build'])
 

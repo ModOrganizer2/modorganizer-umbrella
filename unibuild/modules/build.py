@@ -218,7 +218,7 @@ class Execute(Builder):
 
     def sanitize(self, f):
         # this is mostly for "<lambda>"
-        return f.replace("<", "_").replace(">", "")
+        return f.replace("<", "_").replace(">", "_")
 
 
 class Run(Builder):

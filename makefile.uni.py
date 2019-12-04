@@ -24,7 +24,7 @@ from string import Formatter
 from glob import glob
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github, urldownload, msbuild, appveyor
-from unibuild.projects import boost, fmt, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, spdlog, zlib, nuget, libbsarch, boost_di
+from unibuild.projects import boost, fmt, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, spdlog, zlib, nuget, libbsarch, boost_di, stylesheets
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
 
@@ -116,7 +116,8 @@ for author, git_path, path, branch, dependencies, Build in [
                                                                                     "modorganizer-bsapacker",
                                                                                     "modorganizer-lootcli",
                                                                                     "usvfs", "githubpp",
-                                                                                    "ncc", "openssl"], True),
+                                                                                    "ncc", "openssl",
+                                                                                    "paper-light-and-dark", "paper-automata", "paper-mono", "1809-dark-mode"], True),
 ]:
     cmake_param = cmake_parameters() + ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]
     # build_step = cmake.CMake().arguments(cmake_param).install()

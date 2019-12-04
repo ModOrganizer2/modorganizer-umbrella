@@ -130,6 +130,12 @@ config = {
     'explorer++_version': '1.3.5',
     'libbsarch_version': '0.0.7',
 
+    #stylesheets
+    'paper-light-and-dark_version': '5.3',
+    'paper-automata_version': '2.2',
+    'paper-mono_version': '2.1',
+    '1809-dark-mode_version': '1.3',
+
     #the usvfs version below will only be used if
     'usvfs_version': 'v0.4.4',
 

@@ -210,11 +210,15 @@ class Execute(Builder):
     @property
     def name(self):
         if self._context is None:
-            return "execute {}".format(self.__name or self.__function.__name__)
-        return "execute {}_{}".format(self._context.name, self.__name or self.__function.__name__)
+            return "execute {}".format(self.__name or self.sanitize(self.__function.__name__))
+        return "execute {}_{}".format(self._context.name, self.__name or self.sanitize(self.__function.__name__))
 
     def process(self, progress):
         return self.__function(context=self._context)
+
+    def sanitize(self, f):
+        # this is mostly for "<lambda>"
+        return f.replace("<", "_").replace(">", "_")
 
 
 class Run(Builder):

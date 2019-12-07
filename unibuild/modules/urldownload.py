@@ -48,6 +48,21 @@ class URLDownload(Retrieval):
         self.__file_name = os.path.basename(urlparse(self.__url).path.rstrip("/"))
         self.__file_path = os.path.join(config['paths']['download'], self.__file_name)
 
+        # when set_destination() is called, __file_name is changed to the
+        # given path, which is probably absolute
+        #
+        # because __name is in most cases None, __file_name is used in name(),
+        # which is also used for the progress file name by replacing spaces with
+        # underscores
+        #
+        # this creates a file like "download_c:\somewhere", which is then
+        # sanitized to "download_c"
+        #
+        # this remembers the original filename in __name so the progress file
+        # can use it
+        if self.__name is None:
+            self.__name = self.__file_name
+
     @property
     def name(self):
         if self.__name is None:

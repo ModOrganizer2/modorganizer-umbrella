@@ -82,6 +82,20 @@ def recursive_remove(graph, node):
     graph.remove_node(node)
 
 
+def check_prerequisites_config():
+    if not config['paths']['cmake']:
+        return False
+    if not config['paths']['git']:
+        return False
+    if not config['paths']['perl']:
+        return False
+    if config["Installer"]:
+        if not config['paths']['InnoSetup']:
+            return False
+    if not config['paths']['7z']:
+        return False
+    return True
+
 def main():
     time_format = "%(asctime)-15s %(message)s"
     logging.basicConfig(format=time_format, level=logging.DEBUG)
@@ -99,6 +113,10 @@ def main():
     args = parser.parse_args()
 
     init_config(args)
+
+    if not check_prerequisites_config():
+        print('\nMissing prerequisites listed above - cannot continue')
+        exit(1)
 
     for d in ["download", "build", "progress", "install"]:
         if not os.path.exists(config["paths"][d]):

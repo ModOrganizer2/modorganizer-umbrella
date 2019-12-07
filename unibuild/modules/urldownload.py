@@ -43,10 +43,9 @@ class URLDownload(Retrieval):
         self.__tree_depth = tree_depth
         self.__name = name
         self.__clean = clean
-        # strip trailing slashes from urlparse().path that are generated if they url ends with questionmark
-        # eg: github blobs (file.zip?taw=true) otherwise os.path.basename return no file extension
-        self.__file_name = os.path.basename(urlparse(self.__url).path.rstrip("/"))
-        self.__file_path = os.path.join(config['paths']['download'], self.__file_name)
+
+        if self.__url is not None:
+            self.set_file_from_url()
 
         # when set_destination() is called, __file_name is changed to the
         # given path, which is probably absolute
@@ -68,6 +67,25 @@ class URLDownload(Retrieval):
         if self.__name is None:
             return "download {0}".format(self.__file_name)
         return "download {0}".format(self.__name)
+
+    @name.setter
+    def name(self, value):
+        self.__name = value
+
+    @property
+    def url(self):
+        return self.__url
+
+    @url.setter
+    def url(self, value):
+        self.__url = value
+        self.set_file_from_url()
+
+    def set_file_from_url(self):
+        # strip trailing slashes from urlparse().path that are generated if they url ends with questionmark
+        # eg: github blobs (file.zip?taw=true) otherwise os.path.basename return no file extension
+        self.__file_name = os.path.basename(urlparse(self.__url).path.rstrip("/"))
+        self.__file_path = os.path.join(config['paths']['download'], self.__file_name)
 
     def set_download_filename(self, name):
         self.__file_path = os.path.join(config['paths']['download'], name)

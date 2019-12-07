@@ -95,6 +95,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-preview_dds", "preview_dds", config['Build_Branch'],  ["PyQt5"], True),
     (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-script_extender_plugin_checker", "script_extender_plugin_checker", config['Build_Branch'],  ["PyQt5"], True),
+    (config['Main_Author'], "modorganizer-form43_checker", "form43_checker", config['Build_Branch'],  ["PyQt5"], True),
     (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-installer_manual", "installer_manual", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),

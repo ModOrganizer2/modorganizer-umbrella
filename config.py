@@ -40,21 +40,6 @@ def gen_search_folders(*subpath):
     ]
 
 
-def check_prerequisites_config():
-    if not config['paths']['cmake']:
-        return False
-    if not config['paths']['git']:
-        return False
-    if not config['paths']['perl']:
-        return False
-    if config["Installer"]:
-        if not config['paths']['InnoSetup']:
-            return False
-    if not config['paths']['7z']:
-        return False
-    return True
-
-
 config = {
 
     'Appveyor_Build': False, #Should only be used for the AppVeyor build as it will use as many prebuilt binaries as possible
@@ -178,7 +163,3 @@ config['paths'] = {
     'qt_binary_install': "",
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
-
-if not check_prerequisites_config():
-    print('\nMissing prerequisites listed above - cannot continue')
-    exit(1)

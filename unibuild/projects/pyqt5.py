@@ -43,8 +43,7 @@ qt_binary_install = config["paths"]["qt_binary_install"]
 __build_base_path = config["__build_base_path"]
 
 enabled_modules = ["QtCore", "QtGui", "QtWidgets", "QtOpenGL", "_QOpenGLFunctions_2_0",
-                   "_QOpenGLFunctions_2_1", "_QOpenGLFunctions_4_1_Core",
-                   "_QOpenGLFunctions_ES2", "pylupdate", "pyrcc"]
+                   "_QOpenGLFunctions_2_1", "_QOpenGLFunctions_4_1_Core", "_QOpenGLFunctions_ES2"]
 
 
 def pyqt5_env():
@@ -64,11 +63,11 @@ def copy_files(context):
     for file in glob(os.path.join(config["paths"]["build"], "PyQt5-{}".format(pyqt_version), "*.bat")):
         shutil.copy(file, os.path.join(python.python['build_path']))
     make_sure_path_exists(os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5"))
-    shutil.copy(os.path.join(context["build_path"], "build", "sip.h"),
-                os.path.join(python.python["build_path"], "Include", "sip.h"))
     srcdir = os.path.join(python.python['build_path'], "Lib", "site-packages", "PyQt5")
     dstdir = os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5")
     shutil.copy(os.path.join(srcdir, "__init__.py"), os.path.join(dstdir, "__init__.py"))
+    shutil.copy(os.path.join(sip.sip["build_path"], "sipbuild", "module", "source", "12.7", "sip.pyi"),
+                os.path.join(dstdir, "sip.pyi"))
     for file in glob(os.path.join(srcdir, "sip*")):
         shutil.copy(file, dstdir)
     for module in enabled_modules:
@@ -140,7 +139,8 @@ def build_pyqt(context):
             logging.debug("Run sip-install")
             proc = Popen([os.path.join(bp, "Scripts", "sip-install.exe"), "--confirm-license", "--verbose",
                           "--pep484-pyi", "--link-full-dll",
-                          "--build-dir", os.path.join(context['build_path'], 'build')]
+                          "--build-dir", os.path.join(context['build_path'], 'build'),
+                          "--enable", "pylupdate", "--enable", "pyrcc"]
                          + list(itertools.chain(*[("--enable", s) for s in enabled_modules])),
                          env=pyqt5_env(),
                          cwd=context["build_path"],
@@ -171,6 +171,7 @@ def prep_sip_pyqt_module(context):
                 logging.error("failed to run sip-module (returncode %s), see %s and %s",
                               proc.returncode, soutpath, serrpath)
                 return False
+
     return True
 
 

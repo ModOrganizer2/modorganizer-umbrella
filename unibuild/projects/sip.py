@@ -70,7 +70,7 @@ class SipSetup(build.Builder):
 
                 logging.debug("Ensuring pip exists")
                 proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "-m", "ensurepip"],
-                    env=config["__environment"],
+                    env=sip_environment(),
                     cwd=bp,
                     shell=True,
                     stdout=sout, stderr=serr)
@@ -82,7 +82,7 @@ class SipSetup(build.Builder):
 
                 logging.debug("Bundling python files")
                 proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "setup.py", "install"],
-                    env=config["__environment"],
+                    env=sip_environment(),
                     cwd=self._context["build_path"],
                     shell=True,
                     stdout=sout, stderr=serr)
@@ -91,6 +91,21 @@ class SipSetup(build.Builder):
                     logging.error("failed to run sip setup.py (returncode %s), see %s and %s",
                                   proc.returncode, soutpath, serrpath)
                     return False
+
+                logging.debug("Generating sip.h")
+                proc = Popen([os.path.join(bp, "Scripts", "sip-module.exe"), "--sip-h", "PyQt5.sip"],
+                             env=sip_environment(),
+                             cwd=config["paths"]["download"],
+                             shell=True,
+                             stdout=sout, stderr=serr)
+                proc.communicate()
+                if proc.returncode != 0:
+                    logging.error("failed to run sip-module (returncode %s), see %s and %s",
+                                  proc.returncode, soutpath, serrpath)
+                    return False
+
+                logging.debug("Copy sip.h into python includes")
+                shutil.copy(os.path.join(config["paths"]["download"], "sip.h"), os.path.join(bp, "Include", "sip.h"))
 
         return True
 
@@ -102,6 +117,6 @@ class SipSetup(build.Builder):
         pset.apply()
         os.chdir(savedpath)
 
-Project('sip').depend(SipSetup()
+sip = Project('sip').depend(SipSetup()
                       .depend("Python")
                       .depend(sip_url))

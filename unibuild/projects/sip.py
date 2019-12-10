@@ -26,9 +26,8 @@ from subprocess import Popen
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build, pipdownload, urldownload
+from unibuild.modules import build, pipdownload
 from unibuild.projects import python
-from unibuild.utility.config_utility import make_sure_path_exists
 
 sip_version = config['sip_version']
 sip_dev = False

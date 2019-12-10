@@ -19,10 +19,8 @@ import errno
 import itertools
 import logging
 import os
-import io
 import shutil
 import patch
-import tarfile
 from glob import glob
 from subprocess import Popen
 
@@ -30,10 +28,8 @@ from config import config
 from unibuild import Project
 from unibuild.modules import build, sourceforge, urldownload, urldownloadany, Patch
 from unibuild.projects import python, sip, qt5
-from unibuild.utility import lazy
 from unibuild.utility.config_utility import qt_inst_path, make_sure_path_exists
 from unibuild.utility.lazy import doclambda
-from unibuild.utility import ProgressFile
 
 icu_version = config['icu_version']
 pyqt_version = config['pyqt_version']

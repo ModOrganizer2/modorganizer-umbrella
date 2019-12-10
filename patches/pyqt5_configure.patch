@@ -1,0 +1,16 @@
+--- builder.py	(date 1575938575861)
++++ builder.py	(date 1575938575861)
+@@ -372,9 +372,10 @@
+                     'QMAKE_LFLAGS += -Wl,--version-script={}.exp'.format(
+                             buildable.name))
+
+-        pro_lines.append(
+-                'INCLUDEPATH += {}'.format(
+-                        self.qmake_quote(project.py_include_dir)))
++        for include_dir in project.py_include_dir.split(';'):
++            pro_lines.append(
++                    'INCLUDEPATH += {}'.format(
++                            self.qmake_quote(include_dir)))
+ 
+         # Python.h on Windows seems to embed the need for pythonXY.lib, so tell
+         # it where it is.

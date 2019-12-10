@@ -247,6 +247,7 @@ Project("licenses") \
         .depend(urldownload.URLDownload("https://www.gnu.org/licenses/gpl-3.0.txt", 0))
         .depend(urldownload.URLDownload("https://raw.githubusercontent.com/Microsoft/DirectXTex/master/LICENSE", 0).set_download_filename("DXTex.txt"))
         .depend(urldownload.URLDownload("https://creativecommons.org/licenses/by-sa/3.0/legalcode.txt", 0).set_download_filename("BY-SA-v3.0.txt"))
+        .depend("sip")
         .depend("modorganizer"))
 
 

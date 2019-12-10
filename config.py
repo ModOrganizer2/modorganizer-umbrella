@@ -93,12 +93,13 @@ config = {
     'nuget_version': '4.9.3',
     'nmm_version': '0.70.9',
     'openssl_version': '1.1.1d',
-    'pyqt_version': '5.13.1',
+    'pyqt_version': '5.13.2',
     'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
     'python_version_minor': '.5',
+    'local_python_version': '', # Leave empty to default to the MO2 python version
     'bzip2_version': '1.0.6', # For python
-    'sip_version': '4.19.19',
+    'sip_version': '5.0.0',
     'sip_dev_version': '', # leave empty for a standard release
     'spdlog_version': 'v1.4.2',
     'qt_version': '5.13',

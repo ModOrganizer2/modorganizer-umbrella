@@ -18,6 +18,7 @@
 import errno
 import os
 import shutil
+import patch
 from glob import glob
 from subprocess import Popen
 import logging
@@ -41,6 +42,17 @@ def python_environment(context):
     result = config['__environment'].copy()
     result['PYTHONHOME'] = context["build_path"]
     return result
+
+
+def patch_openssl_props(context):
+    patch_file = os.path.join(config['__Umbrella_path'], "patches", "python_openssl_path.patch")
+    savedpath = os.getcwd()
+    tarpath = os.path.join(context["build_path"])
+    os.chdir(tarpath)
+    pset = patch.fromfile(patch_file)
+    pset.apply()
+    os.chdir(savedpath)
+    return True
 
 
 def upgrade_args():
@@ -77,7 +89,7 @@ class PydCompiler(build.Builder):
 
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
-                logging.debug("123 %s", self._context['build_path'])
+                logging.debug("Packaging python files")
                 bp = self._context['build_path']
                 pyp = os.path.join(bp, "PCbuild", "{}".format("" if config['architecture'] == 'x86' else "amd64"))
 
@@ -133,8 +145,9 @@ else:
         .depend(build.Execute(install)
                 .depend(build.Execute(python_prepare)
                         .depend(PydCompiler()
-                                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pythonw,python3dll,pyexpat,_bz2,_ssl",
+                                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pythonw,python3dll,select,pyexpat,unicodedata,_queue,_bz2,_ssl",
                                                         project_PlatformToolset=config['vc_platformtoolset'],
+                                                        reltarget="Release",
                                                         project_AdditionalParams=[
                                                             "/p:bz2Dir={}".format(os.path.join(build_path, "bzip2")),
                                                             "/p:zlibDir={}".format(os.path.join(build_path, "zlib-{}".format(config['zlib_version']))),
@@ -142,15 +155,17 @@ else:
                                                             "/p:opensslOutDir={}".format(os.path.join(build_path, "openssl-{}".format(openssl_version)))
                                                         ]
                                                         )
-                                        .depend(build.Run(upgrade_args, name="upgrade python project")
-                                                .depend(github.Source("python", "cpython", "v{}{}"
-                                                                      .format(config['python_version'],
-                                                                              config['python_version_minor'])
-                                                                      , shallowclone=True)
-                                                .set_destination("python-{}".format(python_version + python_version_minor))
-                                                        .depend(sourceforge.Release("bzip2","bzip2-{0}.tar.gz"
-                                                                                    .format(bzip2_version), tree_depth=1)
-                                                                .set_destination("bzip2")
+                                        .depend(build.Execute(patch_openssl_props)
+                                                .depend(build.Run(upgrade_args, name="upgrade python project")
+                                                        .depend(github.Source("python", "cpython", "v{}{}"
+                                                                              .format(config['python_version'],
+                                                                                      config['python_version_minor'])
+                                                                              , shallowclone=True)
+                                                        .set_destination("python-{}".format(python_version + python_version_minor))
+                                                                .depend(sourceforge.Release("bzip2","bzip2-{0}.tar.gz"
+                                                                                            .format(bzip2_version), tree_depth=1)
+                                                                        .set_destination("bzip2")
+                                                                        )
                                                                 )
                                                         )
                                                 )

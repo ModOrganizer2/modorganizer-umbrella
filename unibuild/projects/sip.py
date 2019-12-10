@@ -26,7 +26,7 @@ from subprocess import Popen
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build, sourceforge, urldownload, urldownloadany
+from unibuild.modules import build, pipdownload, urldownload
 from unibuild.projects import python
 from unibuild.utility.config_utility import make_sure_path_exists
 
@@ -43,9 +43,8 @@ if config['sip_dev_version']:
 python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
 python_path = os.path.join(config['paths']['build'], "python-{}".format(config['python_version'] + config['python_version_minor']))
 
-sip_url = urldownloadany.URLDownloadAny((
-            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/{0}/sip-{0}.zip".format(sip_version), 1),
-            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/sip-{0}.zip".format(sip_version), 1)))
+sip_url = pipdownload.PIPDownload("sip", sip_version, tree_depth=1)
+
 
 def sip_environment():
     result = config['__environment'].copy()
@@ -54,49 +53,43 @@ def sip_environment():
     return result
 
 
-def copy_pyd(context):
-    make_sure_path_exists(os.path.join(config["__build_base_path"], "install", "bin", "plugins", "data", "PyQt5"))
-    for f in glob(os.path.join(python_path, "Lib", "site-packages", "PyQt5", "sip.pyd")):
-        shutil.copy(f, os.path.join(config["__build_base_path"],
-                                    "install", "bin", "plugins", "data", "PyQt5", "sip.pyd"))
-    for f in glob(os.path.join(python_path, "Lib", "site-packages", "PyQt5", "sip.pyi")):
-        shutil.copy(f, os.path.join(config["__build_base_path"],
-                                    "install", "bin", "plugins", "data", "PyQt5", "sip.pyi"))
-    return True
-
-
-class SipConfigure(build.Builder):
+class SipSetup(build.Builder):
     def __init__(self):
-        super(SipConfigure, self).__init__()
+        super(SipSetup, self).__init__()
 
     @property
     def name(self):
-        return "sip configure module"
+        return "sip setup module"
 
     def process(self, progress):
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
 
-        self.patch_siputils()
-
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
-                logging.debug("123 %s", python.python['build_path'])
                 bp = python.python['build_path']
 
-                proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "configure.py",
-                     "-b", bp,
-                     "-d", os.path.join(bp, "Lib", "site-packages"),
-                     "-v", os.path.join(bp, "sip"),
-                     "-e", os.path.join(bp, "Include"),
-                     "--sip-module=PyQt5.sip"],
+                logging.debug("Ensuring pip exists")
+                proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "-m", "ensurepip"],
+                    env=config["__environment"],
+                    cwd=bp,
+                    shell=True,
+                    stdout=sout, stderr=serr)
+                proc.communicate()
+                if proc.returncode != 0:
+                    logging.error("failed to run sip setup.py (returncode %s), see %s and %s",
+                                  proc.returncode, soutpath, serrpath)
+                    return False
+
+                logging.debug("Bundling python files")
+                proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "setup.py", "install"],
                     env=config["__environment"],
                     cwd=self._context["build_path"],
                     shell=True,
                     stdout=sout, stderr=serr)
                 proc.communicate()
                 if proc.returncode != 0:
-                    logging.error("failed to run sip configure.py (returncode %s), see %s and %s",
+                    logging.error("failed to run sip setup.py (returncode %s), see %s and %s",
                                   proc.returncode, soutpath, serrpath)
                     return False
 
@@ -110,18 +103,6 @@ class SipConfigure(build.Builder):
         pset.apply()
         os.chdir(savedpath)
 
-if config.get('Appveyor_Build', True):
-    Project('sip') \
-        .depend(build.Execute(copy_pyd)
-                .depend(urldownload.URLDownload(
-                    config.get('prebuilt_url') + "sip-prebuilt-{}.7z"
-                    .format(sip_version), name="Sip-Prebuilt", clean=False)
-                        .set_destination("python-{}".format(python_version))
-                            .depend("Python")))
-else:
-    Project('sip') \
-        .depend(build.Execute(copy_pyd)
-                .depend(build.Make(environment=sip_environment()).install()
-                        .depend(SipConfigure()
-                                .depend("Python")
-                                .depend(sip_url))))
+Project('sip').depend(SipSetup()
+                      .depend("Python")
+                      .depend(sip_url))

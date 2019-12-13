@@ -77,7 +77,7 @@ config = {
 
     # manualy set all versions
     '7zip_version': '19.00',
-    'boost_version': '1.71.0',
+    'boost_version': '1.72.0',
     'boost_version_tag': '',
     'fmt_version': '6.0.0',
     'googletest_version': '1.8.0', # unused. We use the latest source
@@ -95,8 +95,8 @@ config = {
     'openssl_version': '1.1.1d',
     'pyqt_version': '5.13.2',
     'pyqt_dev_version': '', # leave empty for a standard release
-    'python_version': '3.7',
-    'python_version_minor': '.5',
+    'python_version': '3.8',
+    'python_version_minor': '.0',
     'local_python_version': '', # Leave empty to default to the MO2 python version
     'bzip2_version': '1.0.6', # For python
     'sip_version': '5.0.0',

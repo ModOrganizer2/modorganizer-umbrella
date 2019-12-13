@@ -43,7 +43,7 @@ def get_from_hklm(hkey ,path, name, wow64=False):
 def init_config(args):
     # some tools gets confused onto what constitutes .  (OpenSSL and maybe CMake)
     args.destination = os.path.realpath(args.destination)
-    python_cli_version = config['python_version'] if config['local_python_version'] is None else config['local_python_version']
+    python_cli_version = config['python_version'] if config['local_python_version'] == "" else config['local_python_version']
 
     for d in list(config['paths'].keys()):
         if isinstance(config['paths'][d], str):

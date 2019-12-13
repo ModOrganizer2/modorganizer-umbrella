@@ -49,6 +49,7 @@ enabled_modules = ["QtCore", "QtGui", "QtWidgets", "QtOpenGL", "_QOpenGLFunction
 def pyqt5_env():
     res = config['__environment'].copy()
     res['path'] = ";".join([os.path.join(qt_binary_install, "bin"),
+                            os.path.join(python.python["build_path"], "PCbuild", arch),
                             os.path.join(python.python['build_path']),
                             os.path.join(python.python['build_path'], 'Scripts')])\
                   + ";" + res['path']
@@ -201,7 +202,7 @@ if config.get('Appveyor_Build', True):
             .depend(build.Execute(copy_files)
                     .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
                                         os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
-                            doclambda(lambda: python.python['build_path'], "python path"))
+                            doclambda(lambda: os.path.join(python.python["build_path"], "PCbuild", arch), "python path"))
                             .depend(
                                     urldownload.URLDownload(
                                         config.get('prebuilt_url') + "PyQt5_gpl-prebuilt-{0}.7z"
@@ -223,7 +224,7 @@ else:
         .depend(build.Execute(copy_files)
                 .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
                                     os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
-                                   doclambda(lambda: python.python['build_path'], "python path"))
+                                   doclambda(lambda: os.path.join(python.python["build_path"], "PCbuild", arch), "python path"))
                         .depend(build.Execute(install_sip_pyqt_module)
                                 .depend(build.Execute(prep_sip_pyqt_module)
                                         .depend(build.Execute(build_pyqt)

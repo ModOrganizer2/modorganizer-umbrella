@@ -100,7 +100,6 @@ else:
                         os.path.join(lz_path, "visual", "VS2017", 'lz4.sln'),
                         project="liblz4-dll",
                         working_directory=lazy.Evaluate(lambda: os.path.join(lz_path)),
-                        project_platform=bitness(),
                         reltarget="Release"
                     ).depend(
                         build.Run(

@@ -28,7 +28,6 @@ from config import config
 from unibuild import Project
 from unibuild.modules import build, sourceforge, urldownload, urldownloadany, Patch
 from unibuild.projects import python, sip, qt5
-from unibuild.utility import lazy
 from unibuild.utility.config_utility import qt_inst_path, make_sure_path_exists
 from unibuild.utility.lazy import doclambda
 
@@ -36,6 +35,7 @@ icu_version = config['icu_version']
 pyqt_version = config['pyqt_version']
 python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
 pyqt_dev = False
+arch = "{}".format("" if config['architecture'] == 'x86' else "amd64")
 if config['pyqt_dev_version']:
     pyqt_version += ".dev" + config['pyqt_dev_version']
     pyqt_dev = True
@@ -43,30 +43,34 @@ qt_binary_install = config["paths"]["qt_binary_install"]
 __build_base_path = config["__build_base_path"]
 
 enabled_modules = ["QtCore", "QtGui", "QtWidgets", "QtOpenGL", "_QOpenGLFunctions_2_0",
-                   "_QOpenGLFunctions_2_1", "_QOpenGLFunctions_4_1_Core",
-                   "_QOpenGLFunctions_ES2"]
+                   "_QOpenGLFunctions_2_1", "_QOpenGLFunctions_4_1_Core", "_QOpenGLFunctions_ES2"]
 
 
 def pyqt5_env():
     res = config['__environment'].copy()
     res['path'] = ";".join([os.path.join(qt_binary_install, "bin"),
-        os.path.join(python.python['build_path'])]) + ";" + res['path']
+                            os.path.join(python.python["build_path"], "PCbuild", arch),
+                            os.path.join(python.python['build_path']),
+                            os.path.join(python.python['build_path'], 'Scripts')])\
+                  + ";" + res['path']
     res['LIB'] = os.path.join(__build_base_path, "install", "libs") + ";" + res['LIB']
     res['CL'] = "/MP"
     res['PYTHONHOME'] = python.python['build_path']
     return res
 
 
-def copy_pyd(context):
+def copy_files(context):
     # fix fir pre compiled deps
     for file in glob(os.path.join(config["paths"]["build"], "PyQt5-{}".format(pyqt_version), "*.bat")):
         shutil.copy(file, os.path.join(python.python['build_path']))
-    # for f in glob(os.path.join(build_path, openssl_path, "bin", "ssleay32.dll")):
-    #      shutil.copy(f, os.path.join(dest_bin))
     make_sure_path_exists(os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5"))
     srcdir = os.path.join(python.python['build_path'], "Lib", "site-packages", "PyQt5")
     dstdir = os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5")
     shutil.copy(os.path.join(srcdir, "__init__.py"), os.path.join(dstdir, "__init__.py"))
+    shutil.copy(os.path.join(sip.sip["build_path"], "sipbuild", "module", "source", "12.7", "sip.pyi"),
+                os.path.join(dstdir, "sip.pyi"))
+    for file in glob(os.path.join(srcdir, "sip*")):
+        shutil.copy(file, dstdir)
     for module in enabled_modules:
         shutil.copy(
             os.path.join(srcdir, module + ".pyd"),
@@ -83,95 +87,154 @@ def copy_pyd(context):
     return True
 
 
-def copy_init_patch(context):
-    shutil.copy2(
-        os.path.join(config['__Umbrella_path'], "patches", "PyQt5_init.py"),
-        os.path.join(context['build_path'], "__init__.py")
-    )
+def install_builder(context):
+    soutpath = os.path.join(context["build_path"], "stdout.log")
+    serrpath = os.path.join(context["build_path"], "stderr.log")
+    with open(soutpath, "w") as sout:
+        with open(serrpath, "w") as serr:
+            bp = python.python['build_path']
+
+            logging.debug("Ensuring pip exists")
+            proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "-m", "ensurepip"],
+                env=config["__environment"],
+                cwd=bp,
+                shell=True,
+                stdout=sout, stderr=serr)
+            proc.communicate()
+            if proc.returncode != 0:
+                logging.error("failed to run sip setup.py (returncode %s), see %s and %s",
+                              proc.returncode, soutpath, serrpath)
+                return False
+
+            logging.debug("Ensure PyQt-builder is available")
+            proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "-m", "pip", "install", "PyQt-builder"],
+                env=pyqt5_env(),
+                cwd=context["build_path"],
+                shell=True,
+                stdout=sout, stderr=serr)
+            proc.communicate()
+            if proc.returncode != 0:
+                logging.error("failed to install PyQt-builder (returncode %s), see %s and %s",
+                              proc.returncode, soutpath, serrpath)
+                return False
     return True
 
 
-def init_patch(context):
-    try:
-        savedpath = os.getcwd()
-        os.chdir(context["build_path"])
-        pset = patch.fromfile(os.path.join(config['__Umbrella_path'], "patches", "pyqt5_configure_init.patch"))
-        pset.apply()
-        os.chdir(savedpath)
-        return True
-    except OSError:
-        return False
+def patch_pyqt_installer(context):
+    patch_file = os.path.join(config['__Umbrella_path'], "patches", "pyqt5_configure.patch")
+    savedpath = os.getcwd()
+    tarpath = os.path.join(python.python['build_path'], "Lib", "site-packages", "pyqtbuild")
+    os.chdir(tarpath)
+    pset = patch.fromfile(patch_file)
+    pset.apply()
+    os.chdir(savedpath)
+    return True
 
 
-class PyQt5Configure(build.Builder):
-    def __init__(self):
-        super(PyQt5Configure, self).__init__()
+def build_pyqt(context):
+    soutpath = os.path.join(context["build_path"], "stdout.log")
+    serrpath = os.path.join(context["build_path"], "stderr.log")
+    with open(soutpath, "w") as sout:
+        with open(serrpath, "w") as serr:
+            bp = python.python['build_path']
+            logging.debug("Run sip-install")
+            proc = Popen([os.path.join(bp, "Scripts", "sip-install.exe"), "--confirm-license", "--verbose",
+                          "--pep484-pyi", "--link-full-dll",
+                          "--build-dir", os.path.join(context['build_path'], 'build'),
+                          "--enable", "pylupdate", "--enable", "pyrcc"]
+                         + list(itertools.chain(*[("--enable", s) for s in enabled_modules])),
+                         env=pyqt5_env(),
+                         cwd=context["build_path"],
+                         shell=True,
+                         stdout=sout, stderr=serr)
+            proc.communicate()
+            if proc.returncode != 0:
+                logging.error("failed to run sip-install (returncode %s), see %s and %s",
+                              proc.returncode, soutpath, serrpath)
+                return False
+    return True
 
-    @property
-    def name(self):
-        return "pyqt configure"
 
-    def process(self, progress):
-        soutpath = os.path.join(self._context["build_path"], "stdout.log")
-        serrpath = os.path.join(self._context["build_path"], "stderr.log")
-        with open(soutpath, "w") as sout:
-            with open(serrpath, "w") as serr:
-                bp = python.python['build_path']
-                proc = Popen([os.path.join(python.python['build_path'], "PCbuild", "amd64", "python.exe"), "configure.py",
-                     "--confirm-license",
-                     "-b", bp,
-                     "--verbose",
-                     "-d", os.path.join(bp, "Lib", "site-packages"),
-                     "-v", os.path.join(bp, "sip", "PyQt5"),
-                     "--sip-incdir", os.path.join(bp, "Include")]
-                     + list(itertools.chain(*[("--enable", s) for s in enabled_modules])),
-                    env=pyqt5_env(),
-                    cwd=self._context["build_path"],
-                    shell=True,
-                    stdout=sout, stderr=serr)
-                proc.communicate()
-                if proc.returncode != 0:
-                    logging.error("failed to run pyqt configure.py (returncode %s), see %s and %s",
-                                  proc.returncode, soutpath, serrpath)
-                    return False
+def prep_sip_pyqt_module(context):
+    soutpath = os.path.join(context["build_path"], "stdout.log")
+    serrpath = os.path.join(context["build_path"], "stderr.log")
+    with open(soutpath, "w") as sout:
+        with open(serrpath, "w") as serr:
+            bp = python.python['build_path']
+            logging.debug("Run sip-module")
+            proc = Popen([os.path.join(bp, "Scripts", "sip-module.exe"), "--sdist", "PyQt5.sip"],
+                         env=pyqt5_env(),
+                         cwd=config["paths"]["download"],
+                         shell=True,
+                         stdout=sout, stderr=serr)
+            proc.communicate()
+            if proc.returncode != 0:
+                logging.error("failed to run sip-module (returncode %s), see %s and %s",
+                              proc.returncode, soutpath, serrpath)
+                return False
 
-        return True
+    return True
+
+
+def install_sip_pyqt_module(context):
+    soutpath = os.path.join(context["build_path"], "stdout.log")
+    serrpath = os.path.join(context["build_path"], "stderr.log")
+    with open(soutpath, "w") as sout:
+        with open(serrpath, "w") as serr:
+            bp = python.python['build_path']
+            logging.debug("Installing PyQt5.sip")
+            proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "-m", "pip", "install",
+                          os.path.join(config["paths"]["download"], "PyQt5_sip-12.7.0.tar.gz")],
+                env=config["__environment"],
+                cwd=bp,
+                shell=True,
+                stdout=sout, stderr=serr)
+            proc.communicate()
+            if proc.returncode != 0:
+                logging.error("failed to install PyQt5.sip (returncode %s), see %s and %s",
+                              proc.returncode, soutpath, serrpath)
+                return False
+    return True
 
 
 if config.get('Appveyor_Build', True):
     Project("PyQt5") \
-            .depend(build.Execute(copy_pyd)
+            .depend(build.Execute(copy_files)
                     .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
                                         os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
-                            doclambda(lambda: python.python['build_path'], "python path"))
-                            .depend(build.Execute(copy_init_patch)
-                                    .depend(urldownload.URLDownload(
-                                                config.get('prebuilt_url') + "PyQt5_gpl-prebuilt-{0}.7z"
-                                                .format(pyqt_version), name="PyQt5-prebuilt", clean=False
-                                            )
-                                            .set_destination("python-{}".format(python_version))
-                                            .depend("sip")
-                                            .depend("Qt5")
-                                            )
+                            doclambda(lambda: os.path.join(python.python["build_path"], "PCbuild", arch), "python path"))
+                            .depend(
+                                    urldownload.URLDownload(
+                                        config.get('prebuilt_url') + "PyQt5_gpl-prebuilt-{0}.7z"
+                                        .format(pyqt_version), name="PyQt5-prebuilt", clean=False
+                                    )
+                                    .set_destination("python-{}".format(python_version))
+                                    .depend("sip")
+                                    .depend("Qt5")
                                     )
                             )
                     )
 else:
     pyqt_source = urldownloadany.URLDownloadAny((
+                    urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/{0}/PyQt5-{0}.zip".format(pyqt_version), tree_depth=1),
                     urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/{0}/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1),
                     urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1)))
 
     Project("PyQt5") \
-        .depend(build.Execute(copy_pyd)
+        .depend(build.Execute(copy_files)
                 .depend(Patch.Copy([os.path.join(qt_inst_path(), "bin", "Qt5Core.dll"),
                                     os.path.join(qt_inst_path(), "bin", "Qt5Xml.dll")],
-                                   doclambda(lambda: python.python['build_path'], "python path"))
-                        .depend(build.Make(environment=lazy.Evaluate(pyqt5_env)).install()
-                                .depend(PyQt5Configure()
-                                        .depend("sip")
-                                        .depend("Qt5")
-                                        .depend(build.Execute(init_patch)
-                                                .depend(pyqt_source)
+                                   doclambda(lambda: os.path.join(python.python["build_path"], "PCbuild", arch), "python path"))
+                        .depend(build.Execute(install_sip_pyqt_module)
+                                .depend(build.Execute(prep_sip_pyqt_module)
+                                        .depend(build.Execute(build_pyqt)
+                                                .depend(build.Execute(patch_pyqt_installer)
+                                                        .depend(build.Execute(install_builder)
+                                                                .depend("sip")
+                                                                .depend("Qt5")
+                                                                .depend(pyqt_source)
+                                                                )
+                                                        )
                                                 )
                                         )
                                 )

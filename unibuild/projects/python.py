@@ -18,6 +18,7 @@
 import errno
 import os
 import shutil
+import patch
 from glob import glob
 from subprocess import Popen
 import logging
@@ -37,10 +38,25 @@ openssl_version = config['openssl_version']
 build_path = config["paths"]["build"]
 
 
+def bitness():
+    return "amd64" if config["architecture"] == "x86_64" else "win32"
+
+
 def python_environment(context):
     result = config['__environment'].copy()
     result['PYTHONHOME'] = context["build_path"]
     return result
+
+
+def patch_openssl_props(context):
+    patch_file = os.path.join(config['__Umbrella_path'], "patches", "python_openssl_path.patch")
+    savedpath = os.getcwd()
+    tarpath = os.path.join(context["build_path"])
+    os.chdir(tarpath)
+    pset = patch.fromfile(patch_file)
+    pset.apply()
+    os.chdir(savedpath)
+    return True
 
 
 def upgrade_args():
@@ -77,9 +93,9 @@ class PydCompiler(build.Builder):
 
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
-                logging.debug("123 %s", self._context['build_path'])
+                logging.debug("Packaging python files")
                 bp = self._context['build_path']
-                pyp = os.path.join(bp, "PCbuild", "{}".format("" if config['architecture'] == 'x86' else "amd64"))
+                pyp = os.path.join(bp, "PCbuild", "{}".format(bitness()))
 
                 proc = Popen([os.path.join(bp, "python.bat"), "PC/layout",
                               "-vv",
@@ -104,20 +120,20 @@ class PydCompiler(build.Builder):
 
 def install(context):
     make_sure_path_exists(os.path.join(path_install, "libs"))
+    make_sure_path_exists(os.path.join(context["build_path"], "libs"))
     make_sure_path_exists(os.path.join(path_install, "bin"))
-    path_segments = [context['build_path'], "PCbuild"]
-    if config['architecture'] == "x86_64":
-        path_segments.append("amd64")
+    path_segments = [context['build_path'], "PCbuild", bitness()]
     for f in glob(os.path.join(*path_segments, "*.lib")):
         shutil.copy(f, os.path.join(path_install, "libs"))
-    for f in glob(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", "")))):
+    for f in glob(os.path.join(*path_segments, "*.lib")):
+        shutil.copy(f, os.path.join(context["build_path"], "libs"))
+    shutil.copy(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", ""))), os.path.join(path_install, "bin"))
+    shutil.copy(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", ""))), os.path.join(context["build_path"], "libs"))
+    for f in glob(os.path.join(*path_segments, "libffi-*.dll".format(python_version.replace(".", "")))):
         shutil.copy(f, os.path.join(path_install, "bin"))
-    for f in glob(os.path.join(*path_segments, "python{}.pdb".format(python_version.replace(".", "")))):
-        shutil.copy(f, os.path.join(path_install, "pdb"))
+    shutil.copy(os.path.join(*path_segments, "python{}.pdb".format(python_version.replace(".", ""))), os.path.join(path_install, "pdb"))
     for f in glob(os.path.join(*path_segments, "_*.pdb".format(python_version.replace(".", "")))):
         shutil.copy(f, os.path.join(path_install, "pdb"))
-    shutil.copy(os.path.join(path_install, "libs", "python{}.lib".format(python_version.replace(".", ""))),
-                os.path.join(path_install, "libs", "python3.lib"))
     return True
 
 
@@ -129,32 +145,40 @@ if config.get('Appveyor_Build', True):
                     .format(python_version + python_version_minor)).
                         set_destination("python-{}".format(python_version + python_version_minor))))
 else:
+    Project("libffi").depend(github.Source("python", "cpython-bin-deps", "libffi", shallowclone=True).set_destination("libffi"))
+
     python = Project("Python") \
         .depend(build.Execute(install)
                 .depend(build.Execute(python_prepare)
                         .depend(PydCompiler()
-                                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pythonw,python3dll,pyexpat,_bz2,_ssl",
+                                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pythonw,python3dll,select,pyexpat,unicodedata,_queue,_bz2,_ssl",
                                                         project_PlatformToolset=config['vc_platformtoolset'],
+                                                        reltarget="Release",
                                                         project_AdditionalParams=[
                                                             "/p:bz2Dir={}".format(os.path.join(build_path, "bzip2")),
                                                             "/p:zlibDir={}".format(os.path.join(build_path, "zlib-{}".format(config['zlib_version']))),
                                                             "/p:opensslIncludeDir={}".format(os.path.join(build_path, "openssl-{}".format(openssl_version), "include")),
-                                                            "/p:opensslOutDir={}".format(os.path.join(build_path, "openssl-{}".format(openssl_version)))
+                                                            "/p:opensslOutDir={}".format(os.path.join(build_path, "openssl-{}".format(openssl_version))),
+                                                            "/p:libffiIncludeDir={}".format(os.path.join(build_path, "libffi", bitness(), "include")),
+                                                            "/p:libffiOutDir={}".format(os.path.join(build_path, "libffi", bitness())),
                                                         ]
                                                         )
-                                        .depend(build.Run(upgrade_args, name="upgrade python project")
-                                                .depend(github.Source("python", "cpython", "v{}{}"
-                                                                      .format(config['python_version'],
-                                                                              config['python_version_minor'])
-                                                                      , shallowclone=True)
-                                                .set_destination("python-{}".format(python_version + python_version_minor))
-                                                        .depend(sourceforge.Release("bzip2","bzip2-{0}.tar.gz"
-                                                                                    .format(bzip2_version), tree_depth=1)
-                                                                .set_destination("bzip2")
+                                        .depend(build.Execute(patch_openssl_props)
+                                                .depend(build.Run(upgrade_args, name="upgrade python project")
+                                                        .depend(github.Source("python", "cpython", "v{}{}"
+                                                                              .format(config['python_version'],
+                                                                                      config['python_version_minor'])
+                                                                              , shallowclone=True)
+                                                        .set_destination("python-{}".format(python_version + python_version_minor))
+                                                                .depend(sourceforge.Release("bzip2","bzip2-{0}.tar.gz"
+                                                                                            .format(bzip2_version), tree_depth=1)
+                                                                        .set_destination("bzip2")
+                                                                        )
                                                                 )
                                                         )
                                                 )
                                         .depend("openssl")
+                                        .depend("libffi")
                                         )
                                 )
                         )

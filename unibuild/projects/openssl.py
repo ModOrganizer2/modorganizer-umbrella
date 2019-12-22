@@ -18,6 +18,7 @@
 import logging
 import os.path
 import shutil
+import multiprocessing
 import time
 from subprocess import Popen
 from glob import glob
@@ -53,7 +54,7 @@ url = "https://www.openssl.org/source/{}".format(filename)
 def openssl_environment():
     result = config['__environment'].copy()
     result['Path'] += ";" + os.path.join(build_path, "nasm-{}-win{}".format(nasm_version, bitness(), nasm_version, bitness()))
-    result['CL'] = "/MP"
+    result['CL'] = "/MP1 /FS"
     return result
 
 
@@ -89,12 +90,12 @@ def openssl_stage(context):
     return True
 
 
-OpenSSL_Install = build.Run(r"nmake install",
+OpenSSL_Install = build.Run("{} /D /J {} install_engines".format(config["paths"]["jom"], multiprocessing.cpu_count().__str__()),
                       environment=openssl_environment(),
-                      name="Install OpenSSL",
+                      name="Build & Install OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
 
-OpenSSL_Build = build.Run(r"nmake",
+OpenSSL_Build = build.Run("{} /D /J {} build_".format(config["paths"]["jom"], multiprocessing.cpu_count().__str__()),
                       environment=openssl_environment(),
                       name="Building OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
@@ -119,7 +120,7 @@ else:
     openssl = Project("openssl") \
         .depend(build.Execute(openssl_stage)
             .depend(OpenSSL_Install
-                .depend(OpenSSL_Build
+                #.depend(OpenSSL_Build
                         .depend(Configure_openssl
                             .depend(urldownload.URLDownload(url, tree_depth=1)
-                                .depend("nasm"))))))
+                                .depend("nasm")))))#)

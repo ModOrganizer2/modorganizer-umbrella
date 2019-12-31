@@ -89,13 +89,12 @@ def openssl_stage(context):
         shutil.copy(f, os.path.join(dest_lib, "libssl.lib"))
     return True
 
-
-OpenSSL_Install = build.Run("{} /D /J {} install_engines".format(config["paths"]["jom"], multiprocessing.cpu_count().__str__()),
+OpenSSL_Install = build.Run("{} /D /J {} install_engines".format(config["paths"]["jom"], config['num_jobs']),
                       environment=openssl_environment(),
                       name="Build & Install OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
 
-OpenSSL_Build = build.Run("{} /D /J {} build_".format(config["paths"]["jom"], multiprocessing.cpu_count().__str__()),
+OpenSSL_Build = build.Run("{} /D /J {} build_".format(config["paths"]["jom"], config['num_jobs']),
                       environment=openssl_environment(),
                       name="Building OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))

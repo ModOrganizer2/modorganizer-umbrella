@@ -61,7 +61,10 @@ def prepare_nmm(context):
             changed = True
     if changed:
         log.info('Writing NexusClientCli.sln')
-        sln.SaveToFile(os.path.relpath(os.path.join(build_path, "Nexus-Mod-Manager", 'NexusClientCli.sln'))) # So we dont get conflicts when pulling
+        try:
+            sln.SaveToFile(os.path.relpath(os.path.join(build_path, "Nexus-Mod-Manager", 'NexusClientCli.sln'))) # So we dont get conflicts when pulling
+        except ValueError:
+            sln.SaveToFile(os.path.join(build_path, "Nexus-Mod-Manager", 'NexusClientCli.sln'))
         return True
 
 
@@ -77,8 +80,8 @@ Project("ncc") \
                     .depend(build.Run(r"nuget.exe restore {}".format(os.path.join(build_path, "Nexus-Mod-Manager", 'NexusClientCli.sln')),
                                       environment=ncc_environment(),
                                       working_directory=lazy.Evaluate(lambda: os.path.join(build_path, "Nexus-Mod-Manager")))
-							.depend(build.Execute(prepare_nmm, name="append NexusClientCli project to NMM")
-									.depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", config["nmm_version"], None, False))
-											.depend(github.Source(config['Main_Author'], "modorganizer-NCC", config['Build_Branch'])
-														   .set_destination("NexusClientCli")))))) \
-   .depend("nuget")
+                            .depend(build.Execute(prepare_nmm, name="append NexusClientCli project to NMM")
+                                    .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", config["nmm_version"], None, False))
+                                    .depend(github.Source(config['Main_Author'], "modorganizer-NCC", config['Build_Branch'])
+                                            .set_destination("NexusClientCli")))))) \
+    .depend("nuget")

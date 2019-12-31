@@ -26,13 +26,14 @@ from subprocess import Popen
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build, sourceforge, urldownload, urldownloadany, Patch
+from unibuild.modules import build, urldownload, urldownloadany, pipdownload, Patch
 from unibuild.projects import python, sip, qt5
 from unibuild.utility.config_utility import qt_inst_path, make_sure_path_exists
 from unibuild.utility.lazy import doclambda
 
 icu_version = config['icu_version']
 pyqt_version = config['pyqt_version']
+pyqt_builder_version = config['pyqt_builder_version']
 python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
 pyqt_dev = False
 arch = "{}".format("" if config['architecture'] == 'x86' else "amd64")
@@ -107,7 +108,7 @@ def install_builder(context):
                 return False
 
             logging.debug("Ensure PyQt-builder is available")
-            proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "-m", "pip", "install", "PyQt-builder"],
+            proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "-m", "pip", "install", "PyQt-builder=={}".format(pyqt_builder_version)],
                 env=pyqt5_env(),
                 cwd=context["build_path"],
                 shell=True,
@@ -215,10 +216,19 @@ if config.get('Appveyor_Build', True):
                             )
                     )
 else:
-    pyqt_source = urldownloadany.URLDownloadAny((
-                    urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/{0}/PyQt5-{0}.zip".format(pyqt_version), tree_depth=1),
-                    urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/{0}/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1),
-                    urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/PyQt5/PyQt5_gpl-{0}.zip".format(pyqt_version), tree_depth=1)))
+    if pyqt_dev:
+        pyqt_source = urldownloadany.URLDownloadAny((
+            urldownload.URLDownload(
+                "https://www.riverbankcomputing.com/static/Downloads/PyQt5/{0}/PyQt5-{0}.zip".format(pyqt_version),
+                tree_depth=1),
+            urldownload.URLDownload(
+                "https://www.riverbankcomputing.com/static/Downloads/PyQt5/{0}/PyQt5_gpl-{0}.zip".format(pyqt_version),
+                tree_depth=1),
+            urldownload.URLDownload(
+                "https://www.riverbankcomputing.com/static/Downloads/PyQt5/PyQt5_gpl-{0}.zip".format(pyqt_version),
+                tree_depth=1)))
+    else:
+        pyqt_source = pipdownload.PIPDownload("PyQt5", pyqt_version, tree_depth=1)
 
     Project("PyQt5") \
         .depend(build.Execute(copy_files)

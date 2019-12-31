@@ -79,7 +79,7 @@ config = {
     '7zip_version': '19.00',
     'boost_version': '1.72.0',
     'boost_version_tag': '',
-    'fmt_version': '6.0.0',
+    'fmt_version': '6.1.2',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '3.3',
     'icu_version': '65',
@@ -93,22 +93,23 @@ config = {
     'nuget_version': '4.9.3',
     'nmm_version': '0.70.11',
     'openssl_version': '1.1.1d',
-    'pyqt_version': '5.13.2',
+    'pyqt_version': '5.14.0',
     'pyqt_dev_version': '', # leave empty for a standard release
+    'pyqt_builder_version': '1.1.0',
     'python_version': '3.8',
-    'python_version_minor': '.0',
+    'python_version_minor': '.1',
     'local_python_version': '', # Leave empty to default to the MO2 python version
     'bzip2_version': '1.0.6', # For python
-    'sip_version': '5.0.0',
+    'sip_version': '5.0.1',
     'sip_dev_version': '', # leave empty for a standard release
     'spdlog_version': 'v1.4.2',
-    'qt_version': '5.13',
-    'qt_version_minor': '2',
+    'qt_version': '5.14',
+    'qt_version_minor': '0',
     'qt_version_appveyor': '5.13',
     'qt_version_minor_appveyor': '2',
     'qt_vc_version': '15.0',
     'vc_platformtoolset': 'v142',
-    'vc_TargetPlatformVersion': '10.0.17763.0',
+    'vc_TargetPlatformVersion': '10.0.18362.0',
     'vc_version': '16.0',
     'vc_version_for_boost': '14.2',
     'WixToolset_version': '311',

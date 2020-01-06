@@ -76,11 +76,25 @@ def extract_independent(graph):
 
 
 def recursive_remove(graph, node):
-    if not isinstance(graph.node[node]["task"], Project):
+    if not isinstance(graph.nodes[node]["task"], Project):
         for ancestor in graph.predecessors(node):
             recursive_remove(graph, ancestor)
     graph.remove_node(node)
 
+
+def check_prerequisites_config():
+    if not config['paths']['cmake']:
+        return False
+    if not config['paths']['git']:
+        return False
+    if not config['paths']['perl']:
+        return False
+    if config["Installer"]:
+        if not config['paths']['InnoSetup']:
+            return False
+    if not config['paths']['7z']:
+        return False
+    return True
 
 def main():
     time_format = "%(asctime)-15s %(message)s"
@@ -99,6 +113,10 @@ def main():
     args = parser.parse_args()
 
     init_config(args)
+
+    if not check_prerequisites_config():
+        print('\nMissing prerequisites listed above - cannot continue')
+        exit(1)
 
     for d in ["download", "build", "progress", "install"]:
         if not os.path.exists(config["paths"][d]):
@@ -147,10 +165,10 @@ def main():
 
     while independent:
         for node in independent:
-            task = build_graph.node[node]['task']
+            task = build_graph.nodes[node]['task']
             try:
                 task.prepare()
-                if build_graph.node[node]['enable'] and not task.already_processed():
+                if build_graph.nodes[node]['enable'] and not task.already_processed():
                     progress = Progress()
                     progress.set_change_callback(progress_callback)
                     if isinstance(task, Project):

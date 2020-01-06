@@ -16,29 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import os
-
-import shutil
 from config import config
 from unibuild import Project
-from unibuild.modules import cmake, urldownload, build
+from unibuild.modules import cmake, github, build
 
-zlib_version = config['zlib_version']
+#boost_di_version = config['boost_di_version']
 
+Project("boost_di") \
+    .depend(github.Source("boost-experimental", "di", "cpp14"))
 
-def copy_header(context):
-    shutil.copy(
-        os.path.join(context["build_path"], "build", "zconf.h"),
-        os.path.join(context["build_path"], "zconf.h")
-    )
-    return True
-
-
-Project("zlib") \
-    .depend(build.Execute(copy_header)
-            .depend(cmake.CMake().arguments(["-DCMAKE_BUILD_TYPE={0}".format(config["build_type"]),
-                                     "-DCMAKE_INSTALL_PREFIX:PATH={}".format(
-                                         os.path.join(config["paths"]["build"], "zlib-{}".format(zlib_version)))
-                                     ]).install()
-                    .depend(urldownload.URLDownload("http://zlib.net/zlib-{}.tar.gz".format(zlib_version), 1))))

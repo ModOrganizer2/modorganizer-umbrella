@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
+
 import multiprocessing
 import os
 
@@ -37,21 +38,6 @@ def gen_search_folders(*subpath):
         os.path.join(search_folder, *subpath)
         for search_folder in config_utility.program_files_folders
     ]
-
-
-def check_prerequisites_config():
-    if not config['paths']['cmake']:
-        return False
-    if not config['paths']['git']:
-        return False
-    if not config['paths']['perl']:
-        return False
-    if config["Installer"]:
-        if not config['paths']['InnoSetup']:
-            return False
-    if not config['paths']['7z']:
-        return False
-    return True
 
 
 config = {
@@ -84,37 +70,41 @@ config = {
                                # folders: <project>\<task>_complete.txt
 
     'Main_Author': 'ModOrganizer2',  # the current maintainer
-    'Main_Branch': "Develop",
+    'Dev_Branch': "Develop",
+    'Release_Branch': "master",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
     # manualy set all versions
     '7zip_version': '19.00',
-    'boost_version': '1.70.0',
+    'boost_version': '1.71.0',
     'boost_version_tag': '',
+    'fmt_version': '6.0.0',
     'googletest_version': '1.8.0', # unused. We use the latest source
-    'grep_version': '2.5.4',
-    'icu_version': '64',
-    'icu_version_minor': '2',
-    'loot_version': '0.14.8',
-    'loot_commit': 'gb0d0f3e',
+    'grep_version': '3.3',
+    'icu_version': '65',
+    'icu_version_minor': '1',
+    'loot_version': '0.15.0',
+    'loot_commit': 'g629fdab',
     'loot_branch': 'master',
-    'lz4_version': '1.9.1',
+    'lz4_version': '1.9.2',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.14.02',
     'nuget_version': '4.9.3',
-    'nmm_version': '0.65.11',
-    'openssl_version': '1.1.1c',
-    'pyqt_version': '5.12.3',
+    'nmm_version': '0.70.9',
+    'openssl_version': '1.1.1d',
+    'pyqt_version': '5.13.1',
     'pyqt_dev_version': '', # leave empty for a standard release
     'python_version': '3.7',
-    'python_version_minor': '.4',
-    'sip_version': '4.19.17',
+    'python_version_minor': '.5',
+    'bzip2_version': '1.0.6', # For python
+    'sip_version': '4.19.19',
     'sip_dev_version': '', # leave empty for a standard release
-    'qt_version': '5.12',
-    'qt_version_minor': '4',
-    'qt_version_appveyor': '5.11',
-    'qt_version_minor_appveyor': '',
+    'spdlog_version': 'v1.4.2',
+    'qt_version': '5.13',
+    'qt_version_minor': '2',
+    'qt_version_appveyor': '5.13',
+    'qt_version_minor_appveyor': '2',
     'qt_vc_version': '15.0',
     'vc_platformtoolset': 'v142',
     'vc_TargetPlatformVersion': '10.0.17763.0',
@@ -122,10 +112,17 @@ config = {
     'vc_version_for_boost': '14.2',
     'WixToolset_version': '311',
     'zlib_version': '1.2.11',
+    'explorer++_version': '1.3.5',
+    'libbsarch_version': '0.0.7',
+
+    #stylesheets
+    'paper-light-and-dark_version': '5.3',
+    'paper-automata_version': '2.2',
+    'paper-mono_version': '2.1',
+    '1809-dark-mode_version': '1.3',
 
     #the usvfs version below will only be used if
-    'usvfs_version': 'v0.4.4',
-
+    'usvfs_version': 'v0.4.6',
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code
@@ -154,21 +151,14 @@ config['paths'] = {
     'install': "{base_dir}\\{install_dir}",
     # 'graphviz': path_or_default("dot.exe", [["Graphviz2.38", "bin"]]),
     'cmake': path_or_default("cmake.exe", [["CMake", "bin"]]),
-    'jom': path_or_default("jom.exe", [["Qt", "Tools", "QtCreator", "bin"]]),
     'git': path_or_default("git.exe", [["Git", "bin"]]),
     'perl': path_or_default("perl.exe", [["StrawberryPerl", "perl", "bin"], ["Strawberry", "perl", "bin"]]),
     #'svn': path_or_default("svn.exe", [["SlikSvn", "bin"]]),
     '7z': path_or_default("7z.exe", [["7-Zip"]]),
     # we need a python that matches the build architecture
     'python': "", # Registry Key can be in multiple places. set in config_setup.py
+    'jom': "",
     'visual_studio_base': "",
     'qt_binary_install': "",
     'visual_studio': ""  # will be set in unimake.py after args are evaluated
 }
-
-if config["Installer"]:
-    config['paths']["InnoSetup"] = path_or_default("ISCC.exe", [["Inno Setup 5"], ["Inno Setup 6"]])
-
-if not check_prerequisites_config():
-    print('\nMissing prerequisites listed above - cannot continue')
-    exit(1)

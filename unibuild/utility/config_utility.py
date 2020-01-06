@@ -41,6 +41,8 @@ def cmake_parameters():
     from config import config
 
     boost_version = config['boost_version']
+    fmt_version = config['fmt_version']
+    spdlog_version = config['spdlog_version']
     vc_version = config['vc_version_for_boost']
     boost_tag_version = ".".join([_f for _f in [boost_version, config['boost_version_tag']] if _f])
 
@@ -50,11 +52,15 @@ def cmake_parameters():
                         "-DDEPENDENCIES_DIR={}".format(paths_build),
                         "-DBOOST_ROOT={}\\boost_{}".format(paths_build, boost_tag_version.replace(".", "_")),
                         "-DBoost_LIBRARY_DIRS={}\\boost_{}\\lib{}-msvc-{}\\lib".format(paths_build, boost_tag_version.replace(".", "_"),"64" if config['architecture'] == 'x86_64' else "32",vc_version),
+                        "-DFMT_ROOT={}\\fmt-{}".format(paths_build, fmt_version),
+                        "-DSPDLOG_ROOT={}\\spdlog-{}".format(paths_build, spdlog_version),
                         "-DLOOT_PATH={}\\libloot-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
                         "-DLZ4_ROOT={}\\lz4-v{}".format(paths_build, ".".join([_f for _f in [config["lz4_version"], config['lz4_version_minor']] if _f])),
                         "-DQT_ROOT={}".format(qt_inst_path()),
                         "-DZLIB_ROOT={}\\\zlib-{}".format(paths_build, config["zlib_version"]),
-                        "-DPYTHON_ROOT={}\\\python-{}".format(paths_build, config["python_version"] + config["python_version_minor"])]
+                        "-DPYTHON_ROOT={}\\\python-{}".format(paths_build, config["python_version"] + config["python_version_minor"]),
+                        "-DBOOST_DI_ROOT={}\\\di".format(paths_build),
+                        "-DLIBBSARCH_ROOT={}\\\libbsarch-{}-{}".format(paths_build, config["libbsarch_version"], "x64" if config['architecture'] == 'x86_64' else "x86")]
 
     if config.get('optimize', False):
         cmake_parameters.append("-DOPTIMIZE_LINK_FLAGS=\"/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF\"")

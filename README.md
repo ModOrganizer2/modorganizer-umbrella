@@ -18,25 +18,24 @@ Open there a console and copy in: ``git clone https://github.com/Modorganizer2/m
 Now you need to install all required software to build Mod Organizer.
 
 #### Manual Requirements
-* Qt 5.12.4 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+* Qt 5.13.2 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
   #### Qt Packages required:
   * msvc2017-64
   * qtwebengine
-  * qtwebsockets
   
-  Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error.
-* Visual Studio Community 2019 Link: https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community
+  Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error or other build errors.
+* Visual Studio Community 2019 Link: https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16
   #### Visual Studio Packages required:
   * .NET desktop development
   * Desktop development for C++
   
   Additionally you need to activate under Individual components:
-  * "Windows Universal C Runtime" (Under Compilers, build tools, and runtimes)
-  * "Windows 8.1 SDK" (Under SDKs, libraries, and frameworks)
+  * "Windows Universal C Runtime" (Under SDKs, libraries, and frameworks)
   * "Windows 10 SDK (10.0.17763.0) for Desktop C++ [x86 and x64]" (Under SDKs, libraries, and frameworks)
   * C++ ATL for v141/v142 build tools (x86 & x64) (Under SDKs, libraries, and frameworks)
   * Ensure v141 build tools are selected for some dependencies that may not support v142 yet
     * Note: If you have problems building Python due to a "missing SDK version", edit the registry key [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0] to point to the the 10.0.17763.0 SDK.
+* .NET Framework 3.5 Link: https://www.microsoft.com/en-us/download/details.aspx?id=21
 
 #### Additional Requirements
 ##### Manual Install

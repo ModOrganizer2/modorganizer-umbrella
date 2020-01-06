@@ -18,6 +18,7 @@
 import logging
 import os.path
 import shutil
+import multiprocessing
 import time
 from subprocess import Popen
 from glob import glob
@@ -25,6 +26,7 @@ from glob import glob
 from config import config
 from unibuild import Project
 from unibuild.modules import build,  Patch, urldownload
+from unibuild.projects import nasm
 
 # currently binary installation only
 openssl_version = config['openssl_version']
@@ -33,6 +35,7 @@ build_path = config["paths"]["build"]
 install_path = config["paths"]["install"]
 openssl_path = os.path.join(build_path, "openssl-{}".format(openssl_version))
 
+cpus = config["num_jobs"] if config["num_jobs"] < 8 else 8
 # installation happens concurrently in separate process.  We need to wait for all relevant files to exist,
 # and can determine failure only by timeout
 timeout = 15  # seconds
@@ -52,50 +55,55 @@ url = "https://www.openssl.org/source/{}".format(filename)
 def openssl_environment():
     result = config['__environment'].copy()
     result['Path'] += ";" + os.path.join(build_path, "nasm-{}-win{}".format(nasm_version, bitness(), nasm_version, bitness()))
-    result['CL'] = "/MP"
+    result['CL'] = "/MP1 /cgthreads{} /FS".format(cpus)
+    result['LINK'] = "/cgthreads:{}".format(cpus)
     return result
 
 
 def openssl_stage(context):
-        final_path = os.path.join(openssl_path, "build")
-        dest_bin = os.path.join(install_path, "bin")
-        dest_lib = os.path.join(install_path, "libs")
-        dest_pdb = os.path.join(install_path, "pdb")
-        if not os.path.exists(dest_bin):
-            os.makedirs(dest_bin)
-        if not os.path.exists(dest_lib):
-            os.makedirs(dest_lib)
-        if not os.path.exists(dest_pdb):
-             os.makedirs(dest_pdb)
-        for f in glob(os.path.join(final_path, "bin", "libcrypto-1_1{}.dll".format(bitness_suffix()))):
-             shutil.copy(f, os.path.join(dest_bin, "libcrypto-1_1{}.dll".format(bitness_suffix())))
-             shutil.copy(f, os.path.join(dest_bin, "dlls", "libcrypto-1_1{}.dll".format(bitness_suffix())))
-        for f in glob(os.path.join(final_path, "bin", "libssl-1_1{}.dll".format(bitness_suffix()))):
-             shutil.copy(f, os.path.join(dest_bin, "libssl-1_1{}.dll".format(bitness_suffix())))
-             shutil.copy(f, os.path.join(dest_bin, "dlls", "libssl-1_1{}.dll".format(bitness_suffix())))
-        for f in glob(os.path.join(final_path,"bin", "libcrypto-1_1{}.pdb".format(bitness_suffix()))):
-            shutil.copy(f, os.path.join(dest_pdb, "libcrypto-1_1{}.pdb".format(bitness_suffix())))
-        for f in glob(os.path.join(final_path,"bin", "libssl-1_1{}.pdb".format(bitness_suffix()))):
-            shutil.copy(f, os.path.join(dest_pdb, "libssl-1_1{}.pdb".format(bitness_suffix())))
-        for f in glob(os.path.join(final_path, "lib", "libcrypto.lib")):
-            shutil.copy(f, os.path.join(dest_lib, "libcrypto.lib"))
-        for f in glob(os.path.join(final_path, "lib", "libssl.lib")):
-            shutil.copy(f, os.path.join(dest_lib, "libssl.lib"))
-        return True
+    if not config['Appveyor_Build']:
+        shutil.copy(os.path.join(openssl_path, "ms", "applink.c"), os.path.join(openssl_path, "include"))
+    final_path = os.path.join(openssl_path, "build")
+    dest_bin = os.path.join(install_path, "bin")
+    dest_lib = os.path.join(install_path, "libs")
+    dest_pdb = os.path.join(install_path, "pdb")
+    if not os.path.exists(dest_bin):
+        os.makedirs(dest_bin)
+    if not os.path.exists(os.path.join(dest_bin, "dlls")):
+        os.mkdir(os.path.join(dest_bin, "dlls"))
+    if not os.path.exists(dest_lib):
+        os.makedirs(dest_lib)
+    if not os.path.exists(dest_pdb):
+        os.makedirs(dest_pdb)
+    for f in glob(os.path.join(final_path, "bin", "libcrypto-1_1{}.dll".format(bitness_suffix()))):
+         shutil.copy(f, os.path.join(dest_bin, "libcrypto-1_1{}.dll".format(bitness_suffix())))
+         shutil.copy(f, os.path.join(dest_bin, "dlls", "libcrypto-1_1{}.dll".format(bitness_suffix())))
+    for f in glob(os.path.join(final_path, "bin", "libssl-1_1{}.dll".format(bitness_suffix()))):
+         shutil.copy(f, os.path.join(dest_bin, "libssl-1_1{}.dll".format(bitness_suffix())))
+         shutil.copy(f, os.path.join(dest_bin, "dlls", "libssl-1_1{}.dll".format(bitness_suffix())))
+    for f in glob(os.path.join(final_path,"bin", "libcrypto-1_1{}.pdb".format(bitness_suffix()))):
+        shutil.copy(f, os.path.join(dest_pdb, "libcrypto-1_1{}.pdb".format(bitness_suffix())))
+    for f in glob(os.path.join(final_path,"bin", "libssl-1_1{}.pdb".format(bitness_suffix()))):
+        shutil.copy(f, os.path.join(dest_pdb, "libssl-1_1{}.pdb".format(bitness_suffix())))
+    for f in glob(os.path.join(final_path, "lib", "libcrypto.lib")):
+        shutil.copy(f, os.path.join(dest_lib, "libcrypto.lib"))
+    for f in glob(os.path.join(final_path, "lib", "libssl.lib")):
+        shutil.copy(f, os.path.join(dest_lib, "libssl.lib"))
+    return True
 
 
-OpenSSL_Install = build.Run(r"nmake install",
+OpenSSL_Install = build.Run("{} /D /J {} install_engines".format(config["paths"]["jom"], cpus),
                       environment=openssl_environment(),
-                      name="Install OpenSSL",
+                      name="Build & Install OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
 
-OpenSSL_Build = build.Run(r"nmake",
+OpenSSL_Build = build.Run("{} /D /J {} build_".format(config["paths"]["jom"], cpus),
                       environment=openssl_environment(),
                       name="Building OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
 
 
-Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} VC-WIN{}A".format(config['paths']['perl'],
+Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} -FS VC-WIN{}A".format(config['paths']['perl'],
                                                                               os.path.join(openssl_path, "build"),
                                                                               os.path.join(openssl_path, "build"),
                                                                                bitness()),
@@ -104,7 +112,7 @@ Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} VC-WIN{
                       working_directory=lambda: os.path.join(openssl_path))
 
 
-if config.get('Appveyor_Build', True):
+if config['Appveyor_Build']:
     openssl = Project("openssl") \
         .depend(build.Execute(openssl_stage)
                 .depend(urldownload.URLDownload(config.get('prebuilt_url') + "openssl-prebuilt-{}.7z"
@@ -114,7 +122,7 @@ else:
     openssl = Project("openssl") \
         .depend(build.Execute(openssl_stage)
             .depend(OpenSSL_Install
-                .depend(OpenSSL_Build
+                #.depend(OpenSSL_Build
                         .depend(Configure_openssl
                             .depend(urldownload.URLDownload(url, tree_depth=1)
-                                .depend("nasm"))))))
+                                .depend("nasm")))))#)

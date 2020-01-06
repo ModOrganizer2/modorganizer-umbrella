@@ -19,6 +19,8 @@ import errno
 import logging
 import os.path
 import shutil
+import patch
+
 from glob import glob
 from subprocess import Popen
 
@@ -30,6 +32,7 @@ from unibuild.utility.config_utility import make_sure_path_exists
 
 sip_version = config['sip_version']
 sip_dev = False
+arch = "{}".format("" if config['architecture'] == 'x86' else "amd64")
 
 
 if config['sip_dev_version']:
@@ -42,13 +45,12 @@ python_path = os.path.join(config['paths']['build'], "python-{}".format(config['
 
 sip_url = urldownloadany.URLDownloadAny((
             urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/{0}/sip-{0}.zip".format(sip_version), 1),
-            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/sip-{0}.zip".format(sip_version), 1),
-            sourceforge.Release("pyqt", "sip/sip-{0}/sip-{0}.zip".format(sip_version), 1)))
+            urldownload.URLDownload("https://www.riverbankcomputing.com/static/Downloads/sip/sip-{0}.zip".format(sip_version), 1)))
 
 def sip_environment():
     result = config['__environment'].copy()
-    result['LIB'] += os.path.join(python_path, "PCbuild", "amd64")
-    logging.debug(os.path.join(os.path.join(config['paths']['build'], "Python-{}".format(config['python_version'] + config['python_version_minor'])), "PCbuild", "amd64"))
+    result['LIB'] += os.path.join(python_path, "PCbuild", arch)
+    logging.debug(os.path.join(os.path.join(config['paths']['build'], "Python-{}".format(config['python_version'] + config['python_version_minor'])), "PCbuild", arch))
     return result
 
 
@@ -74,12 +76,15 @@ class SipConfigure(build.Builder):
     def process(self, progress):
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
+
+        self.patch_siputils()
+
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
                 logging.debug("123 %s", python.python['build_path'])
                 bp = python.python['build_path']
 
-                proc = Popen([os.path.join(bp, "PCbuild", "amd64", "python.exe"), "configure.py",
+                proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "configure.py",
                      "-b", bp,
                      "-d", os.path.join(bp, "Lib", "site-packages"),
                      "-v", os.path.join(bp, "sip"),
@@ -97,6 +102,13 @@ class SipConfigure(build.Builder):
 
         return True
 
+    def patch_siputils(self):
+        patch_file = os.path.join(config['__Umbrella_path'], "patches", "siputils.py.patch")
+        savedpath = os.getcwd()
+        os.chdir(self._context["build_path"])
+        pset = patch.fromfile(patch_file)
+        pset.apply()
+        os.chdir(savedpath)
 
 if config.get('Appveyor_Build', True):
     Project('sip') \

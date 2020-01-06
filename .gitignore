@@ -31,3 +31,6 @@ graph.png
 Thumbs.db
 graph.dot
 graph.pdf
+/eggs/requests
+/eggs/colorama
+/eggs/tqdm

@@ -131,7 +131,7 @@ class PullTranslations(build.Builder):
                 environment = transifex_environment()
                 cwd = str(self._context["build_path"])
 
-                command = "{} config mapping-remote https://www.transifex.com/tannin/mod-organizer/"\
+                command = "{} config mapping-remote https://www.transifex.com/mod-organizer-2-team/mod-organizer-2/"\
                     .format(transifex_client_binary)
                 sout.write("running {} in {}".format(command, cwd))
                 proc = Popen(command,

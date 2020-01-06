@@ -54,7 +54,7 @@ class TaskManager(object, metaclass=Singleton):
         """
         for suc in graph.neighbors(node):
             self.enable(graph, suc)
-        graph.node[node]["enable"] = True
+        graph.nodes[node]["enable"] = True
 
     def enable_all(self, graph):
         for node in graph.nodes():

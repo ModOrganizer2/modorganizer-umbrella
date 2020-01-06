@@ -26,7 +26,10 @@ from unibuild import Task
 def Popen(cmd, **kwargs):
     pc = ''
     if 'cwd' in kwargs:
-        pc += os.path.relpath(kwargs['cwd'],os.path.abspath('..'))
+        try:
+            pc += os.path.relpath(kwargs['cwd'],os.path.abspath('..'))
+        except ValueError:
+            pc += kwargs['cwd']
     pc += '>'
     for arg in cmd:
         pc += ' ' + arg

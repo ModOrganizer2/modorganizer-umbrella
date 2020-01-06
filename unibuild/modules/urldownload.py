@@ -17,11 +17,13 @@
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 import os
+import io
 import shutil
 import subprocess
 import sys
 import tarfile
-import urllib.request, urllib.error, urllib.parse
+import re
+import requests
 import zipfile
 from urllib.parse import urlparse
 
@@ -30,6 +32,7 @@ from unibuild.retrieval import Retrieval
 from unibuild.utility import ProgressFile
 from unibuild.utility.context_objects import on_failure
 
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 class URLDownload(Retrieval):
     BLOCK_SIZE = 8192
@@ -40,16 +43,53 @@ class URLDownload(Retrieval):
         self.__tree_depth = tree_depth
         self.__name = name
         self.__clean = clean
-        # strip trailing slashes from urlparse().path that are generated if they url ends with questionmark
-        # eg: github blobs (file.zip?taw=true) otherwise os.path.basename return no file extension
-        self.__file_name = os.path.basename(urlparse(self.__url).path.rstrip("/"))
-        self.__file_path = os.path.join(config['paths']['download'], self.__file_name)
+
+        if self.__url is not None:
+            self.set_file_from_url()
+
+        # when set_destination() is called, __file_name is changed to the
+        # given path, which is probably absolute
+        #
+        # because __name is in most cases None, __file_name is used in name(),
+        # which is also used for the progress file name by replacing spaces with
+        # underscores
+        #
+        # this creates a file like "download_c:\somewhere", which is then
+        # sanitized to "download_c"
+        #
+        # this remembers the original filename in __name so the progress file
+        # can use it
+        if self.__name is None:
+            self.__name = self.__file_name
 
     @property
     def name(self):
         if self.__name is None:
             return "download {0}".format(self.__file_name)
         return "download {0}".format(self.__name)
+
+    @name.setter
+    def name(self, value):
+        self.__name = value
+
+    @property
+    def url(self):
+        return self.__url
+
+    @url.setter
+    def url(self, value):
+        self.__url = value
+        self.set_file_from_url()
+
+    def set_file_from_url(self):
+        # strip trailing slashes from urlparse().path that are generated if they url ends with questionmark
+        # eg: github blobs (file.zip?taw=true) otherwise os.path.basename return no file extension
+        self.__file_name = os.path.basename(urlparse(self.__url).path.rstrip("/"))
+        self.__file_path = os.path.join(config['paths']['download'], self.__file_name)
+
+    def set_download_filename(self, name):
+        self.__file_path = os.path.join(config['paths']['download'], name)
+        return self
 
     def set_destination(self, destination_name):
         name, ext = os.path.splitext(self.__file_name)
@@ -95,22 +135,20 @@ class URLDownload(Retrieval):
     def download(self, output_file_path, progress):
         logging.info("Downloading {} to {}".format(self.__url, output_file_path))
         progress.job = "Downloading"
-        data = urllib.request.urlopen(self.__url)
+        r = requests.get(self.__url, headers={'User-Agent': 'curl/7.37.0'}, allow_redirects=True, stream=True)
         with open(output_file_path, 'wb') as outfile:
-            length_str = data.getheader("Content-Length")
-            if length_str:
+            progress.maximum = sys.maxsize
+            length_str = r.headers.get('content-length', 0)
+            if int(length_str) > 0:
                 progress.maximum = int(length_str)
-            else:
-                progress.maximum = sys.maxsize
 
             bytes_read = 0
-            while True:
-                block = data.read(URLDownload.BLOCK_SIZE)
-                if not block:
-                    break
-                bytes_read += len(block)
-                outfile.write(block)
+            progress.value = 0
+            for data in r.iter_content(chunk_size=URLDownload.BLOCK_SIZE):
+                bytes_read += len(data)
                 progress.value = bytes_read
+                outfile.write(data)
+
 
     def extract(self, archive_file_path, output_file_path, progress):
         def progress_func(pos, size):
@@ -164,11 +202,11 @@ class URLDownload(Retrieval):
             elif extension in [".exe", ".msi"]:
                 # installers need to be handled by the caller
                 return True
-            elif extension in [".md", ".txt"]:
+            elif extension in [".md", ".txt", ""]:
                 # we don't need todo anything
                 return True
             else:
-                logging.error("unsupported file extension %s", extension)
+                logging.error("unsupported file extension '%s', filename='%s'", extension, self.__file_name)
                 return False
 
             for i in range(self.__tree_depth):

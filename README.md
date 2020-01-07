@@ -18,10 +18,11 @@ Open there a console and copy in: ``git clone https://github.com/Modorganizer2/m
 Now you need to install all required software to build Mod Organizer.
 
 #### Manual Requirements
-* Qt 5.13.2 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+* Qt 5.14.0 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
   #### Qt Packages required:
   * msvc2017-64
   * qtwebengine
+  * Optional: Sources and Windows debug files
   
   Be sure to expand the options to show ALL the available choices and then select those packages. Failure to do so will result in a missing qmake.exe error or other build errors.
 * Visual Studio Community 2019 Link: https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16
@@ -31,21 +32,21 @@ Now you need to install all required software to build Mod Organizer.
   
   Additionally you need to activate under Individual components:
   * "Windows Universal C Runtime" (Under SDKs, libraries, and frameworks)
-  * "Windows 10 SDK (10.0.17763.0) for Desktop C++ [x86 and x64]" (Under SDKs, libraries, and frameworks)
+  * "Windows 10 SDK (10.0.18362.0) for Desktop C++ \[x86 and x64\]" (Under SDKs, libraries, and frameworks)
   * C++ ATL for v141/v142 build tools (x86 & x64) (Under SDKs, libraries, and frameworks)
   * Ensure v141 build tools are selected for some dependencies that may not support v142 yet
-    * Note: If you have problems building Python due to a "missing SDK version", edit the registry key [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0] to point to the the 10.0.17763.0 SDK.
+    * Note: If you have problems building Python due to a "missing SDK version", edit the registry key \[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0\] to point to the the 10.0.17763.0 SDK.
 * .NET Framework 3.5 Link: https://www.microsoft.com/en-us/download/details.aspx?id=21
 
 #### Additional Requirements
 ##### Manual Install
 * 7zip (Latest 64Bit) Link: http://www.7-zip.org/a/7z1900-x64.exe
-* Inno 5 or 6(Only required to build Installer) Setup Link: http://www.jrsoftware.org/download.php/is.exe
-* CMake (latest 64bit)  Link: https://github.com/Kitware/CMake/releases/download/v3.14.5/cmake-3.14.5-win64-x64.msi
-* Git Link: https://github.com/git-for-windows/git/releases/download/v2.22.0.windows.1/Git-2.22.0-64-bit.exe
-* Python 3.7.4 (64Bit) Link: https://www.python.org/ftp/python/3.7.4/python-3.7.4-amd64.exe
+* Inno 5 or 6 (Only required to build Installer) Setup Link: http://www.jrsoftware.org/download.php/is.exe
+* CMake (latest 64bit)  Link: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi
+* Git Link: https://github.com/git-for-windows/git/releases/download/v2.24.1.windows.2/Git-2.24.1.2-64-bit.exe
+* Python 3 (64Bit) Link: https://www.python.org/ftp/python/3.8.1/python-3.8.1-amd64.exe
   * *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.*
-* Strawberry Perl Link: http://strawberryperl.com/download/5.30.0.1/strawberry-perl-5.30.0.1-64bit.msi
+* Strawberry Perl Link: http://strawberryperl.com/download/5.30.1.1/strawberry-perl-5.30.1.1-64bit.msi
 ##### Chocolatey
 Optionally, you can use [Chocolatey](https://chocolatey.org/install) to install these dependencies. The packages are:
 * 7zip

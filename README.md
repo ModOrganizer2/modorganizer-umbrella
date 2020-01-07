@@ -35,7 +35,7 @@ Now you need to install all required software to build Mod Organizer.
   * "Windows 10 SDK (10.0.18362.0) for Desktop C++ \[x86 and x64\]" (Under SDKs, libraries, and frameworks)
   * C++ ATL for v141/v142 build tools (x86 & x64) (Under SDKs, libraries, and frameworks)
   * Ensure v141 build tools are selected for some dependencies that may not support v142 yet
-    * Note: If you have problems building Python due to a "missing SDK version", edit the registry key \[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0\] to point to the the 10.0.17763.0 SDK.
+    * Note: If you have problems building Python due to a "missing SDK version", edit the registry key \[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0\] to point to the the 10.0.18362.0 SDK.
 * .NET Framework 3.5 Link: https://www.microsoft.com/en-us/download/details.aspx?id=21
 
 #### Additional Requirements

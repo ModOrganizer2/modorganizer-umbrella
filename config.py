@@ -124,8 +124,7 @@ config = {
     '1809-dark-mode_version': '1.3',
 
     #the usvfs version below will only be used if
-    'usvfs_version': 'v0.4.4',
-
+    'usvfs_version': 'v0.4.6',
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code

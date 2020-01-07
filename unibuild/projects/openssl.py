@@ -35,6 +35,7 @@ build_path = config["paths"]["build"]
 install_path = config["paths"]["install"]
 openssl_path = os.path.join(build_path, "openssl-{}".format(openssl_version))
 
+cpus = config["num_jobs"] if config["num_jobs"] < 8 else 8
 # installation happens concurrently in separate process.  We need to wait for all relevant files to exist,
 # and can determine failure only by timeout
 timeout = 15  # seconds
@@ -54,7 +55,8 @@ url = "https://www.openssl.org/source/{}".format(filename)
 def openssl_environment():
     result = config['__environment'].copy()
     result['Path'] += ";" + os.path.join(build_path, "nasm-{}-win{}".format(nasm_version, bitness(), nasm_version, bitness()))
-    result['CL'] = "/MP1 /FS"
+    result['CL'] = "/MP1 /cgthreads{} /FS".format(cpus)
+    result['LINK'] = "/cgthreads:{}".format(cpus)
     return result
 
 
@@ -90,18 +92,18 @@ def openssl_stage(context):
     return True
 
 
-OpenSSL_Install = build.Run("{} /D /J {} install_engines".format(config["paths"]["jom"], multiprocessing.cpu_count().__str__()),
+OpenSSL_Install = build.Run("{} /D /J {} install_engines".format(config["paths"]["jom"], cpus),
                       environment=openssl_environment(),
                       name="Build & Install OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
 
-OpenSSL_Build = build.Run("{} /D /J {} build_".format(config["paths"]["jom"], multiprocessing.cpu_count().__str__()),
+OpenSSL_Build = build.Run("{} /D /J {} build_".format(config["paths"]["jom"], cpus),
                       environment=openssl_environment(),
                       name="Building OpenSSL",
                       working_directory=lambda: os.path.join(openssl_path))
 
 
-Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} VC-WIN{}A".format(config['paths']['perl'],
+Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} -FS VC-WIN{}A".format(config['paths']['perl'],
                                                                               os.path.join(openssl_path, "build"),
                                                                               os.path.join(openssl_path, "build"),
                                                                                bitness()),

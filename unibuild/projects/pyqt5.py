@@ -61,9 +61,6 @@ def pyqt5_env():
 
 
 def copy_files(context):
-    # fix fir pre compiled deps
-    for file in glob(os.path.join(config["paths"]["build"], "PyQt5-{}".format(pyqt_version), "*.bat")):
-        shutil.copy(file, os.path.join(python.python['build_path']))
     make_sure_path_exists(os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5"))
     srcdir = os.path.join(python.python['build_path'], "Lib", "site-packages", "PyQt5")
     dstdir = os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5")

@@ -80,7 +80,7 @@ class SipSetup(build.Builder):
                                   proc.returncode, soutpath, serrpath)
                     return False
 
-                logging.debug("Bundling python files")
+                logging.debug("SIP base setup")
                 proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "setup.py", "install"],
                     env=sip_environment(),
                     cwd=self._context["build_path"],
@@ -92,20 +92,21 @@ class SipSetup(build.Builder):
                                   proc.returncode, soutpath, serrpath)
                     return False
 
-                logging.debug("Generating sip.h")
-                proc = Popen([os.path.join(bp, "Scripts", "sip-module.exe"), "--sip-h", "PyQt5.sip"],
-                             env=sip_environment(),
-                             cwd=config["paths"]["download"],
-                             shell=True,
-                             stdout=sout, stderr=serr)
-                proc.communicate()
-                if proc.returncode != 0:
-                    logging.error("failed to run sip-module (returncode %s), see %s and %s",
-                                  proc.returncode, soutpath, serrpath)
-                    return False
+                if config["Appveyor_Build"] is False:
+                    logging.debug("Generating sip.h")
+                    proc = Popen([os.path.join(bp, "Scripts", "sip-module.exe"), "--sip-h", "PyQt5.sip"],
+                                 env=sip_environment(),
+                                 cwd=config["paths"]["download"],
+                                 shell=True,
+                                 stdout=sout, stderr=serr)
+                    proc.communicate()
+                    if proc.returncode != 0:
+                        logging.error("failed to run sip-module (returncode %s), see %s and %s",
+                                      proc.returncode, soutpath, serrpath)
+                        return False
 
-                logging.debug("Copy sip.h into python includes")
-                shutil.copy(os.path.join(config["paths"]["download"], "sip.h"), os.path.join(bp, "Include", "sip.h"))
+                    logging.debug("Copy sip.h into python includes")
+                    shutil.copy(os.path.join(config["paths"]["download"], "sip.h"), os.path.join(bp, "Include", "sip.h"))
 
         return True
 

@@ -119,4 +119,4 @@ optional arguments:
 I'd suggest to use a destination folder that isn't too deep, some dependencies don't handle long paths well.
 If the make target is left empty, everything is built. A incomplete lists of targets can be found [here](targets.md).
 
-Here are the dependency graphs that currently unimake takes care of: https://imgur.com/TT7TFGg.png
+Here are the dependency graphs that currently unimake takes care of: https://www.dropbox.com/s/rqi1wrboevrxelu/graph.pdf?dl=1

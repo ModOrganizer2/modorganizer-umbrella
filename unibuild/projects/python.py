@@ -122,6 +122,7 @@ def install(context):
     make_sure_path_exists(os.path.join(path_install, "libs"))
     make_sure_path_exists(os.path.join(context["build_path"], "libs"))
     make_sure_path_exists(os.path.join(path_install, "bin"))
+    make_sure_path_exists(os.path.join(path_install, "pdb"))
     path_segments = [context['build_path'], "PCbuild", bitness()]
     for f in glob(os.path.join(*path_segments, "*.lib")):
         shutil.copy(f, os.path.join(path_install, "libs"))

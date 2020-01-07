@@ -127,7 +127,8 @@ def patch_pyqt_installer(context):
     tarpath = os.path.join(python.python['build_path'], "Lib", "site-packages", "pyqtbuild")
     os.chdir(tarpath)
     pset = patch.fromfile(patch_file)
-    pset.apply()
+    if pset.apply() is False:
+        raise Exception('Unable to apply PyQt-builder patch, the patchset likely requires an update')
     os.chdir(savedpath)
     return True
 

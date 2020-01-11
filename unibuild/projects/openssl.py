@@ -15,17 +15,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
-import logging
 import os.path
 import shutil
-import multiprocessing
-import time
-from subprocess import Popen
 from glob import glob
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build,  Patch, urldownload
+from unibuild.modules import build, urldownload
 from unibuild.projects import nasm
 
 # currently binary installation only
@@ -43,6 +39,7 @@ timeout = 15  # seconds
 
 def bitness():
     return "64" if config['architecture'] == "x86_64" else "32"
+
 
 def bitness_suffix():
     return "-x64" if config['architecture'] == "x86_64" else ""
@@ -99,13 +96,14 @@ OpenSSL_Install = build.Run("{} /D /J {} install_engines".format(config["paths"]
                             retries=5)
 
 
-Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} -FS VC-WIN{}A".format(config['paths']['perl'],
-                                                                              os.path.join(openssl_path, "build"),
-                                                                              os.path.join(openssl_path, "build"),
-                                                                               bitness()),
-                      environment=openssl_environment(),
-                      name="Configure OpenSSL",
-                      working_directory=lambda: os.path.join(openssl_path))
+Configure_openssl = build.Run(
+    r"{} Configure --openssldir={} --prefix={} -FS VC-WIN{}A".format(config['paths']['perl'],
+                                                                     os.path.join(openssl_path, "build"),
+                                                                     os.path.join(openssl_path, "build"),
+                                                                     bitness()),
+    environment=openssl_environment(),
+    name="Configure OpenSSL",
+    working_directory=lambda: os.path.join(openssl_path))
 
 
 if config['Appveyor_Build']:
@@ -117,8 +115,7 @@ if config['Appveyor_Build']:
 else:
     openssl = Project("openssl") \
         .depend(build.Execute(openssl_stage)
-            .depend(OpenSSL_Install
-                #.depend(OpenSSL_Build
+                .depend(OpenSSL_Install
                         .depend(Configure_openssl
-                            .depend(urldownload.URLDownload(url, tree_depth=1)
-                                .depend("nasm")))))#)
+                                .depend(urldownload.URLDownload(url, tree_depth=1)
+                                        .depend("nasm")))))

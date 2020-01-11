@@ -94,6 +94,7 @@ config = {
     'nmm_version': '0.70.11',
     'openssl_version': '1.1.1d',
     'pyqt_version': '5.14.1',
+    'pyqt_pypi_hash': '3a/fb/eb51731f2dc7c22d8e1a63ba88fb702727b324c6352183a32f27f73b8116',
     'pyqt_dev_version': '', # leave empty for a standard release
     'pyqt_builder_version': '1.2.0',
     'python_version': '3.8',

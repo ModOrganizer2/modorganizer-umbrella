@@ -93,14 +93,10 @@ def openssl_stage(context):
 
 
 OpenSSL_Install = build.Run("{} /D /J {} install_engines".format(config["paths"]["jom"], cpus),
-                      environment=openssl_environment(),
-                      name="Build & Install OpenSSL",
-                      working_directory=lambda: os.path.join(openssl_path))
-
-OpenSSL_Build = build.Run("{} /D /J {} build_".format(config["paths"]["jom"], cpus),
-                      environment=openssl_environment(),
-                      name="Building OpenSSL",
-                      working_directory=lambda: os.path.join(openssl_path))
+                            environment=openssl_environment(),
+                            name="Build & Install OpenSSL",
+                            working_directory=lambda: os.path.join(openssl_path),
+                            retries=5)
 
 
 Configure_openssl = build.Run(r"{} Configure --openssldir={} --prefix={} -FS VC-WIN{}A".format(config['paths']['perl'],

@@ -33,6 +33,7 @@ from unibuild.utility.lazy import doclambda
 
 icu_version = config['icu_version']
 pyqt_version = config['pyqt_version']
+pyqt_pypi_hash = config['pyqt_pypi_hash']
 pyqt_builder_version = config['pyqt_builder_version']
 python_version = config.get('python_version', "3.7") + config.get('python_version_minor', ".0")
 pyqt_dev = False
@@ -226,7 +227,12 @@ else:
                 "https://www.riverbankcomputing.com/static/Downloads/PyQt5/PyQt5_gpl-{0}.zip".format(pyqt_version),
                 tree_depth=1)))
     else:
-        pyqt_source = pipdownload.PIPDownload("PyQt5", pyqt_version, tree_depth=1)
+        # The following does not work cleanly until pip download no longer runs setup.py
+        #pyqt_source = pipdownload.PIPDownload("PyQt5", pyqt_version, tree_depth=1)
+        pyqt_source = urldownload.URLDownload(
+            "https://files.pythonhosted.org/packages/{}/PyQt5-{}.tar.gz".format(pyqt_pypi_hash, pyqt_version),
+            tree_depth=1
+        )
 
     Project("PyQt5") \
         .depend(build.Execute(copy_files)

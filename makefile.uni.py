@@ -260,16 +260,16 @@ def copy_explorerpp(context):
 
 Project("explorerpp") \
     .depend(build.Execute(copy_explorerpp)
-        .depend(urldownload.URLDownload("https://explorerplusplus.com/software/explorer++_{}_x64.zip".format(config["explorer++_version"]), 0)
-            .set_destination("explorer++")))
+            .depend(urldownload.URLDownload("https://explorerplusplus.com/software/explorer++_{}_x64.zip".format(config["explorer++_version"]), 0)
+                    .set_destination("explorer++")))
 
 
 if config['Installer']:
-    build_installer =  build.Run(r'"{}" {}'.format(config["paths"]["InnoSetup"],"dist/MO2-Installer.iss"),
-              name="Build MO2 Installer")
+    build_installer = build.Run(r'"{}" {}'.format(config["paths"]["InnoSetup"],"dist/MO2-Installer.iss"),
+                                name="Build MO2 Installer")
 
     installer = Project("Installer") \
         .depend(build_installer
-            .depend(github.Source(config['Main_Author'], "modorganizer-Installer", "Develop", super_repository=tl_repo)
-                .set_destination("Installer")) \
-                    .depend("modorganizer").depend("usvfs").depend("usvfs_32").depend("translationsBuild").depend("modorganizer-fnistool"))
+                .depend(github.Source(config['Main_Author'], "modorganizer-Installer", "Develop", super_repository=tl_repo)
+                        .set_destination("Installer"))
+                .depend("modorganizer").depend("usvfs").depend("usvfs_32").depend("translationsBuild").depend("modorganizer-fnistool"))

@@ -223,11 +223,12 @@ class Execute(Builder):
 
 class Run(Builder):
     def __init__(self, command, fail_behaviour=Task.FailBehaviour.FAIL, environment=None, working_directory=None,
-                 name=None):
+                 name=None, retries=0):
         super(Run, self).__init__()
         self.__command = Lazy(command)
         self.__name = name
         self.__fail_behaviour = fail_behaviour
+        self.__retries = retries
         self.__environment = Lazy(environment)
         self.__working_directory = Lazy(working_directory)
 
@@ -242,6 +243,8 @@ class Run(Builder):
             logging.error("source path not known for {},"
                           " are you missing a matching retrieval script?".format(self.name))
 
+        tries = 0
+        return_code = -1
         soutpath = os.path.join(self._context["build_path"], "stdout.log")
         serrpath = os.path.join(self._context["build_path"], "stderr.log")
         with open(soutpath, "w") as sout:
@@ -254,13 +257,18 @@ class Run(Builder):
                           else self._context["build_path"])
 
                 sout.write("running {} in {}".format(self.__command(), cwd))
-                proc = Popen(self.__command(),
-                             env=environment,
-                             cwd=cwd,
-                             shell=True,
-                             stdout=sout, stderr=serr)
-                proc.communicate()
-                if proc.returncode != 0:
+
+                while tries <= self.__retries and return_code is not 0:
+                    tries += 1
+                    proc = Popen(self.__command(),
+                                 env=environment,
+                                 cwd=cwd,
+                                 shell=True,
+                                 stdout=sout, stderr=serr)
+                    proc.communicate()
+                    return_code = proc.returncode
+
+                if return_code != 0:
                     logging.error("failed to run %s (returncode %s), see %s and %s",
                                   self.__command(), proc.returncode, soutpath, serrpath)
                     return False

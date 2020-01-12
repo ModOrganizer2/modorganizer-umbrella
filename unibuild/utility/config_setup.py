@@ -49,11 +49,15 @@ def init_config(args):
         config['paths']['python'] = Lazy(sys.executable)
     else:
         (major, minor) = sys.version_info
-        python = get_from_hklm("HKEY_LOCAL_MACHINE", r"SOFTWARE\Python\PythonCore\{}.{}\InstallPath".format(major, minor), "")
+        python = get_from_hklm("HKEY_LOCAL_MACHINE", r"SOFTWARE\Python\PythonCore\{}.{}\InstallPath".format(major, minor), "ExecutablePath")
         if python is not None:
-            config['paths']['python'] = Lazy(lambda: os.path.join(python, "python.exe"))
+            config['paths']['python'] = Lazy(python)
         else:
-            config['paths']['python'] = Lazy(lambda: os.path.join(get_from_hklm("HKEY_CURRENT_USER", r"SOFTWARE\Python\PythonCore\{}.{}\InstallPath".format(major, minor), ""), "python.exe"))
+            python = get_from_hklm("HKEY_LOCAL_MACHINE", r"SOFTWARE\Python\PythonCore\{}.{}\InstallPath".format(major, minor), "")
+            if python is not None:
+                config['paths']['python'] = Lazy(lambda: os.path.join(python, "python.exe"))
+            else:
+                config['paths']['python'] = Lazy(lambda: os.path.join(get_from_hklm("HKEY_CURRENT_USER", r"SOFTWARE\Python\PythonCore\{}.{}\InstallPath".format(major, minor), ""), "python.exe"))
 
     for d in list(config['paths'].keys()):
         if isinstance(config['paths'][d], str):

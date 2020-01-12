@@ -99,7 +99,6 @@ config = {
     'pyqt_builder_version': '1.2.0',
     'python_version': '3.8',
     'python_version_minor': '.1',
-    'local_python_version': '', # Leave empty to default to the MO2 python version
     'bzip2_version': '1.0.6', # For python
     'sip_version': '5.1.0',
     'sip_dev_version': '', # leave empty for a standard release

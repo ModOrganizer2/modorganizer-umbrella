@@ -43,7 +43,17 @@ def get_from_hklm(hkey ,path, name, wow64=False):
 def init_config(args):
     # some tools gets confused onto what constitutes .  (OpenSSL and maybe CMake)
     args.destination = os.path.realpath(args.destination)
-    python_cli_version = config['python_version'] if config['local_python_version'] == "" else config['local_python_version']
+
+    # locate python
+    if sys.executable is not None:
+        config['paths']['python'] = Lazy(sys.executable)
+    else:
+        (major, minor) = sys.version_info
+        python = get_from_hklm("HKEY_LOCAL_MACHINE", r"SOFTWARE\Python\PythonCore\{}.{}\InstallPath".format(major, minor), "")
+        if python is not None:
+            config['paths']['python'] = Lazy(lambda: os.path.join(python, "python.exe"))
+        else:
+            config['paths']['python'] = Lazy(lambda: os.path.join(get_from_hklm("HKEY_CURRENT_USER", r"SOFTWARE\Python\PythonCore\{}.{}\InstallPath".format(major, minor), ""), "python.exe"))
 
     for d in list(config['paths'].keys()):
         if isinstance(config['paths'][d], str):
@@ -51,13 +61,6 @@ def init_config(args):
                                                            build_dir=args.builddir,
                                                            progress_dir=args.progressdir,
                                                            install_dir=args.installdir)
-
-    python = get_from_hklm("HKEY_LOCAL_MACHINE", r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(python_cli_version), "")
-    if python is not None:
-        config['paths']['python'] = Lazy(lambda: os.path.join(python, "python.exe"))
-    else:
-        config['paths']['python'] = Lazy(lambda: os.path.join(get_from_hklm("HKEY_CURRENT_USER", r"SOFTWARE\Python\PythonCore\{}\InstallPath".format(python_cli_version), ""), "python.exe"))
-
 
     # parse -s argument.  Example -s paths.build=bin would set config[paths][build] to bin
     if args.set:

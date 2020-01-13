@@ -70,8 +70,8 @@ config = {
                                # folders: <project>\<task>_complete.txt
 
     'Main_Author': 'ModOrganizer2',  # the current maintainer
-    'Dev_Branch': "Develop",
-    'Release_Branch': "master",
+    'Dev_Branch': "master",
+    'Release_Branch': "2_2_2",
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 

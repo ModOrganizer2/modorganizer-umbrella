@@ -269,6 +269,6 @@ if config['Installer']:
 
     installer = Project("Installer") \
         .depend(build_installer
-            .depend(github.Source(config['Main_Author'], "modorganizer-Installer", "Develop", super_repository=tl_repo)
-                .set_destination("Installer")) \
+            .depend(github.Source(config['Main_Author'], "modorganizer-Installer", config['Build_Branch'], super_repository=tl_repo)
+                .set_destination("installer")) \
                     .depend("modorganizer").depend("usvfs").depend("usvfs_32").depend("translationsBuild").depend("modorganizer-fnistool"))

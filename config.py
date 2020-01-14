@@ -72,6 +72,7 @@ config = {
     'Main_Author': 'ModOrganizer2',  # the current maintainer
     'Dev_Branch': "master",
     'Release_Branch': "2_2_2",
+    'Feature_Branch': None, # Specify a branch or None to disable, used in place of the build branch when found
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 

@@ -22,10 +22,11 @@ from unibuild.retrieval import Retrieval
 
 
 class Repository(Retrieval):
-    def __init__(self, url, branch):
+    def __init__(self, url, branch, feature_branch=None):
         super(Repository, self).__init__()
         self._url = url
         self._branch = branch
+        self._feature_branch = feature_branch
         self._dir_name = os.path.basename(self._url)
         self._output_file_path = os.path.join(config["paths"]["build"], self._dir_name)
 

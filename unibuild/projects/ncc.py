@@ -81,7 +81,7 @@ Project("ncc") \
                                       environment=ncc_environment(),
                                       working_directory=lazy.Evaluate(lambda: os.path.join(build_path, "Nexus-Mod-Manager")))
                             .depend(build.Execute(prepare_nmm, name="append NexusClientCli project to NMM")
-                                    .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", config["nmm_version"], None, False))
-                                    .depend(github.Source(config['Main_Author'], "modorganizer-NCC", config['Build_Branch'])
+                                    .depend(github.Source("Nexus-Mods", "Nexus-Mod-Manager", config["nmm_version"], None, None, False))
+                                    .depend(github.Source(config['Main_Author'], "modorganizer-NCC", config['Build_Branch'], feature_branch=config['Feature_Branch'])
                                             .set_destination("NexusClientCli")))))) \
     .depend("nuget")

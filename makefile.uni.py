@@ -143,7 +143,7 @@ for author, git_path, path, branch, dependencies, Build in [
             else:
                 project.depend(
                     appveyor_cmake_step.depend(
-                        github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path)
+                        github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)
                     )
                 )
         else:
@@ -160,12 +160,12 @@ for author, git_path, path, branch, dependencies, Build in [
             project.depend(
                 vs_msbuild_step.depend(
                     vs_cmake_step.depend(
-                        github.Source(author, git_path, branch, super_repository=tl_repo).set_destination(path)
+                        github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)
                     )
                 )
             )
     else:
-        project.depend(github.Source(author, git_path, branch, super_repository=tl_repo)
+        project.depend(github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo)
                        .set_destination(path))
 
 
@@ -270,6 +270,6 @@ if config['Installer']:
 
     installer = Project("Installer") \
         .depend(build_installer
-                .depend(github.Source(config['Main_Author'], "modorganizer-Installer", config['Build_Branch'], super_repository=tl_repo)
+                .depend(github.Source(config['Main_Author'], "modorganizer-Installer", config['Build_Branch'], feature_branch=config['Feature_Branch'], super_repository=tl_repo)
                         .set_destination("installer"))
                 .depend("modorganizer").depend("usvfs").depend("usvfs_32").depend("translationsBuild").depend("modorganizer-fnistool"))

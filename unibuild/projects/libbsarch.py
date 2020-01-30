@@ -46,7 +46,7 @@ def deploy_dll(context):
 Project("libbsarch").depend(
     build.Execute(deploy_dll).depend(
         github.Release(
-            "deorder",
+            "ModOrganizer2",
             "libbsarch",
             version=libbsarch_version,
             filename="libbsarch-{}-release-{}".format(libbsarch_version, bitness()),

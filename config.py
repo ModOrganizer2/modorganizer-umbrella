@@ -116,7 +116,7 @@ config = {
     'WixToolset_version': '311',
     'zlib_version': '1.2.11',
     'explorer++_version': '1.3.5',
-    'libbsarch_version': '0.0.7',
+    'libbsarch_version': '0.0.8',
 
     #stylesheets
     'paper-light-and-dark_version': '5.3',

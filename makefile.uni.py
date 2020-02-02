@@ -108,6 +108,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-preview_dds", "preview_dds", config['Build_Branch'],  ["modorganizer-plugin_python"], True),
     (config['Main_Author'], "githubpp", "githubpp", config['Build_Branch'], ["Qt5"], True),
     (config['Main_Author'], "modorganizer-bsapacker", "bsapacker", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "libbsarch", "boost_di"], True),
+    (config['Main_Author'], "modorganizer-preview_bsa", "preview_bsa", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "libbsarch" ], True),
     (config['Main_Author'], "modorganizer", "modorganizer", config['Build_Branch'], ["Qt5", "boost", "usvfs_32",
                                                                                     "modorganizer-uibase",
                                                                                     "modorganizer-archive",

@@ -66,7 +66,8 @@ def copy_files(context):
     srcdir = os.path.join(python.python['build_path'], "Lib", "site-packages", "PyQt5")
     dstdir = os.path.join(__build_base_path, "install", "bin", "plugins", "data", "PyQt5")
     shutil.copy(os.path.join(srcdir, "__init__.py"), os.path.join(dstdir, "__init__.py"))
-    shutil.copy(os.path.join(sip.sip["build_path"], "sipbuild", "module", "source", "12.7", "sip.pyi"),
+    pyqt_sip_ver = config["pyqt_sip_version"].split('.')
+    shutil.copy(os.path.join(sip.sip["build_path"], "sipbuild", "module", "source", "{}.{}".format(pyqt_sip_ver[0], pyqt_sip_ver[1]), "sip.pyi"),
                 os.path.join(dstdir, "sip.pyi"))
     for file in glob(os.path.join(srcdir, "sip*")):
         shutil.copy(file, dstdir)
@@ -184,7 +185,7 @@ def install_sip_pyqt_module(context):
             bp = python.python['build_path']
             logging.debug("Installing PyQt5.sip")
             proc = Popen([os.path.join(bp, "PCbuild", arch, "python.exe"), "-m", "pip", "install",
-                          os.path.join(config["paths"]["download"], "PyQt5_sip-12.7.0.tar.gz")],
+                          os.path.join(config["paths"]["download"], "PyQt5_sip-{}.tar.gz".format(config["pyqt_sip_version"]))],
                 env=config["__environment"],
                 cwd=bp,
                 shell=True,

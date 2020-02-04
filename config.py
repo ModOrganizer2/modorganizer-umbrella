@@ -98,16 +98,17 @@ config = {
     'pyqt_pypi_hash': '3a/fb/eb51731f2dc7c22d8e1a63ba88fb702727b324c6352183a32f27f73b8116',
     'pyqt_dev_version': '', # leave empty for a standard release
     'pyqt_builder_version': '1.2.0',
+    'pyqt_sip_version': '12.7.1',
     'python_version': '3.8',
     'python_version_minor': '.1',
     'bzip2_version': '1.0.6', # For python
-    'sip_version': '5.1.0',
+    'sip_version': '5.1.1',
     'sip_dev_version': '', # leave empty for a standard release
     'spdlog_version': 'v1.4.2',
     'qt_version': '5.14',
-    'qt_version_minor': '0',
-    'qt_version_appveyor': '5.13',
-    'qt_version_minor_appveyor': '2',
+    'qt_version_minor': '1',
+    'qt_version_appveyor': '5.14',
+    'qt_version_minor_appveyor': '0',
     'qt_vc_version': '15.0',
     'vc_platformtoolset': 'v142',
     'vc_TargetPlatformVersion': '10.0.18362.0',

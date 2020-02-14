@@ -64,6 +64,8 @@ You can specify a build location using ``-d <directory path>``
 If you wish to rebuild only one target once everything is complete, you simply delete the relevant txt file or directory in the progress folder, e.g C:\modorganizer-umbrella\progress\modorganizer
 Then rerun the build script and it will rebuild the relevant project.
 
+To build an individual project once the umbrella script has completed successfully, you can also use the relative VS solution, making sure to set the configuration to RelWithDebugInfo.
+
 ## Purpose
 This repository contains a meta build-system that is able to download and build MO subprojects and dependencies as necessary.
 It can be used to build the whole project to produce a build that should be equivalent to the release or to build subprojects (i.e. plugins) with the minimum of dependencies.

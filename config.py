@@ -46,6 +46,9 @@ config = {
     'Release_Build': False,  #Used to override certain versions in umbrella when doing an officail release
 
                             #eg. Using the usvfs_version below instead of the Main_Branch config
+    
+    'override_build_version': '', #used to override the modorganizer.exe output version, useful for Appveyor nightlies and dev builds.
+    
     'vc_CustomInstallPath': '',  # If you installed VC to a custom location put the full path here
                                  # eg.  'E:\Microsoft Visual Studio 14.0'
     'qt_CustomInstallPath': r'',  # If you installed QT to a custom location put the full path here

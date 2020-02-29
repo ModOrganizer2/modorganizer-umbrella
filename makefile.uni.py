@@ -23,7 +23,7 @@ from config import config
 from string import Formatter
 from glob import glob
 from unibuild import Project
-from unibuild.modules import build, cmake, git, github, urldownload, msbuild, appveyor
+from unibuild.modules import build, cmake, git, github, urldownload, msbuild, appveyor, Patch
 from unibuild.projects import boost, fmt, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, spdlog, zlib, nuget, libbsarch, boost_di, stylesheets
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
@@ -130,41 +130,52 @@ for author, git_path, path, branch, dependencies, Build in [
     project = Project(git_path)
 
     if Build:
+        #prepare build version override step
+        patch_version_step = Patch.RegexReplace("src/version.rc", 
+                                                "#define VER_FILEVERSION_STR.*\n", 
+                                                "#define VER_FILEVERSION_STR \"{}\"\n"
+                                                .format(config['override_build_version']))
+
         if config['Appveyor_Build']:
             appveyor_cmake_step = cmake.CMakeJOM().arguments(cmake_param).install()
 
             for dep in dependencies:
                 appveyor_cmake_step.depend(dep)
+
             if os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
-                project.depend(
-                    appveyor_cmake_step.depend(
-                        appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
-                    )
-                )
+                source_retrieval_step = appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))                
             else:
-                project.depend(
-                    appveyor_cmake_step.depend(
-                        github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)
-                    )
-                )
+                source_retrieval_step = github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)
+
+            if git_path == "modorganizer" and config['override_build_version']:
+                #add patching step that depends on source retrieval
+                patch_version_step.depend(source_retrieval_step)
+                appveyor_cmake_step.depend(patch_version_step)
+            else:
+                appveyor_cmake_step.depend(source_retrieval_step)
+
+            project.depend(appveyor_cmake_step)
         else:
             vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
 
             for dep in dependencies:
                 vs_cmake_step.depend(dep)
-
+            
             #vs_target = "Clean;Build" if config['rebuild'] else "Build"
             vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
                                               "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
                                               config['build_type'])
 
-            project.depend(
-                vs_msbuild_step.depend(
-                    vs_cmake_step.depend(
-                        github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)
-                    )
-                )
-            )
+            source_retrieval_step = github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)
+
+            if git_path == "modorganizer" and config['override_build_version']:
+                #add patching step that depends on source retrieval
+                patch_version_step.depend(source_retrieval_step)
+                vs_cmake_step.depend(patch_version_step)
+            else:
+                vs_cmake_step.depend(source_retrieval_step)
+
+            project.depend(vs_msbuild_step.depend(vs_cmake_step))
     else:
         project.depend(github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo)
                        .set_destination(path))

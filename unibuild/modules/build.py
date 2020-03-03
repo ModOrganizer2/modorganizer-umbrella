@@ -258,7 +258,7 @@ class Run(Builder):
 
                 sout.write("running {} in {}".format(self.__command(), cwd))
 
-                while tries <= self.__retries and return_code is not 0:
+                while tries <= self.__retries and return_code != 0:
                     tries += 1
                     proc = Popen(self.__command(),
                                  env=environment,

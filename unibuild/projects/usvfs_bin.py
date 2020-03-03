@@ -41,7 +41,7 @@ def copy_usvfs_files(context):
     for f in glob(os.path.join(download_path, "usvfs_{}.pdb".format(arch))):
         shutil.copy(f, os.path.join(install_path, "pdb"))
     for f in glob(os.path.join(download_path, "usvfs_{}.lib".format(arch))):
-        shutil.copy(f, os.path.join(install_path, "pdb"))
+        shutil.copy(f, os.path.join(install_path, "libs"))
     for f in glob(os.path.join(download_path, "usvfs_{}.dll".format(arch))):
         shutil.copy(f, os.path.join(install_path, "bin"))
     for f in glob(os.path.join(download_path, "usvfs_proxy_{}.exe".format(arch))):

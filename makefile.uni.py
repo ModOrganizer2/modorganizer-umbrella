@@ -24,7 +24,7 @@ from string import Formatter
 from glob import glob
 from unibuild import Project
 from unibuild.modules import build, cmake, git, github, urldownload, msbuild, appveyor, Patch
-from unibuild.projects import boost, fmt, googletest, libloot, lz4, nasm, ncc, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, spdlog, zlib, nuget, libbsarch, boost_di, stylesheets
+from unibuild.projects import boost, fmt, googletest, libloot, lz4, nasm, ncc, usvfs_bin, openssl, sevenzip, sip, usvfs, python, pyqt5, qt5, spdlog, zlib, nuget, libbsarch, boost_di, stylesheets
 from unibuild.utility import FormatDict
 from unibuild.utility.config_utility import cmake_parameters, qt_inst_path
 

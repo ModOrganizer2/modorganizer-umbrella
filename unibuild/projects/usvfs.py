@@ -21,8 +21,7 @@ import sys
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build, cmake, dummy, msbuild, github
-
+from unibuild.modules import build, msbuild, github
 
 build_path = config["paths"]["build"]
 suffix = "" if config['architecture'] == 'x86_64' else "_32"
@@ -64,8 +63,13 @@ for (project32, dependencies) in [("boost", ["boost_prepare"]),
   else:
     Project(project32 + "_32").dummy().depend(project32)
 
-usvfs \
-    .depend(msbuild.MSBuild("usvfs.sln", vs_target, os.path.join(build_path, "usvfs", "vsbuild"),
+
+if config['Appveyor_Build']:
+    usvfs \
+        .depend(github.Source(config['Main_Author'], "usvfs", usvfs_version)).depend("usvfs_bin")
+else:
+    usvfs \
+        .depend(msbuild.MSBuild("usvfs.sln", vs_target, os.path.join(build_path, "usvfs", "vsbuild"),
                             "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
                             None, None, None, usvfs_environment())
             .depend("boost" + suffix)

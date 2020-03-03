@@ -202,7 +202,7 @@ class URLDownload(Retrieval):
             elif extension in [".exe", ".msi"]:
                 # installers need to be handled by the caller
                 return True
-            elif extension in [".md", ".txt", ""]:
+            elif extension in [".md", ".txt", ".pdb", ".lib", ".dll", ""]:
                 # we don't need todo anything
                 return True
             else:

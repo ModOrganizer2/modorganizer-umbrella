@@ -32,7 +32,7 @@ usvfs_bin = Project("usvfs_bin")
 
 
 def appveyor_url(filename,sysarch):
-    return "https://ci.appveyor.com/api/projects/Modorganizer2/usvfs//artifacts/bin/{0}?job=Platform:%20{1}".format(
+    return "https://ci.appveyor.com/api/projects/Modorganizer2/usvfs/artifacts/{0}?job=Platform:%20{1}".format(
                                                                                                             filename,
                                                                                                             sysarch)
 
@@ -53,11 +53,11 @@ def copy_usvfs_files(context):
 
 usvfs_bin \
     .depend(build.Execute(copy_usvfs_files)
-    .depend(urldownload.URLDownload(appveyor_url("usvfs_{}.pdb".format(arch), "{}".format(arch)))
-    .depend(urldownload.URLDownload(appveyor_url("usvfs_{}.dll".format(arch), "{}".format(arch)))
-    .depend(urldownload.URLDownload(appveyor_url("usvfs_{}.lib".format(arch), "{}".format(arch)))
-    .depend(urldownload.URLDownload(appveyor_url("usvfs_proxy_{}.exe".format(arch), "{}".format(arch)))
-    .depend(urldownload.URLDownload(appveyor_url("usvfs_proxy_{}.pdb".format(arch), "{}".format(arch)))))))))
+    .depend(urldownload.URLDownload(appveyor_url("lib/usvfs_{}.pdb".format(arch), "{}".format(arch)))
+    .depend(urldownload.URLDownload(appveyor_url("lib/usvfs_{}.dll".format(arch), "{}".format(arch)))
+    .depend(urldownload.URLDownload(appveyor_url("lib/usvfs_{}.lib".format(arch), "{}".format(arch)))
+    .depend(urldownload.URLDownload(appveyor_url("bin/usvfs_proxy_{}.exe".format(arch), "{}".format(arch)))
+    .depend(urldownload.URLDownload(appveyor_url("bin/usvfs_proxy_{}.pdb".format(arch), "{}".format(arch)))))))))
 
 
 

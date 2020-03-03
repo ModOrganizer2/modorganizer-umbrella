@@ -38,15 +38,21 @@ def appveyor_url(filename,sysarch):
 
 
 def copy_usvfs_files(context):
-    for f in glob(os.path.join(download_path, "usvfs_{}.pdb".format(arch))):
-        shutil.copy(f, os.path.join(install_path, "pdb"))
+    if not os.path.exists(os.path.join(install_path, "libs")):
+        os.mkdir(os.path.join(install_path, "libs"))
     for f in glob(os.path.join(download_path, "usvfs_{}.lib".format(arch))):
         shutil.copy(f, os.path.join(install_path, "libs"))
+    if not os.path.exists(os.path.join(install_path, "bin")):
+        os.mkdir(os.path.join(install_path, "bin"))
     for f in glob(os.path.join(download_path, "usvfs_{}.dll".format(arch))):
         shutil.copy(f, os.path.join(install_path, "bin"))
     for f in glob(os.path.join(download_path, "usvfs_proxy_{}.exe".format(arch))):
         shutil.copy(f, os.path.join(install_path, "bin"))
+    if not os.path.exists(os.path.join(install_path, "pdb")):
+        os.mkdir(os.path.join(install_path, "pdb"))
     for f in glob(os.path.join(download_path, "usvfs_proxy_{}.pdb".format(arch))):
+        shutil.copy(f, os.path.join(install_path, "pdb"))
+    for f in glob(os.path.join(download_path, "usvfs_{}.pdb".format(arch))):
         shutil.copy(f, os.path.join(install_path, "pdb"))
     return True
 

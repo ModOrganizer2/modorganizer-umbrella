@@ -66,7 +66,7 @@ for (project32, dependencies) in [("boost", ["boost_prepare"]),
 
 if config['Appveyor_Build']:
     usvfs \
-        .depend(github.Source(config['Main_Author'], "usvfs", usvfs_version)).depend("usvfs_bin")
+        .depend(github.Source(config['Main_Author'], "usvfs", usvfs_version)).depend("usvfs_bin" + suffix)
 else:
     usvfs \
         .depend(msbuild.MSBuild("usvfs.sln", vs_target, os.path.join(build_path, "usvfs", "vsbuild"),

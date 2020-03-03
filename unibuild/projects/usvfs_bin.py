@@ -28,7 +28,10 @@ from unibuild.modules import build, github, urldownload
 install_path = config["paths"]["install"]
 download_path = config["paths"]["download"]
 arch = "x64" if config['architecture'] == 'x86_64' else "x86"
-usvfs_bin = Project("usvfs_bin")
+if config['architecture'] == 'x86_64':
+    usvfs_bin = Project("usvfs_bin_64")
+else:
+    usvfs_bin = Project("usvfs_bin_32")
 
 
 def appveyor_url(filename,sysarch):

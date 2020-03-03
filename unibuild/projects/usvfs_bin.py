@@ -29,7 +29,7 @@ install_path = config["paths"]["install"]
 download_path = config["paths"]["download"]
 arch = "x64" if config['architecture'] == 'x86_64' else "x86"
 if config['architecture'] == 'x86_64':
-    usvfs_bin = Project("usvfs_bin_64")
+    usvfs_bin = Project("usvfs_bin")
 else:
     usvfs_bin = Project("usvfs_bin_32")
 

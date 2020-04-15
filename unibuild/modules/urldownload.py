@@ -180,9 +180,15 @@ class URLDownload(Retrieval):
             if extension == ".gz" or extension == ".tgz":
                 extractProgress()
                 archive_file = ProgressFile(archive_file_path, progress_func)
-                with tarfile.open(fileobj=archive_file, mode='r:gz') as arch:
-                    arch.extractall(output_file_path)
-                archive_file.close()
+                try:
+                    with tarfile.open(fileobj=archive_file, mode='r:gz') as arch:
+                        arch.extractall(output_file_path)
+                    archive_file.close()
+                except tarfile.ReadError:
+                    logging.info("Extracting {} failed due to a Read Error".format(self.__file_path))
+                    archive_file.close()
+                    os.remove(archive_file_path)
+                    return False
             elif extension == ".bz2":
                 extractProgress()
                 archive_file = ProgressFile(archive_file_path, progress_func)

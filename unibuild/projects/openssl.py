@@ -16,12 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 import os.path
+import re
 import shutil
 from glob import glob
 
 from config import config
 from unibuild import Project
-from unibuild.modules import build, urldownload
+from unibuild.modules import build, urldownload, urldownloadany
 from unibuild.projects import nasm
 
 # currently binary installation only
@@ -46,7 +47,8 @@ def bitness_suffix():
 
 
 filename = "openssl-{}.tar.gz".format(openssl_version)
-url = "https://www.openssl.org/source/{}".format(filename)
+url_latest = "https://www.openssl.org/source/{}".format(filename)
+url_archive = "https://www.openssl.org/source/old/{}/{}".format(re.sub(r'[a-z]+', '', openssl_version, re.I), filename)
 
 
 def openssl_environment():
@@ -117,5 +119,7 @@ else:
         .depend(build.Execute(openssl_stage)
                 .depend(OpenSSL_Install
                         .depend(Configure_openssl
-                                .depend(urldownload.URLDownload(url, tree_depth=1)
+                                .depend(urldownloadany.URLDownloadAny((
+                                            urldownload.URLDownload(url_latest, tree_depth=1),
+                                            urldownload.URLDownload(url_archive, tree_depth=1)))
                                         .depend("nasm")))))

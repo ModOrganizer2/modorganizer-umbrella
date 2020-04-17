@@ -20,6 +20,7 @@ import shutil
 import zipfile
 
 from config import config
+from pathlib import Path
 from string import Formatter
 from glob import glob
 from unibuild import Project
@@ -264,9 +265,9 @@ Project("licenses") \
 
 
 def copy_explorerpp(context):
-    target_path = os.path.join(config["paths"]["install"], "bin", "explorer++")
-    build_path = os.path.join(config["paths"]["build"], "explorer++")
-    shutil.copytree(build_path, target_path)
+    target_path = Path(config["paths"]["install"]) / "bin" / "explorer++"
+    build_path = Path(config["paths"]["build"]) / "explorer++"
+    shutil.copytree(build_path, target_path, dirs_exist_ok = True)
     return True
 
 

@@ -45,6 +45,7 @@ def cmake_parameters():
     spdlog_version = config['spdlog_version']
     vc_version = config['vc_version_for_boost']
     boost_tag_version = ".".join([_f for _f in [boost_version, config['boost_version_tag']] if _f])
+    sevenz_version = config['7zip_version']
 
     paths_build = config['paths']['build']
 
@@ -52,6 +53,7 @@ def cmake_parameters():
                         "-DDEPENDENCIES_DIR={}".format(paths_build),
                         "-DBOOST_ROOT={}\\boost_{}".format(paths_build, boost_tag_version.replace(".", "_")),
                         "-DBoost_LIBRARY_DIRS={}\\boost_{}\\lib{}-msvc-{}\\lib".format(paths_build, boost_tag_version.replace(".", "_"),"64" if config['architecture'] == 'x86_64' else "32",vc_version),
+                        "-DBOOST_LIBRARYDIR={}\\boost_{}\\lib{}-msvc-{}\\lib".format(paths_build, boost_tag_version.replace(".", "_"),"64" if config['architecture'] == 'x86_64' else "32",vc_version),
                         "-DFMT_ROOT={}\\fmt-{}".format(paths_build, fmt_version),
                         "-DSPDLOG_ROOT={}\\spdlog-{}".format(paths_build, spdlog_version),
                         "-DLOOT_PATH={}\\libloot-{}-{}".format(paths_build, config["loot_version"], config["loot_commit"]),
@@ -59,6 +61,7 @@ def cmake_parameters():
                         "-DQT_ROOT={}".format(qt_inst_path()),
                         "-DZLIB_ROOT={}\\\zlib-{}".format(paths_build, config["zlib_version"]),
                         "-DPYTHON_ROOT={}\\\python-{}".format(paths_build, config["python_version"] + config["python_version_minor"]),
+                        "-DSEVENZ_ROOT={}\\7zip-{}".format(paths_build, sevenz_version),
                         "-DBOOST_DI_ROOT={}\\\di".format(paths_build),
                         "-DLIBBSARCH_ROOT={}\\\libbsarch-{}-{}".format(paths_build, config["libbsarch_version"], "x64" if config['architecture'] == 'x86_64' else "x86")]
 

@@ -147,7 +147,7 @@ for author, git_path, path, branch, dependencies, Build in [
             for dep in dependencies:
                 appveyor_cmake_step.depend(dep)
 
-            if os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
+            if False: #os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
                 source_retrieval_step = appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))                
             else:
                 source_retrieval_step = github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)

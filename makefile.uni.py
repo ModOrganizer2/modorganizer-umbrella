@@ -44,6 +44,7 @@ def gen_userfile_content(project):
 
 
 for author, git_path, path, branch, dependencies, Build in [
+    (config['Main_Author'], "cmake_common", "cmake_common", config['Build_Branch'], [], False),
     (config['Main_Author'], "modorganizer-game_features", "game_features", config['Build_Branch'], [], False),
     (config['Main_Author'], "modorganizer-archive", "archive", config['Build_Branch'], ["7zip", "Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-uibase", "uibase", config['Build_Branch'], ["Qt5", "boost", "fmt", "spdlog"], True),
@@ -140,6 +141,9 @@ for author, git_path, path, branch, dependencies, Build in [
         if config['Appveyor_Build']:
             appveyor_cmake_step = cmake.CMakeJOM().arguments(cmake_param).install()
 
+            if git_path != "cmake_common":
+                appveyor_cmake_step.depend("cmake_common")
+
             for dep in dependencies:
                 appveyor_cmake_step.depend(dep)
 
@@ -158,6 +162,9 @@ for author, git_path, path, branch, dependencies, Build in [
             project.depend(appveyor_cmake_step)
         else:
             vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
+
+            if git_path != "cmake_common":
+                vs_cmake_step.depend("cmake_common")
 
             for dep in dependencies:
                 vs_cmake_step.depend(dep)

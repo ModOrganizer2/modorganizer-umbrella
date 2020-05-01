@@ -44,13 +44,13 @@ def gen_userfile_content(project):
 
 
 for author, git_path, path, branch, dependencies, Build in [
-    (config['Main_Author'], "cmake_common", "cmake_common", config['Build_Branch'], [], False),
-    (config['Main_Author'], "modorganizer-game_features", "game_features", config['Build_Branch'], [], False),
-    (config['Main_Author'], "modorganizer-archive", "archive", config['Build_Branch'], ["7zip", "Qt5", "boost"], True),
+    (config['Main_Author'], "cmake_common", "cmake_common", config['Build_Branch'], ["boost", "zlib", "fmt"], False),
     (config['Main_Author'], "modorganizer-uibase", "uibase", config['Build_Branch'], ["Qt5", "boost", "fmt", "spdlog"], True),
-    (config['Main_Author'], "modorganizer-lootcli", "lootcli", config['Build_Branch'], ["libloot", "boost"], True),
-    (config['Main_Author'], "modorganizer-esptk", "esptk", config['Build_Branch'], ["boost"], True),
-    (config['Main_Author'], "modorganizer-bsatk", "bsatk", config['Build_Branch'], ["zlib", "boost", "lz4"], True),
+    (config['Main_Author'], "modorganizer-game_features", "game_features", config['Build_Branch'], ["modorganizer-uibase"], False),
+    (config['Main_Author'], "modorganizer-archive", "archive", config['Build_Branch'], ["7zip", "Qt5", "boost", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-lootcli", "lootcli", config['Build_Branch'], ["libloot", "boost", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-esptk", "esptk", config['Build_Branch'], ["boost", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-bsatk", "bsatk", config['Build_Branch'], ["zlib", "boost", "lz4", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-nxmhandler", "nxmhandler", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-helper", "helper", config['Build_Branch'], ["Qt5","boost"], True),
     (config['Main_Author'], "modorganizer-game_gamebryo", "game_gamebryo", config['Build_Branch'], ["Qt5", "modorganizer-uibase",
@@ -108,7 +108,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-script_extender_plugin_checker", "script_extender_plugin_checker", config['Build_Branch'],  ["modorganizer-plugin_python"], True),
     (config['Main_Author'], "modorganizer-form43_checker", "form43_checker", config['Build_Branch'],  ["modorganizer-plugin_python"], True),
     (config['Main_Author'], "modorganizer-preview_dds", "preview_dds", config['Build_Branch'],  ["modorganizer-plugin_python"], True),
-    (config['Main_Author'], "githubpp", "githubpp", config['Build_Branch'], ["Qt5"], True),
+    (config['Main_Author'], "githubpp", "githubpp", config['Build_Branch'], ["Qt5", "boost"], True),
     (config['Main_Author'], "modorganizer-bsapacker", "bsapacker", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "libbsarch", "boost_di"], True),
     (config['Main_Author'], "modorganizer-preview_bsa", "preview_bsa", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "libbsarch" ], True),
     (config['Main_Author'], "modorganizer", "modorganizer", config['Build_Branch'], ["Qt5", "boost", "usvfs_32",
@@ -133,8 +133,8 @@ for author, git_path, path, branch, dependencies, Build in [
 
     if Build:
         #prepare build version override step
-        patch_version_step = Patch.RegexReplace("src/version.rc", 
-                                                "#define VER_FILEVERSION_STR.*\n", 
+        patch_version_step = Patch.RegexReplace("src/version.rc",
+                                                "#define VER_FILEVERSION_STR.*\n",
                                                 "#define VER_FILEVERSION_STR \"{}\"\n"
                                                 .format(config['override_build_version']))
 
@@ -148,7 +148,7 @@ for author, git_path, path, branch, dependencies, Build in [
                 appveyor_cmake_step.depend(dep)
 
             if os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
-                source_retrieval_step = appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))                
+                source_retrieval_step = appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
             else:
                 source_retrieval_step = github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)
 
@@ -168,7 +168,7 @@ for author, git_path, path, branch, dependencies, Build in [
 
             for dep in dependencies:
                 vs_cmake_step.depend(dep)
-            
+
             #vs_target = "Clean;Build" if config['rebuild'] else "Build"
             vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
                                               "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),

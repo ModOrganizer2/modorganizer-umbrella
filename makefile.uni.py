@@ -45,7 +45,7 @@ def gen_userfile_content(project):
 
 for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "cmake_common", "cmake_common", config['Build_Branch'], ["boost", "zlib", "fmt"], False),
-    (config['Main_Author'], "modorganizer-uibase", "uibase", config['Build_Branch'], ["Qt5", "boost", "fmt", "spdlog"], True),
+    (config['Main_Author'], "modorganizer-uibase", "uibase", config['Build_Branch'], ["Qt5", "boost", "fmt", "spdlog", "lz4", "zlib"], True),
     (config['Main_Author'], "modorganizer-game_features", "game_features", config['Build_Branch'], ["modorganizer-uibase"], False),
     (config['Main_Author'], "modorganizer-archive", "archive", config['Build_Branch'], ["7zip", "Qt5", "boost", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-lootcli", "lootcli", config['Build_Branch'], ["libloot", "boost", "modorganizer-uibase"], True),

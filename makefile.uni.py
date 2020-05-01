@@ -52,7 +52,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-esptk", "esptk", config['Build_Branch'], ["boost", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-bsatk", "bsatk", config['Build_Branch'], ["zlib", "boost", "lz4", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-nxmhandler", "nxmhandler", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-helper", "helper", config['Build_Branch'], ["Qt5","boost"], True),
+    (config['Main_Author'], "modorganizer-helper", "helper", config['Build_Branch'], ["Qt5", "boost", "fmt"], True),
     (config['Main_Author'], "modorganizer-game_gamebryo", "game_gamebryo", config['Build_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                                    "modorganizer-game_features",
                                                                                                    "lz4"], True),

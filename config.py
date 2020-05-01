@@ -81,12 +81,12 @@ config = {
 
     # manualy set all versions
     '7zip_version': '19.00',
-    'boost_version': '1.72.0',
+    'boost_version': '1.73.0',
     'boost_version_tag': '',
-    'fmt_version': '6.1.2',
+    'fmt_version': '6.2.0',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '3.3',
-    'icu_version': '65',
+    'icu_version': '66',
     'icu_version_minor': '1',
     'loot_version': '0.15.1',
     'loot_commit': 'gf725dd7',
@@ -96,16 +96,16 @@ config = {
     'nasm_version': '2.14.02',
     'nuget_version': '4.9.3',
     'nmm_version': '0.71.2',
-    'openssl_version': '1.1.1f',
+    'openssl_version': '1.1.1g',
     'pyqt_version': '5.14.2',
     'pyqt_pypi_hash': '4d/81/b9a66a28fb9a7bbeb60e266f06ebc4703e7e42b99e3609bf1b58ddd232b9',
     'pyqt_dev_version': '', # leave empty for a standard release
-    'pyqt_builder_version': '1.3.0',
+    'pyqt_builder_version': '1.3.2',
     'pyqt_sip_version': '12.7.2',
     'python_version': '3.8',
     'python_version_minor': '.2',
     'bzip2_version': '1.0.6', # For python
-    'sip_version': '5.1.2',
+    'sip_version': '5.2.0',
     'sip_dev_version': '', # leave empty for a standard release
     'spdlog_version': 'v1.5.0',
     'qt_version': '5.14',

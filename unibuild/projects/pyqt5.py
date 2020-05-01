@@ -45,7 +45,7 @@ qt_binary_install = config["paths"]["qt_binary_install"]
 __build_base_path = config["__build_base_path"]
 
 enabled_modules = ["QtCore", "QtGui", "QtWidgets", "QtOpenGL", "_QOpenGLFunctions_2_0",
-                   "_QOpenGLFunctions_2_1", "_QOpenGLFunctions_4_1_Core", "_QOpenGLFunctions_ES2"]
+                   "_QOpenGLFunctions_2_1", "_QOpenGLFunctions_4_1_Core"] #, "_QOpenGLFunctions_ES2"]
 
 
 def pyqt5_env():

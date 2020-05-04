@@ -83,6 +83,11 @@ def copy_files(context):
             )
         except FileNotFoundError:
             pass
+    shutil.rmtree(os.path.join(dstdir, "uic"))
+    shutil.copytree(
+        os.path.join(srcdir, "uic"),
+        os.path.join(dstdir, "uic"),
+        ignore=shutil.ignore_patterns("__pycache__"))
 
     return True
 

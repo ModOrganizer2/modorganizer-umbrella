@@ -83,7 +83,7 @@ def copy_files(context):
             )
         except FileNotFoundError:
             pass
-    shutil.rmtree(os.path.join(dstdir, "uic"))
+    shutil.rmtree(os.path.join(dstdir, "uic"), ignore_errors=True)
     shutil.copytree(
         os.path.join(srcdir, "uic"),
         os.path.join(dstdir, "uic"),

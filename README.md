@@ -42,7 +42,7 @@ Now you need to install all required software to build Mod Organizer.
 ##### Manual Install
 * 7zip (Latest 64Bit) Link: http://www.7-zip.org/a/7z1900-x64.exe
 * Inno 5 or 6 (Only required to build Installer) Setup Link: http://www.jrsoftware.org/download.php/is.exe
-* CMake (latest 64bit)  Link: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi
+* CMake (latest 64bit)  Link: https://github.com/Kitware/CMake/releases/download/v3.17.2/cmake-3.17.2-win64-x64.msi
 * Git Link: https://github.com/git-for-windows/git/releases/download/v2.24.1.windows.2/Git-2.24.1.2-64-bit.exe
 * Python 3 (64Bit) Link: https://www.python.org/ftp/python/3.8.2/python-3.8.2-amd64.exe
   * *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.*

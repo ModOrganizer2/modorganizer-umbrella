@@ -18,7 +18,7 @@ Open there a console and copy in: ``git clone https://github.com/Modorganizer2/m
 Now you need to install all required software to build Mod Organizer.
 
 #### Manual Requirements
-* Qt 5.14.1 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+* Qt 5.14.2 http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
   #### Qt Packages required:
   * msvc2017-64
   * qtwebengine
@@ -44,7 +44,7 @@ Now you need to install all required software to build Mod Organizer.
 * Inno 5 or 6 (Only required to build Installer) Setup Link: http://www.jrsoftware.org/download.php/is.exe
 * CMake (latest 64bit)  Link: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi
 * Git Link: https://github.com/git-for-windows/git/releases/download/v2.24.1.windows.2/Git-2.24.1.2-64-bit.exe
-* Python 3 (64Bit) Link: https://www.python.org/ftp/python/3.8.1/python-3.8.1-amd64.exe
+* Python 3 (64Bit) Link: https://www.python.org/ftp/python/3.8.2/python-3.8.2-amd64.exe
   * *If you've previously used a Python 2 version of Umbrella, you may need to run `git clean -xdf` to remove cached data which interferes with Python 3.*
 * Strawberry Perl Link: http://strawberryperl.com/download/5.30.1.1/strawberry-perl-5.30.1.1-64bit.msi
 ##### Chocolatey

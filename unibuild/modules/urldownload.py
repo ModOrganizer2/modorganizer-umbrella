@@ -19,6 +19,7 @@ import logging
 import os
 import io
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
@@ -164,7 +165,10 @@ class URLDownload(Retrieval):
                 logging.info("Cleaning {}".format(output_file_path))
                 for ls in sub_dirs:
                     try:
-                        shutil.rmtree(os.path.join(output_file_path, ls))
+                        def ensureWritable(function, path, exc_info):
+                            os.chmod(path, stat.S_IWRITE)
+                            function(path)
+                        shutil.rmtree(os.path.join(output_file_path, ls), onerror = ensureWritable)
                     except Exception:
                         os.remove(os.path.join(output_file_path, ls))
 

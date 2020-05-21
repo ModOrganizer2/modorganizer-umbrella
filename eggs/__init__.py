@@ -25,7 +25,9 @@ def download(url, filename):
     if os.path.exists(filename):
         return False
 
-    data = urllib.request.urlopen(url)
+    user_agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
+    req = urllib.request.Request(url, headers={'User-Agent' : user_agent}) 
+    data = urllib.request.urlopen(req)
     with open(filename, 'wb') as outfile:
         while True:
             block = data.read(4096)

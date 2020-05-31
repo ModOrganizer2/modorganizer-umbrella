@@ -25,7 +25,7 @@ def download(url, filename):
     if os.path.exists(filename):
         return False
 
-    user_agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
+    user_agent = 'Mod Organizer 2/Umbrella'
     req = urllib.request.Request(url, headers={'User-Agent' : user_agent}) 
     data = urllib.request.urlopen(req)
     with open(filename, 'wb') as outfile:

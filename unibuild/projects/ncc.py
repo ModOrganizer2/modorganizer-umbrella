@@ -71,7 +71,7 @@ def prepare_nmm(context):
 # https://github.com/Nexus-Mods/Nexus-Mod-Manager/commit/03448e0eb02e08f37d7b66507d0537ab67841321 broke fomod installation
 # until this is fixed we lock NMM to the latest nexus release.
 Project("ncc") \
-    .depend(build.Run(r"publish.bat {}".format("-debug" if config['build_type'] == "Debug" else "-release",
+    .depend(build.Run(r"publish.bat {} {}".format("-debug" if config['build_type'] == "Debug" else "-release",
                                             os.path.join(config["paths"]["install"], "bin")),
                       working_directory=lazy.Evaluate(lambda: os.path.join(build_path, "NexusClientCli")))
             .depend(msbuild.MSBuild(os.path.join(build_path, "Nexus-Mod-Manager", 'NexusClientCli.sln'),

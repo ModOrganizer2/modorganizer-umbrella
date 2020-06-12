@@ -53,7 +53,7 @@ url_archive = "https://www.openssl.org/source/old/{}/{}".format(re.sub(r'[a-z]+'
 
 def openssl_environment():
     result = config['__environment'].copy()
-    result['Path'] += ";" + os.path.join(build_path, "nasm-{}-win{}".format(nasm_version, bitness(), nasm_version, bitness()))
+    result['Path'] += ";" + os.path.join(build_path, "nasm-{}-win{}".format(nasm_version, bitness()))
     result['CL'] = "/MP1 /cgthreads{} /FS".format(cpus)
     result['LINK'] = "/cgthreads:{}".format(cpus)
     return result

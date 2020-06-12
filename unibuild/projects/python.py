@@ -130,10 +130,10 @@ def install(context):
         shutil.copy(f, os.path.join(context["build_path"], "libs"))
     shutil.copy(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", ""))), os.path.join(path_install, "bin"))
     shutil.copy(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", ""))), os.path.join(context["build_path"], "libs"))
-    for f in glob(os.path.join(*path_segments, "libffi-*.dll".format(python_version.replace(".", "")))):
+    for f in glob(os.path.join(*path_segments, "libffi-*.dll")):
         shutil.copy(f, os.path.join(path_install, "bin"))
     shutil.copy(os.path.join(*path_segments, "python{}.pdb".format(python_version.replace(".", ""))), os.path.join(path_install, "pdb"))
-    for f in glob(os.path.join(*path_segments, "_*.pdb".format(python_version.replace(".", "")))):
+    for f in glob(os.path.join(*path_segments, "_*.pdb")):
         shutil.copy(f, os.path.join(path_install, "pdb"))
     return True
 

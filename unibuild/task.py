@@ -50,6 +50,16 @@ class Task(object):
     def dependencies(self):
         return self.__dependencies
 
+    def depends_on(self, name):
+        for d in self.__dependencies:
+            if d.name == name:
+                return True
+
+            if d.depends_on(name):
+                return True
+
+        return False
+
     @property
     def enabled(self):
         return True

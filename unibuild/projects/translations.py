@@ -25,6 +25,7 @@ from subprocess import Popen
 from config import config
 from unibuild import Project
 from unibuild.modules import build, github, Patch
+from unibuild.manager import TaskManager
 
 transifex_version = config['transifex-client_version']
 transifex_api = config['transifex_API']
@@ -69,7 +70,46 @@ def GenerateFiles(path,data, c = 1):
                 if os.path.isfile(i):
                     filepath, filename = os.path.split(i)
                     if filename.endswith(".ts"):
-                        data.update({os.path.join(filepath,filename):os.path.join(install_path, "bin", "translations",os.path.basename(filepath).split(".")[-1] + "_" +  os.path.splitext(filename)[0] + ".qm")})
+                        dest_dir = os.path.join(install_path, "bin", "translations")
+
+                        # filepath is the directory that contains the .ts file
+                        # in build/transifex-translations/translations, created
+                        # by the transifex tool when pulling the translations
+                        #
+                        # for example, 'mod-organizer-2.game_enderal'
+
+                        # filename is the name of the .ts file inside that
+                        # directory
+                        #
+                        # for example, 'de.ts'
+
+
+                        # the part after the dot, such as 'game_enderal'
+                        project = os.path.basename(filepath).split(".")[-1]
+
+                        # the name of the file without the extension, such as
+                        # 'de'
+                        lang = os.path.splitext(filename)[0]
+
+                        # the filename of the qm file, such as
+                        # 'game_enderal_de.qm'
+                        qm = project + "_" + lang + ".qm"
+
+                        src = os.path.join(filepath, filename)
+                        srcs = [src]
+                        dest = os.path.join(dest_dir, qm)
+
+                        # if the task depends on gamebryo, add its .ts file
+                        # so it gets merged with the one from this task
+                        t = TaskManager().get_task("modorganizer-" + project)
+                        if t is not None:
+                            if t.depends_on("modorganizer-game_gamebryo"):
+                                translations = os.path.join(build_path, "transifex-translations", "translations")
+                                gamebryo_dir = os.path.join(translations, "mod-organizer-2.game_gamebryo")
+                                gamebryo_ts = os.path.join(gamebryo_dir, filename)
+                                srcs.append(gamebryo_ts)
+
+                        data.update({dest: srcs})
                 elif os.path.isdir(i):
                     c+=1
                     GenerateFiles(i,data,c)
@@ -91,11 +131,15 @@ class GenerateTranslations(build.Builder):
         with open(soutpath, "w") as sout:
             with open(serrpath, "w") as serr:
                 data = {}
-                data = GenerateFiles(self._context["build_path"],data)
-                for i, o in list(data.items()):
-                    proc = Popen([qt_lrelease_binary, i,
-                                "-qm",
-                                 o],
+                data = GenerateFiles(self._context["build_path"], data)
+                for qm, srcs in list(data.items()):
+                    args = []
+                    args.append(qt_lrelease_binary)
+                    args.extend(srcs)
+                    args.append("-qm")
+                    args.append(qm)
+
+                    proc = Popen(args,
                                 cwd=self._context["build_path"],
                                 shell=True,
                                 stdout=sout, stderr=serr)

@@ -113,5 +113,6 @@ def visual_studio_environment():
     for line in stdout.splitlines():
         if b"=" in line:
             key, value = line.split(b"=", 1)
-            vcenv[key] = value
+            vcenv[key] = value.decode('mbcs')
+
     return vcenv

@@ -88,9 +88,9 @@ config = {
     'grep_version': '3.3',
     'icu_version': '66',
     'icu_version_minor': '1',
-    'loot_version': '0.15.1',
-    'loot_commit': 'gf725dd7',
-    'loot_branch': '0.15.1',
+    'loot_version': '0.15.2',
+    'loot_commit': 'g3baa0e8',
+    'loot_branch': 'master',
     'lz4_version': '1.9.2',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.14.02',
@@ -123,10 +123,10 @@ config = {
     'libbsarch_version': '0.0.8',
 
     #stylesheets
-    'paper-light-and-dark_version': '5.3',
+    'paper-light-and-dark_version': '6.0',
     'paper-automata_version': '2.2',
     'paper-mono_version': '2.1',
-    '1809-dark-mode_version': '1.3',
+    '1809-dark-mode_version': '2.0',
 
     #the usvfs version below will only be used if
     'usvfs_version': 'v0.4.6',

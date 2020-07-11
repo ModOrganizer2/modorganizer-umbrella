@@ -102,12 +102,20 @@ def GenerateFiles(path,data, c = 1):
                         # if the task depends on gamebryo, add its .ts file
                         # so it gets merged with the one from this task
                         t = TaskManager().get_task("modorganizer-" + project)
+
+                        if t is None:
+                            # there's are case differences for some projects
+                            t = TaskManager().get_task("modorganizer-" + project.lower())
+
                         if t is not None:
                             if t.depends_on("modorganizer-game_gamebryo"):
                                 translations = os.path.join(build_path, "transifex-translations", "translations")
                                 gamebryo_dir = os.path.join(translations, "mod-organizer-2.game_gamebryo")
                                 gamebryo_ts = os.path.join(gamebryo_dir, filename)
-                                srcs.append(gamebryo_ts)
+
+                                # some translations might be missing
+                                if os.path.exists(gamebryo_ts):
+                                    srcs.append(gamebryo_ts)
 
                         data.update({dest: srcs})
                 elif os.path.isdir(i):

@@ -47,15 +47,17 @@ def copy_stylesheets(context, dir):
     copytree_fixed(src, dst)
     return True
 
-def create_stylesheet_project(author, name, filename, extension="7z"):
+def create_stylesheet_project(author, name, filename=None, extension="7z"):
     version = "v" + config[name + "_version"]
+    if filename is None:
+        filename = config[name + "_version"]
     dir = name + "-" + version
 
     Project(name) \
         .depend(build.Execute(lambda context: copy_stylesheets(context, dir))
         .depend(github.Release(author, name, version, filename, extension)))
 
-create_stylesheet_project("6788-00", "paper-light-and-dark", "6.0")
+create_stylesheet_project("6788-00", "paper-light-and-dark")
 create_stylesheet_project("6788-00", "paper-automata", "Paper-Automata")
 create_stylesheet_project("6788-00", "paper-mono", "Paper-Mono")
-create_stylesheet_project("6788-00", "1809-dark-mode", "2.0")
+create_stylesheet_project("6788-00", "1809-dark-mode")

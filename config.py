@@ -74,7 +74,7 @@ config = {
 
     'Main_Author': 'ModOrganizer2',  # the current maintainer
     'Dev_Branch': "master",
-    'Release_Branch': "2_2_2",
+    'Release_Branch': "2_3_0",
     'Feature_Branch': None, # Specify a branch or None to disable, used in place of the build branch when found
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
@@ -129,7 +129,7 @@ config = {
     '1809-dark-mode_version': '2.0',
 
     #the usvfs version below will only be used if
-    'usvfs_version': 'v0.4.6',
+    'usvfs_version': 'v0.4.8',
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code

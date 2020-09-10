@@ -97,7 +97,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-installer_manual", "installer_manual", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_bundle", "installer_bundle", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-installer_quick", "installer_quick", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-installer_quick", "installer_quick", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_fomod", "installer_fomod", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_fomod_csharp", "installer_fomod_csharp", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_ncc", "installer_ncc", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "ncc", "modorganizer-game_features"], True),

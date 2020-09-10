@@ -94,7 +94,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-preview_base", "preview_base", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-diagnose_basic", "diagnose_basic", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-check_fnis", "check_fnis", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
-    (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
+    (config['Main_Author'], "modorganizer-installer_bain", "installer_bain", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_manual", "installer_manual", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_bundle", "installer_bundle", config['Build_Branch'], ["Qt5", "modorganizer-uibase"], True),
     (config['Main_Author'], "modorganizer-installer_quick", "installer_quick", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),

@@ -43,6 +43,12 @@ def gen_userfile_content(project):
         return res
 
 
+# Set the feature branch on appveyor if the build branch is not the default branch
+if config['Appveyor_Build']:
+    branch = os.getenv('APPVEYOR_REPO_BRANCH')
+    if branch is not None and branch != 'master':
+        config['Feature_Branch'] = branch
+
 for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "cmake_common", "cmake_common", config['Build_Branch'], ["boost", "zlib", "fmt"], False),
     (config['Main_Author'], "modorganizer-uibase", "uibase", config['Build_Branch'], ["Qt5", "boost", "fmt", "spdlog", "lz4", "zlib", "GTest"], True),

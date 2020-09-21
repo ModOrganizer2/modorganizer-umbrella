@@ -89,7 +89,7 @@ class Source(Clone):
             if len(filtered_data) > 0:
                 repo_url = filtered_data[0]["head"]["repo"]["html_url"]
                 repo_branch = filtered_data[0]["head"]["ref"]
-                proc = Popen([config['paths']['git'], "remote", "add", "pr", repo_url],
+                proc = Popen([config['paths']['git'], "remote", "add", "-f", "pr", repo_url],
                              cwd=self._context["build_path"],
                              env=config["__environment"])
                 proc.communicate()

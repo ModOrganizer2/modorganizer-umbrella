@@ -45,7 +45,8 @@ def gen_userfile_content(project):
 
 # Set the feature branch on appveyor if the build branch is not the default branch
 if config['Appveyor_Build']:
-    branch = os.getenv('APPVEYOR_REPO_BRANCH')
+    branch = os.getenv('APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH')
+    branch = branch if branch is not None else os.getenv('APPVEYOR_REPO_BRANCH')
     if branch is not None and branch != 'master':
         config['Feature_Branch'] = branch
 

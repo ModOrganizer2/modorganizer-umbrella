@@ -120,6 +120,8 @@ def main():
         print('\nMissing prerequisites listed above - cannot continue')
         exit(1)
 
+    sys.stdout.write("GH Token: {}".format(config['gh_cli_token']))
+
     from subprocess import Popen, PIPE
     p = Popen([config['paths']['gh'], 'auth', 'login', '--with-token'], stdout=PIPE, stdin=PIPE, stderr=PIPE, text=True)
     out, errs = p.communicate(input=config['gh_cli_token'])

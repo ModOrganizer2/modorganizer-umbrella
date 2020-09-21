@@ -80,7 +80,7 @@ class SuperRepository(Task):
 
 
 class Clone(Repository):
-    def __init__(self, url, branch, feature_branch=None, super_repository=None, update=True, commit=None, shallowclone=False, gh_pr=None):
+    def __init__(self, url, branch, feature_branch=None, super_repository=None, update=True, commit=None, shallowclone=False):
         if config['shallowclone']:
             self.shallowclone = True
         super(Clone, self).__init__(url, branch, feature_branch)
@@ -89,7 +89,6 @@ class Clone(Repository):
         self.__update = update
         self.__commit = commit
         self.__shallowclone = shallowclone
-        self.__gh_pr = gh_pr
 
         if self._feature_branch is not None:
             proc = Popen([config['paths']['git'], "ls-remote", "--heads", "--exit-code", self._url, self._feature_branch],
@@ -152,12 +151,7 @@ class Clone(Repository):
                 logging.error("failed to clone repository %s (returncode %s)", self._url, proc.returncode)
                 return False
 
-        if self.__gh_pr is not None:
-            proc = Popen([config['paths']['gh'], "pr", "checkout", self.__gh_pr],
-                         cwd=self.__super_repository.path,
-                         env=config['__environment'])
-            proc.communicate()
-        elif self.__commit is not None:
+        if self.__commit is not None:
             if self.__shallowclone:
                 proc = Popen([config['paths']['git'], "checkout","--depth", "1", self.__commit],
                          cwd=self._context["build_path"],

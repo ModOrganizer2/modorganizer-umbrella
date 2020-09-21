@@ -110,7 +110,6 @@ def dump_config():
     logging.debug("  Config: config['paths']['cmake']=%s", config['paths']['cmake'])
     logging.debug("  Config: config['paths']['jom']=%s", config['paths']['jom'])
     logging.debug("  Config: config['paths']['git']=%s", config['paths']['git'])
-    logging.debug("  Config: config['paths']['gh']=%s", config['paths']['gh'])
     logging.debug("  Config: config['paths']['perl']=%s", config['paths']['perl'])
     #logging.debug(" Config: config['paths']['ruby']=%s", config['paths']['ruby'])
     #logging.debug(" Config: config['paths']['svn']=%s", config['paths']['svn'])

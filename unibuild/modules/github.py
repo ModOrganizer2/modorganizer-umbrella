@@ -84,11 +84,11 @@ class Source(Clone):
             url = "https://api.github.com/repos/{}/{}/pulls".format(self.__author, self.__project)
             response = urllib.request.urlopen(url)
             data = json.loads(response.read())
-            filtered_data = list(filter(lambda x: x["head"]["label"] == self.__pr_label, data))
+            filtered_data = [x for x in data if x["head"]["label"] == self.__pr_label]
             sys.stdout.write(filtered_data.__str__())
             if len(filtered_data) > 0:
-                repo_url = filtered_data["head"]["repo"]["html_url"]
-                repo_branch = filtered_data["head"]["ref"]
+                repo_url = filtered_data[0]["head"]["repo"]["html_url"]
+                repo_branch = filtered_data[0]["head"]["ref"]
                 proc = Popen([config['paths']['git'], "remote", "add", "pr", repo_url],
                              cwd=self._context["build_path"],
                              env=config["__environment"])

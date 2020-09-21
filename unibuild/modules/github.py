@@ -97,7 +97,7 @@ class Source(Clone):
                     logging.error("failed to add pr remote %s (returncode %s)", repo_url, proc.returncode)
                     return False
 
-                proc = Popen([config['paths']['git'], "checkout", repo_branch, "pr/{}".format(repo_branch)],
+                proc = Popen([config['paths']['git'], "checkout", "-b", repo_branch, "--track", "pr/{}".format(repo_branch)],
                              cwd=self._context["build_path"],
                              env=config["__environment"])
                 proc.communicate()

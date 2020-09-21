@@ -63,13 +63,12 @@ class Tag(URLDownload):
 
 
 class Source(Clone):
-    def __init__(self, author, project, branch="master", feature_branch=None, pr_label=None, super_repository=None, update=True, commit=None, shallowclone=False):
+    def __init__(self, author, project, branch="master", feature_branch=None, super_repository=None, update=True, commit=None, pr_label=None, shallowclone=False):
         self.__author = author
         self.__project = project
         if config['shallowclone']:
             self.shallowclone = True
-        if pr_label is not None:
-            self.__pr_label = pr_label
+        self.__pr_label = pr_label
 
         super(Source, self).__init__("https://github.com/{author}/{project}.git".format(author=author, project=project),
                                      branch, feature_branch, super_repository, update, commit, shallowclone)
@@ -77,7 +76,9 @@ class Source(Clone):
         self.set_destination(project)
 
     def process(self, progress):
-        super(Source, self).process(progress)
+        result = super(Source, self).process(progress)
+        if result is False:
+            return False
 
         if self.__pr_label is not None:
             url = "https://api.github.com/repos/{}/{}/pulls".format(self.__author, self.__project)
@@ -103,3 +104,5 @@ class Source(Clone):
                 if proc.returncode != 0:
                     logging.error("failed to checkout pr branch %s (returncode %s)", repo_branch, proc.returncode)
                     return False
+
+        return True

@@ -72,7 +72,7 @@ class Source(Clone):
             self.__pr_label = pr_label
 
         super(Source, self).__init__("https://github.com/{author}/{project}.git".format(author=author, project=project),
-                                     branch, feature_branch, pr_label, super_repository, update, commit, shallowclone)
+                                     branch, feature_branch, super_repository, update, commit, shallowclone)
 
         self.set_destination(project)
 

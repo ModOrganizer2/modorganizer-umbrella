@@ -155,10 +155,15 @@ for author, git_path, path, branch, dependencies, Build in [
             for dep in dependencies:
                 appveyor_cmake_step.depend(dep)
 
+            pr_label = None
+            if os.getenv('APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH') is not None:
+                pr_user = os.getenv('APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME', '').split('/')[0]
+                pr_label = '{}:{}'.format(pr_user, os.getenv('APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH'))
+
             if os.getenv("APPVEYOR_PROJECT_NAME","") == git_path:
                 source_retrieval_step = appveyor.SetProjectFolder(os.getenv("APPVEYOR_BUILD_FOLDER", ""))
             else:
-                source_retrieval_step = github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)
+                source_retrieval_step = github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo,pr_label=pr_label).set_destination(path)
 
             if git_path == "modorganizer" and config['override_build_version']:
                 #add patching step that depends on source retrieval

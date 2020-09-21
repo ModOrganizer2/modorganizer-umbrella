@@ -87,22 +87,21 @@ class Source(Clone):
             filtered_data = [x for x in data if x["head"]["label"] == self.__pr_label]
             sys.stdout.write(filtered_data.__str__())
             if len(filtered_data) > 0:
-                repo_url = filtered_data[0]["head"]["repo"]["html_url"]
-                repo_branch = filtered_data[0]["head"]["ref"]
-                proc = Popen([config['paths']['git'], "remote", "add", "-f", "pr", repo_url],
+                pr_number = filtered_data[0]["number"]
+                proc = Popen([config['paths']['git'], "fetch", "-q", "origin", "+refs/pull/{}/merge:".format(pr_number)],
                              cwd=self._context["build_path"],
                              env=config["__environment"])
                 proc.communicate()
                 if proc.returncode != 0:
-                    logging.error("failed to add pr remote %s (returncode %s)", repo_url, proc.returncode)
+                    logging.error("failed to fetch pr %s (returncode %s)", pr_number, proc.returncode)
                     return False
 
-                proc = Popen([config['paths']['git'], "checkout", "-b", repo_branch, "--track", "pr/{}".format(repo_branch)],
+                proc = Popen([config['paths']['git'], "checkout", "-qf", "FETCH_HEAD"],
                              cwd=self._context["build_path"],
                              env=config["__environment"])
                 proc.communicate()
                 if proc.returncode != 0:
-                    logging.error("failed to checkout pr branch %s (returncode %s)", repo_branch, proc.returncode)
+                    logging.error("failed to checkout pr branch (returncode %s)", proc.returncode)
                     return False
 
         return True

@@ -122,7 +122,9 @@ def main():
 
     from subprocess import Popen, PIPE
     p = Popen([config['paths']['gh'], 'auth', 'login', '--with-token'], stdout=PIPE, stdin=PIPE, stderr=PIPE, text=True)
-    p.communicate(input=config['gh_cli_token'])
+    out, errs = p.communicate(input=config['gh_cli_token'])
+    sys.stdout.write(out)
+    sys.stderr.write(errs)
 
     for d in ["download", "build", "progress", "install"]:
         if not os.path.exists(config["paths"][d]):

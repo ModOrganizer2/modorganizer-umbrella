@@ -18,6 +18,7 @@
 import logging
 import os
 import subprocess
+import sys
 
 from config import config
 from unibuild.modules.repository import Repository
@@ -156,8 +157,10 @@ class Clone(Repository):
             proc = Popen([config['paths']['gh'], "pr", "checkout", self.__gh_pr],
                          cwd=self._context["build_path"],
                          env=config['__environment'],
-                         stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-            proc.communicate()
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, errs = proc.communicate()
+            sys.stdout.write(out)
+            sys.stderr.write(errs)
         elif self.__commit is not None:
             if self.__shallowclone:
                 proc = Popen([config['paths']['git'], "checkout","--depth", "1", self.__commit],

@@ -88,9 +88,9 @@ config = {
     'grep_version': '3.3',
     'icu_version': '66',
     'icu_version_minor': '1',
-    'loot_version': '0.15.2',
-    'loot_commit': 'g3baa0e8',
-    'loot_branch': 'master',
+    'loot_version': '0.16.1',
+    'loot_commit': 'gd8c9b98',
+    'loot_branch': '0.16.1',
     'lz4_version': '1.9.2',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
     'nasm_version': '2.14.02',

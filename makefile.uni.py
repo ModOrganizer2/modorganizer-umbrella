@@ -151,7 +151,8 @@ for author, git_path, path, branch, dependencies, Build in [
             gh_pr_branch = None
 
             if os.getenv('APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH') is not None:
-                gh_pr_branch = '{}:{}'.format(os.getenv('APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME'), os.getenv('APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH'))
+                pr_name = os.getenv('APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME', '').split('/')[0]
+                gh_pr_branch = '{}:{}'.format(pr_name, os.getenv('APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH'))
 
             if git_path != "cmake_common":
                 appveyor_cmake_step.depend("cmake_common")

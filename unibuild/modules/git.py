@@ -154,8 +154,9 @@ class Clone(Repository):
 
         if self.__gh_pr is not None:
             proc = Popen([config['paths']['gh'], "pr", "checkout", self.__gh_pr],
-                         cwd=self.__super_repository.path,
-                         env=config['__environment'])
+                         cwd=self._context["build_path"],
+                         env=config['__environment'],
+                         stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
             proc.communicate()
         elif self.__commit is not None:
             if self.__shallowclone:

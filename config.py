@@ -79,6 +79,8 @@ config = {
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
 
+    'gh_cli_token': '',
+
     # manualy set all versions
     '7zip_version': '19.00',
     'boost_version': '1.73.0',
@@ -159,6 +161,7 @@ config['paths'] = {
     # 'graphviz': path_or_default("dot.exe", [["Graphviz2.38", "bin"]]),
     'cmake': path_or_default("cmake.exe", [["CMake", "bin"]]),
     'git': path_or_default("git.exe", [["Git", "bin"]]),
+    'gh': path_or_default("gh.exe", [["GitHub CLI"]]),
     'perl': path_or_default("perl.exe", [["StrawberryPerl", "perl", "bin"], ["Strawberry", "perl", "bin"]]),
     #'svn': path_or_default("svn.exe", [["SlikSvn", "bin"]]),
     '7z': path_or_default("7z.exe", [["7-Zip"]]),

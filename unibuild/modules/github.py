@@ -43,10 +43,10 @@ class Tag(URLDownload):
 
 
 class Source(Clone):
-    def __init__(self, author, project, branch="master", feature_branch=None, super_repository=None, update=True, commit=None, shallowclone=False):
+    def __init__(self, author, project, branch="master", feature_branch=None, super_repository=None, update=True, commit=None, shallowclone=False, gh_pr=None):
         if config['shallowclone']:
             self.shallowclone = True
 
         super(Source, self).__init__("https://github.com/{author}/{project}.git".format(author=author, project=project),
-                                     branch, feature_branch, super_repository, update, commit, shallowclone)
+                                     branch, feature_branch, super_repository, update, commit, shallowclone, gh_pr)
         self.set_destination(project)

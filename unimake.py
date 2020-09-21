@@ -87,6 +87,8 @@ def check_prerequisites_config():
         return False
     if not config['paths']['git']:
         return False
+    if not config['paths']['gh']:
+        return False
     if not config['paths']['perl']:
         return False
     if config["Installer"]:
@@ -117,6 +119,10 @@ def main():
     if not check_prerequisites_config():
         print('\nMissing prerequisites listed above - cannot continue')
         exit(1)
+
+    from subprocess import Popen, PIPE
+    p = Popen([config['paths']['gh'], 'auth', 'login', '--with-token'], stdout=PIPE, stdin=PIPE, stderr=PIPE, text=True)
+    stdout_data = p.communicate(input=config['gh_cli_token'])[0]
 
     for d in ["download", "build", "progress", "install"]:
         if not os.path.exists(config["paths"][d]):

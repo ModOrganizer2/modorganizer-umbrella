@@ -74,7 +74,7 @@ config = {
 
     'Main_Author': 'ModOrganizer2',  # the current maintainer
     'Dev_Branch': "master",
-    'Release_Branch': "2_2_2",
+    'Release_Branch': "2_3_0",
     'Feature_Branch': None, # Specify a branch or None to disable, used in place of the build branch when found
     'Distrib_Author': 'TanninOne',  # the current distribution (and the original Author)
     'Work_Author': '',  # yourself
@@ -86,24 +86,24 @@ config = {
     'fmt_version': '7.0.3',
     'googletest_version': '1.8.0', # unused. We use the latest source
     'grep_version': '3.3',
-    'icu_version': '66',
+    'icu_version': '67',
     'icu_version_minor': '1',
     'loot_version': '0.16.1',
     'loot_commit': 'gd8c9b98',
     'loot_branch': '0.16.1',
     'lz4_version': '1.9.2',
     'lz4_version_minor': '', # leave empty if no patch version (1.2.3.x)
-    'nasm_version': '2.14.02',
-    'nuget_version': '4.9.3',
+    'nasm_version': '2.15.05',
+    'nuget_version': '5.7.0',
     'nmm_version': '0.71.2',
-    'openssl_version': '1.1.1g',
-    'pyqt_version': '5.15.0',
-    'pyqt_pypi_hash': '8c/90/82c62bbbadcca98e8c6fa84f1a638de1ed1c89e85368241e9cc43fcbc320',
+    'openssl_version': '1.1.1h',
+    'pyqt_version': '5.15.1',
+    'pyqt_pypi_hash': '1d/31/896dc3dfb6c81c70164019a6cbba6ab037e3af7653d9ca60ccc874ee4c27',
     'pyqt_dev_version': '', # leave empty for a standard release
     'pyqt_builder_version': '1.5.0',
     'pyqt_sip_version': '12.8.1',
     'python_version': '3.8',
-    'python_version_minor': '.5',
+    'python_version_minor': '.6',
     'bzip2_version': '1.0.6', # For python
     'sip_version': '5.4.0',
     'sip_dev_version': '', # leave empty for a standard release
@@ -114,7 +114,7 @@ config = {
     'qt_version_minor_appveyor': '0',
     'qt_vc_version': '16.0',
     'vc_platformtoolset': 'v142',
-    'vc_TargetPlatformVersion': '10.0.18362.0',
+    'vc_TargetPlatformVersion': '10.0.19041.0',
     'vc_version': '16.0',
     'vc_version_for_boost': '14.2',
     'WixToolset_version': '311',
@@ -129,7 +129,7 @@ config = {
     '1809-dark-mode_version': '2.0',
 
     #the usvfs version below will only be used if
-    'usvfs_version': 'v0.4.6',
+    'usvfs_version': 'v0.4.8',
 
     'optimize': True,  # activate link-time code generation and other optimization.  This massively increases build time but
                        # produces smaller binaries and marginally faster code

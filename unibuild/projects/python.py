@@ -69,7 +69,7 @@ def upgrade_args():
         return [os.path.join(devenv_path, "devenv.exe"),
                 "PCBuild/pcbuild.sln",
                 "/upgrade"]
-    return [os.path.join(get_visual_studio(config["vc_version"]), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
+    return [os.path.join(get_visual_studio(config["vs_version"]), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
             "PCBuild/pcbuild.sln", "/upgrade"]
 
 

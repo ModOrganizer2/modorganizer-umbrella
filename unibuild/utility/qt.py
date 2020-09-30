@@ -25,12 +25,12 @@ from unibuild.utility.config_utility import program_files_folders
 from unibuild.utility.visualstudio import vc_year
 
 
-def get_qt_install(qt_version, qt_version_minor, vc_version):
+def get_qt_install(qt_version, qt_version_minor, vs_version):
     # Start with the custom Qt install path, overrides automatic detection
     try:
         p = os.path.join(config['qt_CustomInstallPath'], "{}".format(qt_version + "." + qt_version_minor
                                                                     if qt_version_minor != '' else qt_version),
-                             "msvc{0}_64".format(vc_year(vc_version)))
+                             "msvc{0}_64".format(vc_year(vs_version)))
         f = os.path.join(p, "bin", "qmake.exe")
         if os.path.isfile(f):
             return os.path.realpath(p)
@@ -42,14 +42,14 @@ def get_qt_install(qt_version, qt_version_minor, vc_version):
             # Offline installer default location
             p = os.path.join(baselocation, "Qt", "Qt{}".format(qt_version + "." + qt_version_minor
                              if qt_version_minor != '' else qt_version), "{}".format(qt_version + "." + qt_version_minor
-                             if qt_version_minor != '' else qt_version), "msvc{0}_64".format(vc_year(vc_version)))
+                             if qt_version_minor != '' else qt_version), "msvc{0}_64".format(vc_year(vs_version)))
             f = os.path.join(p, "bin", "qmake.exe")
             if os.path.isfile(f):
                 return os.path.realpath(p)
             # Online installer default location
             p = os.path.join(baselocation, "Qt", "{}".format(qt_version + "." + qt_version_minor
                                                              if qt_version_minor != '' else qt_version),
-                             "msvc{0}_64".format(vc_year(vc_version)))
+                             "msvc{0}_64".format(vc_year(vs_version)))
             f = os.path.join(p, "bin", "qmake.exe")
             if os.path.isfile(f):
                 return os.path.realpath(p)
@@ -73,7 +73,7 @@ def get_qt_install(qt_version, qt_version_minor, vc_version):
 
             p = os.path.join(root, "{}".format(qt_version + "." + qt_version_minor
                                                if qt_version_minor != '' else qt_version),
-                             "msvc{0}_64".format(vc_year(vc_version)))
+                             "msvc{0}_64".format(vc_year(vs_version)))
             f = os.path.join(p, "bin", "qmake.exe")
             if os.path.isfile(f):
                 return os.path.realpath(p)
@@ -83,8 +83,8 @@ def get_qt_install(qt_version, qt_version_minor, vc_version):
     return None
 
 
-def qt_install(qt_version, qt_version_minor, vc_version):
-    config["paths"]["qt_binary_install"] = get_qt_install(qt_version, qt_version_minor, vc_version)
+def qt_install(qt_version, qt_version_minor, vs_version):
+    config["paths"]["qt_binary_install"] = get_qt_install(qt_version, qt_version_minor, vs_version)
     if not config["paths"]["qt_binary_install"]:
         if qt_version_minor != '':
             qt_v = qt_version + "." + qt_version_minor

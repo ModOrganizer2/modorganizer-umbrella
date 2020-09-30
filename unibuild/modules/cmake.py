@@ -175,7 +175,7 @@ class CMakeEdit(Builder):
     def __generator_name(self):
         if self.__type == CMakeEdit.Type.VC:
             return "Visual Studio {} {}" \
-                .format(config['vc_version'].split('.')[0], self.__vc_year(config['vc_version']))
+                .format(config['vs_version'].split('.')[0], self.__vc_year(config['vs_version']))
         elif self.__type == CMakeEdit.Type.CodeBlocks:
             return "CodeBlocks - NMake Makefiles"
 
@@ -254,7 +254,7 @@ class CMakeVS(Builder):
         soutpath = os.path.join(self._context["build_path"], "vs_stdout.log")
         serrpath = os.path.join(self._context["build_path"], "vs_stderr.log")
 
-        vs_generator = "Visual Studio {0} {1}".format(config['vc_version'].split(".", 1)[0],vc_year(config['vc_version']))
+        vs_generator = "Visual Studio {0} {1}".format(config['vs_version'].split(".", 1)[0],vc_year(config['vs_version']))
         # Updated for latest versions of CMake > 3.1 - VS 2019 does not allow use of the deprecated method
         vs_generator_arch = "x64"
         if config["architecture"] == "x86":

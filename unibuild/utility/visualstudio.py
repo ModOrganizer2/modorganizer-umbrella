@@ -32,9 +32,9 @@ vs_editions = ["enterprise",
 
 
 # No entries for vs 2017 in the stadard registry, check environment then look in the default installation dir
-def get_visual_studio(vc_version):
+def get_visual_studio(vs_version):
     try:
-        if os.environ["VisualStudioVersion"] == vc_version:
+        if os.environ["VisualStudioVersion"] == vs_version:
             p = os.path.join(os.environ["VSINSTALLDIR"], "VC", "Auxiliary", "Build")
             f = os.path.join(p, "vcvarsall.bat")
             res = os.path.isfile(f)
@@ -60,25 +60,25 @@ def get_visual_studio(vc_version):
 
     for edition in vs_editions:
         s = os.environ["ProgramFiles(x86)"]
-        p = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version), edition, "VC", "Auxiliary", "Build")
+        p = os.path.join(s, "Microsoft Visual Studio", vc_year(vs_version), edition, "VC", "Auxiliary", "Build")
         f = os.path.join(p, "vcvarsall.bat")
         if os.path.isfile(f):
-            config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio", vc_year(vc_version),
+            config['paths']['visual_studio_basedir'] = os.path.join(s, "Microsoft Visual Studio", vc_year(vs_version),
                                                                     edition)
             return os.path.realpath(p)
 
 
-def vc_year(vc_version):
-    if vc_version == "15.0":
+def vc_year(vs_version):
+    if vs_version == "15.0":
         return "2017"
-    elif vc_version == "16.0":
+    elif vs_version == "16.0":
         return "2019"
     else:
-        logging.error("Visual Studio %s is not supported", vc_version)
+        logging.error("Visual Studio %s is not supported", vs_version)
 
 
-def visual_studio(vc_version):
-    config["paths"]["visual_studio"] = get_visual_studio(vc_version)
+def visual_studio(vs_version):
+    config["paths"]["visual_studio"] = get_visual_studio(vs_version)
     if not config["paths"]["visual_studio"]:
         logging.error("Unable to find vcvarsall.bat, please make sure you have 'Common C++ tools' Installed."
           " If you have changed the default installation folder for VS please set the 'vc_CustomInstallPath' in the config.py file"

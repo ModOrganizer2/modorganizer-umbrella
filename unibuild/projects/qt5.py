@@ -42,7 +42,7 @@ def bitnessQt():
 
 
 def variant():
-    return "msvc2013" if config['qt_vc_version'] == "12.0" else "msvc2015" if config['qt_vc_version'] == "14.0" else "msvc2017" if config['qt_vc_version'] == "15.0" else "msvc2019"
+    return "msvc2013" if config['qt_vs_version'] == "12.0" else "msvc2015" if config['qt_vs_version'] == "14.0" else "msvc2017" if config['qt_vs_version'] == "15.0" else "msvc2019"
 
 qt_bin_variant = variant()
 platform = "win32-{0}".format(variant())

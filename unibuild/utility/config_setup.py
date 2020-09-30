@@ -82,12 +82,12 @@ def init_config(args):
     if config['architecture'] not in ['x86_64', 'x86']:
         raise ValueError("only architectures supported are x86 and x86_64")
 
-    visual_studio(config["vc_version"])  # forced set after args are evaluated
+    visual_studio(config["vs_version"])  # forced set after args are evaluated
     if config['prefer_binary_dependencies']:
         if os.environ.get('APPVEYOR') is not None:
-            qt_install(config["qt_version_appveyor"], config["qt_version_minor_appveyor"], config["qt_vc_version"])
+            qt_install(config["qt_version_appveyor"], config["qt_version_minor_appveyor"], config["qt_vs_version"])
         else:
-            qt_install(config["qt_version"], config["qt_version_minor"], config["qt_vc_version"])
+            qt_install(config["qt_version"], config["qt_version_minor"], config["qt_vs_version"])
     config['__Default_environment'] = os.environ
     config['__environment'] = visual_studio_environment()
     config['__build_base_path'] = os.path.abspath(args.destination)
@@ -117,7 +117,7 @@ def dump_config():
     logging.debug("  Config: config['paths']['python']=%s", Evaluate(config['paths']['python']))
     logging.debug("  Config: config['paths']['visual_studio']=%s", config['paths']['visual_studio'])
     logging.debug("  Config: config['paths']['qt_binary_install']=%s", config['paths']['qt_binary_install'])
-    logging.debug("  Config: config['vc_version']=%s", config['vc_version'])
+    logging.debug("  Config: config['vs_version']=%s", config['vs_version'])
 
 
 def check_config():

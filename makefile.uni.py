@@ -203,7 +203,7 @@ for author, git_path, path, branch, dependencies, Build in [
 
 
 def python_core_collect(context):
-    ip = os.path.join(config["paths"]["install"], "bin")
+    ip = os.path.join(config["paths"]["install"], "bin/dlls")
     bp = python.python['build_path']
     path_segments = [bp, "PCbuild"]
     if config['architecture'] == "x86_64":

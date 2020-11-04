@@ -70,7 +70,7 @@ def GenerateFiles(path,data, c = 1):
                 if os.path.isfile(i):
                     filepath, filename = os.path.split(i)
                     if filename.endswith(".ts"):
-                        dest_dir = os.path.join(install_path, "bin/dlls", "translations")
+                        dest_dir = os.path.join(install_path, "bin/resources", "translations")
 
                         # filepath is the directory that contains the .ts file
                         # in build/transifex-translations/translations, created
@@ -225,7 +225,7 @@ init_transifex_repo = build.Run("{} init --force --no-interactive"
 
 
 def install_qt_translations(context):
-    full_install_path = os.path.join(install_path, "bin/dlls", "translations")
+    full_install_path = os.path.join(install_path, "bin/resources", "translations")
     qt_qm_path = os.path.join(config["paths"]["qt_binary_install"], "translations")
     translated_ts_path = os.path.join(build_path, "transifex-translations", "translations", "mod-organizer.organizer")
     for ts_file in glob(os.path.join(translated_ts_path, "*.ts")):

@@ -88,6 +88,7 @@ class MSBuild(Builder):
                           "/verbosity:" + verbosity,
                           "/consoleloggerparameters:Summary",
                           "/fileLogger",
+                          "/property:RunCodeAnalysis=false",
                           "/fileloggerparameters:Summary;Verbosity=" + lverbosity]
 
 

@@ -34,7 +34,8 @@ boost_components = ["date_time",
     "filesystem",
     "thread",
     "log",
-    "locale"]
+    "locale",
+    "program_options"]
 boost_components_shared = ["python"]
 
 user_config_jam = "user-config-{}.jam".format("64" if config['architecture'] == "x86_64" else "32")

@@ -152,7 +152,7 @@ else:
         .depend(build.Execute(install)
                 .depend(build.Execute(python_prepare)
                         .depend(PydCompiler()
-                                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pythonw,python3dll,select,pyexpat,unicodedata,_queue,_bz2,_ssl",
+                                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pythonw,python3dll,select,pyexpat,unicodedata,_queue,_bz2,_ssl,_overlapped",
                                                         project_PlatformToolset=config['vc_platformtoolset'],
                                                         reltarget="Release",
                                                         project_AdditionalParams=[

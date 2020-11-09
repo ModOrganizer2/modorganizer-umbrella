@@ -44,7 +44,7 @@ if config['pyqt_dev_version']:
 qt_binary_install = config["paths"]["qt_binary_install"]
 __build_base_path = config["__build_base_path"]
 
-enabled_modules = ["QtCore", "QtGui", "QtWidgets", "QtOpenGL", "_QOpenGLFunctions_2_0",
+enabled_modules = ["QtCore", "QtGui", "QtWidgets", "QtOpenGL", "QtSvg", "_QOpenGLFunctions_2_0",
                    "_QOpenGLFunctions_2_1", "_QOpenGLFunctions_4_1_Core"] #, "_QOpenGLFunctions_ES2"]
 
 

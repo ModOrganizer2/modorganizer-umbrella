@@ -121,18 +121,18 @@ class PydCompiler(build.Builder):
 def install(context):
     make_sure_path_exists(os.path.join(path_install, "libs"))
     make_sure_path_exists(os.path.join(context["build_path"], "libs"))
-    make_sure_path_exists(os.path.join(path_install, "bin"))
+    make_sure_path_exists(os.path.join(path_install, "bin/dlls"))
     make_sure_path_exists(os.path.join(path_install, "pdb"))
     path_segments = [context['build_path'], "PCbuild", bitness()]
     for f in glob(os.path.join(*path_segments, "*.lib")):
         shutil.copy(f, os.path.join(path_install, "libs"))
     for f in glob(os.path.join(*path_segments, "*.lib")):
         shutil.copy(f, os.path.join(context["build_path"], "libs"))
-    shutil.copy(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", ""))), os.path.join(path_install, "bin"))
-    shutil.copy(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", ""))), os.path.join(context["build_path"], "libs"))
+        shutil.copy(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", ""))), os.path.join(path_install, "bin/dlls"))
+        shutil.copy(os.path.join(*path_segments, "python{}.dll".format(python_version.replace(".", ""))), os.path.join(context["build_path"], "libs"))
     for f in glob(os.path.join(*path_segments, "libffi-*.dll")):
-        shutil.copy(f, os.path.join(path_install, "bin"))
-    shutil.copy(os.path.join(*path_segments, "python{}.pdb".format(python_version.replace(".", ""))), os.path.join(path_install, "pdb"))
+        shutil.copy(f, os.path.join(path_install, "bin/dlls"))
+        shutil.copy(os.path.join(*path_segments, "python{}.pdb".format(python_version.replace(".", ""))), os.path.join(path_install, "pdb"))
     for f in glob(os.path.join(*path_segments, "_*.pdb")):
         shutil.copy(f, os.path.join(path_install, "pdb"))
     return True
@@ -152,7 +152,7 @@ else:
         .depend(build.Execute(install)
                 .depend(build.Execute(python_prepare)
                         .depend(PydCompiler()
-                                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pythonw,python3dll,select,pyexpat,unicodedata,_queue,_bz2,_ssl",
+                                .depend(msbuild.MSBuild("PCBuild/PCBuild.sln", "python,pythonw,python3dll,select,pyexpat,unicodedata,_queue,_bz2,_ssl,_overlapped",
                                                         project_PlatformToolset=config['vc_platformtoolset'],
                                                         reltarget="Release",
                                                         project_AdditionalParams=[

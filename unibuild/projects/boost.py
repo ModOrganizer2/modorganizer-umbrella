@@ -34,7 +34,8 @@ boost_components = ["date_time",
     "filesystem",
     "thread",
     "log",
-    "locale"]
+    "locale",
+    "program_options"]
 boost_components_shared = ["python"]
 
 user_config_jam = "user-config-{}.jam".format("64" if config['architecture'] == "x86_64" else "32")
@@ -73,7 +74,7 @@ if config.get('binary_boost', True):
                                                       vc_version.replace(".", ""),
                                                       "x64" if config['architecture'] == "x86_64" else "x86",
                                                       "_".join(boost_version.split(".")[:-1]))),
-                                 os.path.join(config["paths"]["install"], "bin"))
+                                 os.path.join(config["paths"]["install"], "bin/dlls"))
         boost.depend(boost_stage)
 
 
@@ -109,7 +110,7 @@ else:
                                                       vc_version.replace(".", ""),
                                                       "x64" if config['architecture'] == "x86_64" else "x86",
                                                       "_".join(boost_version.split(".")[:-1]))),
-                                 os.path.join(config["paths"]["install"], "bin"))
+                                 os.path.join(config["paths"]["install"], "bin/dlls"))
         boost.depend(boost_stage)
     else:
         boost_stage = boost

@@ -202,6 +202,8 @@ def main():
             build_graph.remove_node(node)
 
         independent = extract_independent(build_graph)
+    logging.info("tasks complete")
+    return 0
 
 
 if __name__ == "__main__":

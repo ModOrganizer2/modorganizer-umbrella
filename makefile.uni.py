@@ -50,7 +50,7 @@ if config['Appveyor_Build']:
     if branch is not None and branch != 'master':
         config['Feature_Branch'] = branch
 
-for author, git_path, path, branch, dependencies, Build in [
+for author, git_path, path, branch, dependencies, Build, *restore_nuget in [
     (config['Main_Author'], "cmake_common", "cmake_common", config['Build_Branch'], ["boost", "zlib", "fmt"], False),
     (config['Main_Author'], "modorganizer-uibase", "uibase", config['Build_Branch'], ["Qt5", "boost", "fmt", "spdlog", "lz4", "zlib", "GTest"], True),
     (config['Main_Author'], "modorganizer-game_features", "game_features", config['Build_Branch'], ["modorganizer-uibase"], False),
@@ -107,7 +107,7 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-installer_quick", "installer_quick", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_fomod", "installer_fomod", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_fomod_csharp", "installer_fomod_csharp", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
-    ("AnyOldName3", "modorganizer-installer_omod", "installer_omod", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
+    ("AnyOldName3", "modorganizer-installer_omod", "installer_omod", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True, True),
     (config['Main_Author'], "modorganizer-installer_ncc", "installer_ncc", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "ncc", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-bsa_extractor", "bsa_extractor", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-bsatk"], True),
     (config['Main_Author'], "modorganizer-plugin_python", "plugin_python", config['Build_Branch'], ["Qt5", "boost", "modorganizer-uibase", "modorganizer-game_features",
@@ -148,6 +148,8 @@ for author, git_path, path, branch, dependencies, Build in [
                                                 .format(config['override_build_version']))
 
         if config['Appveyor_Build']:
+            if restore_nuget:
+                raise Exception("Unable to restore Nuget packages with a JOM Makefile build. Figure out how to use MSBuild here.")
             appveyor_cmake_step = cmake.CMakeJOM().arguments(cmake_param).install()
 
             if git_path != "cmake_common":
@@ -187,6 +189,13 @@ for author, git_path, path, branch, dependencies, Build in [
             vs_msbuild_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), None, None,
                                               "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
                                               config['build_type'])
+
+            if restore_nuget:
+                vs_nuget_restore_step = msbuild.MSBuild(os.path.join("vsbuild", "INSTALL.vcxproj"), "restore", None,
+                                                        "{}".format("x64" if config['architecture'] == 'x86_64' else "x86"),
+                                                        config['build_type'])
+                vs_nuget_restore_step.depend(vs_cmake_step)
+                vs_msbuild_step.depend(vs_nuget_restore_step)
 
             source_retrieval_step = github.Source(author, git_path, branch, feature_branch=config['Feature_Branch'], super_repository=tl_repo).set_destination(path)
 

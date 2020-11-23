@@ -45,9 +45,10 @@ class MSBuild(Builder):
     @property
     def name(self):
         suffix_32 = "" if config['architecture'] == 'x86_64' else "_32"
+        suffix_project = (" " + self.__project) if self.__project else ""
         if self._context is None:
-            return "msbuild" + suffix_32
-        return "msbuild{} {}".format(suffix_32, self._context.name)
+            return "msbuild" + suffix_32 + suffix_project
+        return "msbuild{}{} {}".format(suffix_32, suffix_project, self._context.name)
 
     def applies(self, parameters):
         return True

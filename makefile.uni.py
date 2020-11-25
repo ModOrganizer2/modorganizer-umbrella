@@ -107,7 +107,7 @@ for author, git_path, path, branch, dependencies, Build, *restore_nuget in [
     (config['Main_Author'], "modorganizer-installer_quick", "installer_quick", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_fomod", "installer_fomod", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-installer_fomod_csharp", "installer_fomod_csharp", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True),
-    ("AnyOldName3", "modorganizer-installer_omod", "installer_omod", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True, True),
+    (config['Main_Author'], "modorganizer-installer_omod", "installer_omod", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-game_features"], True, True),
     (config['Main_Author'], "modorganizer-installer_ncc", "installer_ncc", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "ncc", "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-bsa_extractor", "bsa_extractor", config['Build_Branch'], ["Qt5", "modorganizer-uibase", "modorganizer-bsatk"], True),
     (config['Main_Author'], "modorganizer-plugin_python", "plugin_python", config['Build_Branch'], ["Qt5", "boost", "modorganizer-uibase", "modorganizer-game_features",

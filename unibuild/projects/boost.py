@@ -74,7 +74,7 @@ if config.get('binary_boost', True):
                                                       vc_version.replace(".", ""),
                                                       "x64" if config['architecture'] == "x86_64" else "x86",
                                                       "_".join(boost_version.split(".")[:-1]))),
-                                 os.path.join(config["paths"]["install"], "bin/dlls"))
+                                 os.path.join(config["paths"]["install"], "bin"))
         boost.depend(boost_stage)
 
 
@@ -110,7 +110,7 @@ else:
                                                       vc_version.replace(".", ""),
                                                       "x64" if config['architecture'] == "x86_64" else "x86",
                                                       "_".join(boost_version.split(".")[:-1]))),
-                                 os.path.join(config["paths"]["install"], "bin/dlls"))
+                                 os.path.join(config["paths"]["install"], "bin"))
         boost.depend(boost_stage)
     else:
         boost_stage = boost

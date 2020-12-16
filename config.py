@@ -111,7 +111,7 @@ config = {
     'qt_version': '5.15',
     'qt_version_minor': '0',
     'qt_version_appveyor': '5.15',
-    'qt_version_minor_appveyor': '1',
+    'qt_version_minor_appveyor': '2',
     'qt_vs_version': '16.0',
     'vc_platformtoolset': 'v142',
     'vc_TargetPlatformVersion': '10.0.19041.0',

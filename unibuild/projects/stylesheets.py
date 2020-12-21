@@ -47,8 +47,8 @@ def copy_stylesheets(context, dir):
     copytree_fixed(src, dst)
     return True
 
-def create_stylesheet_project(author, name, filename=None, extension="7z"):
-    version = "v" + config[name + "_version"]
+def create_stylesheet_project(author, name, filename=None, version_prefix="", extension="7z"):
+    version = version_prefix + config[name + "_version"]
     if filename is None:
         filename = config[name + "_version"]
     dir = name + "-" + version
@@ -57,7 +57,8 @@ def create_stylesheet_project(author, name, filename=None, extension="7z"):
         .depend(build.Execute(lambda context: copy_stylesheets(context, dir))
         .depend(github.Release(author, name, version, filename, extension)))
 
-create_stylesheet_project("6788-00", "paper-light-and-dark")
-create_stylesheet_project("6788-00", "paper-automata", "Paper-Automata")
-create_stylesheet_project("6788-00", "paper-mono", "Paper-Mono")
-create_stylesheet_project("6788-00", "1809-dark-mode")
+create_stylesheet_project("6788-00", "paper-light-and-dark", version_prefix="v")
+create_stylesheet_project("6788-00", "paper-automata", "Paper-Automata", version_prefix="v")
+create_stylesheet_project("6788-00", "paper-mono", "Paper-Mono", version_prefix="v")
+create_stylesheet_project("6788-00", "1809-dark-mode", version_prefix="v")
+create_stylesheet_project("Trosski", "ModOrganizer_Style_Morrowind", "Transparent-Style-Morrowind")

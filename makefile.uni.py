@@ -129,7 +129,7 @@ for author, git_path, path, branch, dependencies, Build in [
                                                                                     "modorganizer-lootcli",
                                                                                     "usvfs", "githubpp",
                                                                                     "ncc", "openssl",
-                                                                                    "paper-light-and-dark", "paper-automata", "paper-mono", "1809-dark-mode"], True),
+                                                                                    "paper-light-and-dark", "paper-automata", "paper-mono", "1809-dark-mode", "ModOrganizer_Style_Morrowind"], True),
 ]:
     cmake_param = cmake_parameters() + ["-DCMAKE_INSTALL_PREFIX:PATH={}".format(config["paths"]["install"])]
     # build_step = cmake.CMake().arguments(cmake_param).install()

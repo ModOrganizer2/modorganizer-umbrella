@@ -109,7 +109,7 @@ config = {
     'sip_dev_version': '', # leave empty for a standard release
     'spdlog_version': 'v1.8.0',
     'qt_version': '5.15',
-    'qt_version_minor': '0',
+    'qt_version_minor': '2',
     'qt_version_appveyor': '5.15',
     'qt_version_minor_appveyor': '2',
     'qt_vs_version': '16.0',

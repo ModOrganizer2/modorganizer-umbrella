@@ -18,7 +18,7 @@ Open there a console and copy in: ``git clone https://github.com/Modorganizer2/m
 Now you need to install all required software to build Mod Organizer.
 
 #### Manual Requirements
-* Qt 5.15.0: [Download Manager](http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe)
+* Qt 5.15.2: [Download Manager](http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe)
   #### Qt Packages required:
   * msvc2019-64
   * qtwebengine

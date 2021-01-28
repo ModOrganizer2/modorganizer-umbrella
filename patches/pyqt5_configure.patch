@@ -1,6 +1,6 @@
 --- builder.py	(date 1575938575861)
 +++ builder.py	(date 1575938575861)
-@@ -386,17 +386,29 @@
+@@ -441,17 +441,29 @@
                      'QMAKE_LFLAGS += -Wl,--version-script={}.exp'.format(
                              buildable.target))
  

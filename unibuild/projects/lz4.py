@@ -50,7 +50,7 @@ def upgrade_args():
                 os.path.join(lz_path, "visual", "VS2017", 'lz4.sln'),
                 "/upgrade"]
     return [os.path.join(get_visual_studio(config["vs_version"]), "..", "..", "..", "Common7", "IDE", "devenv.exe"),
-            os.path.join(lz_path, "visual", "VS2017", 'lz4.sln'), "/upgrade"]
+            os.path.join(lz_path, "build", "VS2017", 'lz4.sln'), "/upgrade"]
 
 
 def copy_binaries(context):
@@ -59,7 +59,7 @@ def copy_binaries(context):
             os.path.join(lz_path, "bin")
         )
     shutil.copytree(
-        os.path.join(lz_path, "visual", "VS2017", "bin", "{}_Release".format(bitness())),
+        os.path.join(lz_path, "build", "VS2017", "bin", "{}_Release".format(bitness())),
         os.path.join(lz_path, "bin")
     )
     return True
@@ -97,7 +97,7 @@ else:
                     copy_binaries
                 ).depend(
                     msbuild.MSBuild(
-                        os.path.join(lz_path, "visual", "VS2017", 'lz4.sln'),
+                        os.path.join(lz_path, "build", "VS2017", 'lz4.sln'),
                         project="liblz4-dll",
                         working_directory=lazy.Evaluate(lambda: os.path.join(lz_path)),
                         reltarget="Release"

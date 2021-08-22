@@ -50,6 +50,8 @@ modorganizer-game_gamebryo
 
 modorganizer-game_oblivion
 
+modorganizer-game_nehrim
+
 modorganizer-game_fallout3
 
 modorganizer-game_fallout4

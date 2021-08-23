@@ -66,6 +66,9 @@ for author, git_path, path, branch, dependencies, Build in [
     (config['Main_Author'], "modorganizer-game_oblivion", "game_oblivion", config['Build_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                                    "modorganizer-game_gamebryo",
                                                                                                    "modorganizer-game_features"], True),
+    (config['Main_Author'], "modorganizer-game_nehrim", "game_nehrim", config['Build_Branch'], ["Qt5", "modorganizer-uibase",
+                                                                                                "modorganizer-game_gamebryo",
+                                                                                                "modorganizer-game_features"], True),
     (config['Main_Author'], "modorganizer-game_fallout3", "game_fallout3", config['Build_Branch'], ["Qt5", "modorganizer-uibase",
                                                                                                    "modorganizer-game_gamebryo",
                                                                                                    "modorganizer-game_features"], True),
@@ -147,7 +150,7 @@ for author, git_path, path, branch, dependencies, Build in [
                                                 "#define VER_FILEVERSION_STR.*\n",
                                                 "#define VER_FILEVERSION_STR \"{}\"\n"
                                                 .format(config['override_build_version']))
- 
+
         #begin build
         vs_cmake_step = cmake.CMakeVS().arguments(cmake_param).install()
 

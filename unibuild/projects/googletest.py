@@ -22,5 +22,5 @@ from unibuild.modules import cmake, github, build
 
 Project("GTest") \
   .depend(cmake.CMake().arguments(["-DCMAKE_BUILD_TYPE={0}".format(config["build_type"])])
-    .depend(github.Source("google", "googletest", "master")))
+    .depend(github.Source("google", "googletest", "main")))
       #.depend(github.Source("google", "googletest", "release-{}".format(googletest_version))))

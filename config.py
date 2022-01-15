@@ -127,7 +127,10 @@ config = {
     'paper-automata_version': '2.2',
     'paper-mono_version': '2.1',
     '1809-dark-mode_version': '2.0',
-    'ModOrganizer_Style_Morrowind_version': '1.0',
+    'ModOrganizer_Style_Morrowind_version': '1.1',
+    'Mod-Organizer-2-Skyrim-Stylesheet_version': '1.1',
+    'ModOrganizer_Style_Fallout3_version': '1.1',
+    'Mod-Organizer2-Fallout-4-Stylesheet_version': '1.1',
 
     #the usvfs version below will only be used if
     'usvfs_version': 'v0.4.8',

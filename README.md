@@ -1,4 +1,9 @@
-[![Python Check status](https://ci.appveyor.com/api/projects/status/ev4wj7qmscr5b09d?svg=true)](https://ci.appveyor.com/project/Modorganizer2/modorganizer-umbrella)
+<!-- [![Python Check status](https://ci.appveyor.com/api/projects/status/ev4wj7qmscr5b09d?svg=true)](https://ci.appveyor.com/project/Modorganizer2/modorganizer-umbrella) -->
+[![No Maintenance Intended](https://unmaintained.tech/badge.svg)](https://unmaintained.tech/)
+
+> Tthis repository is archived and obsolete, see
+> https://github.com/ModOrganizer2/mob if you want to build ModOrganizer2.
+
 
 # modorganizer-umbrella
 An umbrella- (super-) project for [modorganizer](https://github.com/Modorganizer2/modorganizer).
